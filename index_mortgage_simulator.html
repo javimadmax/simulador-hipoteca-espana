@@ -1,0 +1,2808 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador hipotecario y fiscal — España</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1C2B2B;
+    --ink-soft:#3A4A48;
+    --paper:#EFEDE3;
+    --paper-2:#E7E4D6;
+    --surface:#FFFFFF;
+    --border:#DBD5C3;
+    --border-soft:#E5E1D2;
+    --teal:#0F5C5C;
+    --teal-deep:#0A3F3F;
+    --teal-light:#17787D;
+    --teal-wash:#E4EEEC;
+    --gold:#C68A2E;
+    --gold-wash:#F6ECD8;
+    --brick:#AC4530;
+    --brick-wash:#F7E9E4;
+    --sage:#4C7A5B;
+    --sage-wash:#E9F1EA;
+    --muted:#6B7876;
+    --radius-lg:18px;
+    --radius-md:12px;
+    --radius-sm:8px;
+    --font-display:'Fraunces', serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'IBM Plex Mono', monospace;
+    --shadow-card: 0 1px 2px rgba(28,43,43,0.04), 0 8px 24px -12px rgba(28,43,43,0.18);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 90% -10%, var(--teal-wash) 0%, transparent 60%),
+      var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+  }
+
+  a{color:var(--teal);}
+
+  .app{max-width:1440px;margin:0 auto;padding:28px 28px 96px;}
+
+  /* ---------- Header ---------- */
+  header.hero{
+    display:flex; align-items:flex-end; justify-content:space-between; gap:24px;
+    padding-bottom:20px; margin-bottom:22px; border-bottom:1px solid var(--border);
+    flex-wrap:wrap;
+  }
+  .hero-title-eyebrow{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--teal); font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:8px;
+  }
+  .hero-title-eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);display:inline-block;}
+  h1.hero-title{
+    font-family:var(--font-display); font-weight:600; font-size:clamp(28px,3.4vw,42px);
+    margin:0; color:var(--teal-deep); letter-spacing:-0.01em;
+  }
+  h1.hero-title em{font-style:italic; font-weight:500; color:var(--gold);}
+  .hero-sub{color:var(--muted); font-size:14.5px; max-width:52ch; margin-top:8px;}
+  .hero-meta{
+    font-family:var(--font-mono); font-size:12px; color:var(--muted); text-align:right;
+    display:flex; flex-direction:column; gap:4px; white-space:nowrap;
+  }
+  .hero-meta b{color:var(--ink);}
+
+  /* ---------- Region bar ---------- */
+  .region-bar{
+    display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;
+    background:var(--surface); border:1.5px solid var(--teal); border-radius:var(--radius-lg);
+    padding:16px 20px; margin-bottom:20px; box-shadow:var(--shadow-card);
+  }
+  .region-field{display:flex; flex-direction:column; gap:6px;}
+  .region-field label{font-size:12px; font-weight:700; color:var(--ink-soft);}
+  .region-field label .opt{font-weight:400; color:var(--muted);}
+  .region-field select, .region-field input[type=text]{
+    font-family:var(--font-mono); font-size:14px; padding:9px 12px; border-radius:var(--radius-sm);
+    border:1.5px solid var(--border); background:var(--paper); color:var(--ink); min-width:220px; outline:none;
+  }
+  .region-field select:focus, .region-field input:focus{border-color:var(--teal); background:#fff;}
+  .region-note{
+    flex:1; min-width:220px; font-size:12px; color:var(--muted); line-height:1.5; padding-bottom:2px;
+  }
+  .region-note b{color:var(--teal-deep);}
+  .region-note.warn{color:var(--brick);}
+  @media (max-width:640px){
+    .region-bar{flex-direction:column; align-items:stretch; gap:12px;}
+    .region-field select, .region-field input[type=text]{min-width:0; width:100%;}
+  }
+
+  /* ---------- Layout shell ---------- */
+  .shell{display:grid; grid-template-columns:232px minmax(0,1fr) 420px; gap:22px; align-items:start;}
+  @media (max-width:1180px){ .shell{grid-template-columns:1fr; } }
+
+  /* ---------- Tabs (left rail) ---------- */
+  nav.tabs{
+    display:flex; flex-direction:column; gap:4px; position:sticky; top:20px;
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:8px; box-shadow:var(--shadow-card);
+  }
+  @media (max-width:1180px){
+    nav.tabs{ position:static; flex-direction:row; overflow-x:auto; gap:6px; padding:6px; }
+  }
+  nav.tabs button{
+    all:unset; cursor:pointer; padding:11px 14px; border-radius:var(--radius-sm);
+    font-size:13.5px; font-weight:600; color:var(--ink-soft); display:flex; align-items:center; gap:10px;
+    white-space:nowrap;
+  }
+  nav.tabs button .num{
+    font-family:var(--font-mono); font-size:11px; color:var(--muted); width:18px; height:18px;
+    border-radius:50%; border:1px solid var(--border); display:inline-flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  nav.tabs button:hover{background:var(--paper-2);}
+  nav.tabs button.active{background:var(--teal); color:#fff;}
+  nav.tabs button.active .num{border-color:rgba(255,255,255,.5); color:#fff;}
+
+  /* ---------- Form panels ---------- */
+  .panel{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:26px 28px 22px; box-shadow:var(--shadow-card); display:none; animation:fadeIn .25s ease;
+  }
+  .panel.active{display:block;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+  .panel h2{
+    font-family:var(--font-display); font-size:22px; font-weight:600; margin:0 0 4px; color:var(--teal-deep);
+  }
+  .panel .panel-sub{color:var(--muted); font-size:13.5px; margin:0 0 22px;}
+
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px 20px;}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px 20px;}
+  @media (max-width:640px){ .grid2, .grid3{grid-template-columns:1fr;} }
+
+  .field{display:flex; flex-direction:column; gap:6px; margin-bottom:16px;}
+  .field label{
+    font-size:12.5px; font-weight:600; color:var(--ink-soft); display:flex; align-items:center; gap:6px;
+  }
+  .field .hint{font-size:11.5px; color:var(--muted); font-weight:400; margin-top:-2px;}
+  .field input[type=number], .field input[type=text], .field input[type=date], .field select{
+    font-family:var(--font-mono); font-size:14.5px; padding:10px 12px; border-radius:var(--radius-sm);
+    border:1.5px solid var(--border); background:var(--paper); color:var(--ink); outline:none;
+    transition:border-color .15s, background .15s;
+  }
+  .field input:focus, .field select:focus{border-color:var(--teal); background:#fff;}
+  .suffix-wrap{position:relative;}
+  .suffix-wrap input{width:100%; padding-right:34px;}
+  .suffix-wrap span{
+    position:absolute; right:12px; top:50%; transform:translateY(-50%); font-family:var(--font-mono);
+    font-size:12.5px; color:var(--muted); pointer-events:none;
+  }
+
+  .segmented{display:flex; border:1.5px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; width:fit-content;}
+  .segmented button{
+    all:unset; cursor:pointer; padding:9px 16px; font-size:13px; font-weight:600; color:var(--ink-soft);
+    background:var(--paper); border-right:1px solid var(--border);
+  }
+  .segmented button:last-child{border-right:none;}
+  .segmented button.active{background:var(--teal); color:#fff;}
+
+  .chip-toggle{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 14px;
+    border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--paper); margin-bottom:10px;
+    cursor:pointer;
+  }
+  .chip-toggle.on{border-color:var(--teal); background:var(--teal-wash);}
+  .chip-toggle .ct-label{font-size:13.5px; font-weight:600;}
+  .chip-toggle .ct-detail{font-size:11.5px; color:var(--muted); font-weight:400;}
+  .switch{
+    width:38px; height:22px; border-radius:20px; background:var(--border); position:relative; flex-shrink:0;
+    transition:background .15s;
+  }
+  .switch::after{
+    content:""; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%;
+    background:#fff; transition:transform .15s; box-shadow:0 1px 2px rgba(0,0,0,.25);
+  }
+  .chip-toggle.on .switch{background:var(--teal);}
+  .chip-toggle.on .switch::after{transform:translateX(16px);}
+
+  .divider{height:1px; background:var(--border); margin:22px 0;}
+  .subhead{font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:600; margin:0 0 14px;}
+
+  .callout{
+    border-radius:var(--radius-sm); padding:12px 14px; font-size:13px; display:flex; gap:10px; align-items:flex-start;
+    margin:14px 0;
+  }
+  .callout.teal{background:var(--teal-wash); color:var(--teal-deep);}
+  .callout.gold{background:var(--gold-wash); color:#7A5A19;}
+  .callout .ic{flex-shrink:0; margin-top:1px;}
+
+  /* ---------- Dossier (results) ---------- */
+  .dossier{position:sticky; top:20px; display:flex; flex-direction:column; gap:16px;}
+  @media (max-width:1180px){ .dossier{position:static;} }
+
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-card); padding:22px 24px;
+  }
+
+  /* Seal */
+  .seal-card{display:flex; align-items:center; gap:18px;}
+  .seal{
+    width:104px; height:104px; border-radius:50%; flex-shrink:0; position:relative;
+    background: repeating-conic-gradient(from 0deg, var(--teal-wash) 0deg 6deg, transparent 6deg 12deg);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .seal::before{
+    content:""; position:absolute; inset:8px; border-radius:50%; border:1.5px solid var(--teal); background:#fff;
+  }
+  .seal-inner{position:relative; z-index:1; text-align:center;}
+  .seal-inner .pct{font-family:var(--font-display); font-weight:700; font-size:26px; color:var(--teal-deep); line-height:1;}
+  .seal-inner .lbl{font-family:var(--font-mono); font-size:8.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-top:3px;}
+  .seal-copy .seal-title{font-family:var(--font-display); font-weight:600; font-size:16px; color:var(--teal-deep);}
+  .seal-copy .seal-desc{font-size:12.5px; color:var(--muted); margin-top:3px; line-height:1.4;}
+
+  .kpi-row{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .kpi{
+    background:var(--paper); border:1px solid var(--border-soft); border-radius:var(--radius-sm); padding:13px 14px;
+  }
+  .kpi .kpi-label{font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted);}
+  .kpi .kpi-value{font-family:var(--font-mono); font-weight:600; font-size:19px; color:var(--ink); margin-top:4px;}
+  .kpi .kpi-value.pos{color:var(--sage);}
+  .kpi .kpi-value.neg{color:var(--brick);}
+  .kpi .kpi-sub{font-size:11px; color:var(--muted); margin-top:2px;}
+
+  .ledger-title{font-family:var(--font-display); font-size:17px; font-weight:600; color:var(--teal-deep); margin:0 0 12px;}
+  .ledger-row{display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px dotted var(--border);}
+  .ledger-row .lr-label{font-size:12.5px; color:var(--ink-soft);}
+  .ledger-row .lr-value{font-family:var(--font-mono); font-size:13px; font-weight:600; white-space:nowrap;}
+  .ledger-row.total{border-bottom:none; border-top:1.5px solid var(--ink); margin-top:4px; padding-top:10px;}
+  .ledger-row.total .lr-label{font-weight:700; color:var(--ink);}
+  .ledger-row.total .lr-value{font-size:15px;}
+  .ledger-row.sub .lr-label{padding-left:12px; color:var(--muted);}
+  .ledger-row.neg .lr-value{color:var(--brick);}
+
+  .alert{
+    border-radius:var(--radius-sm); padding:11px 13px; font-size:12.5px; line-height:1.45; display:flex; gap:9px;
+    margin-bottom:8px; border-left:3px solid;
+  }
+  .alert.warn{background:var(--brick-wash); border-color:var(--brick); color:#7A3323;}
+  .alert.info{background:var(--teal-wash); border-color:var(--teal); color:var(--teal-deep);}
+  .alert.good{background:var(--sage-wash); border-color:var(--sage); color:#2F5A40;}
+  .alert .ic{flex-shrink:0;}
+
+  table.sens{width:100%; border-collapse:collapse; font-size:12px;}
+  table.sens th{
+    font-family:var(--font-mono); font-weight:600; text-align:right; color:var(--muted); font-size:10.5px;
+    padding:6px 4px; border-bottom:1px solid var(--border); text-transform:uppercase;
+  }
+  table.sens td{padding:7px 4px; text-align:right; font-family:var(--font-mono); border-bottom:1px dotted var(--border-soft);}
+  table.sens th:first-child, table.sens td:first-child{text-align:left;}
+  table.sens tr.current td{background:var(--teal-wash); font-weight:700;}
+  table.sens tr.current td:first-child{border-radius:6px 0 0 6px;}
+  table.sens tr.current td:last-child{border-radius:0 6px 6px 0;}
+
+  .foot-disclaimer{
+    margin-top:28px; padding-top:18px; border-top:1px solid var(--border); font-size:11.5px; color:var(--muted);
+    max-width:80ch; line-height:1.6;
+  }
+
+  /* mobile sticky summary */
+  .sticky-bar{
+    display:none; position:fixed; bottom:0; left:0; right:0; background:var(--teal-deep); color:#fff;
+    padding:10px 16px; font-family:var(--font-mono); font-size:12px; z-index:50; justify-content:space-between;
+    box-shadow:0 -6px 18px rgba(0,0,0,.18);
+  }
+  .sticky-bar b{font-size:13.5px;}
+  @media (max-width:1180px){ .sticky-bar{display:flex;} }
+
+  .bonif-item{
+    border:1.5px solid var(--border); border-radius:var(--radius-sm); padding:12px 14px; margin-bottom:10px;
+    background:var(--paper);
+  }
+  .bonif-item.on{border-color:var(--teal); background:var(--teal-wash);}
+  .bonif-top{display:flex; align-items:center; gap:10px;}
+  .bonif-top .switch{cursor:pointer;}
+  .bonif-item.on .switch{background:var(--teal);}
+  .bonif-item.on .switch::after{transform:translateX(16px);}
+
+  .card-header-row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px;}
+  .card-header-row .ledger-title{margin:0;}
+  .btn-ghost{
+    all:unset; cursor:pointer; font-size:11.5px; font-weight:600; color:var(--teal); background:var(--teal-wash);
+    padding:7px 12px; border-radius:20px; white-space:nowrap; transition:background .15s;
+  }
+  .btn-ghost:hover{background:var(--teal); color:#fff;}
+  .btn-ghost.small{padding:5px 10px; font-size:11px;}
+
+  .compare-empty{font-size:12.5px; color:var(--muted); padding:6px 0;}
+  .compare-table{width:100%; border-collapse:collapse; font-size:11.5px;}
+  .compare-table th{
+    font-family:var(--font-mono); font-weight:600; text-align:right; color:var(--muted); font-size:9.5px;
+    text-transform:uppercase; padding:5px 6px; border-bottom:1px solid var(--border);
+  }
+  .compare-table th:first-child, .compare-table td:first-child{text-align:left;}
+  .compare-table td{padding:6px; text-align:right; font-family:var(--font-mono); border-bottom:1px dotted var(--border-soft); white-space:nowrap;}
+  .compare-table input.compare-name{
+    font-family:var(--font-body); font-weight:600; font-size:12px; border:none; background:transparent;
+    width:100%; padding:2px; border-radius:4px; color:var(--ink);
+  }
+  .compare-table input.compare-name:focus{background:var(--paper); outline:1px solid var(--border);}
+  .compare-actions{display:flex; gap:4px; justify-content:flex-end;}
+  .mini-btn{
+    all:unset; cursor:pointer; font-size:13px; padding:2px 6px; border-radius:5px; color:var(--muted);
+  }
+  .mini-btn:hover{background:var(--teal-wash); color:var(--teal);}
+  .mini-btn.danger:hover{background:var(--brick-wash); color:var(--brick);}
+  .compare-table tr.negative td.col-colchon{color:var(--brick);}
+  .compare-table tr.positive td.col-colchon{color:var(--sage);}
+
+  .toast{
+    position:fixed; bottom:70px; left:50%; transform:translateX(-50%) translateY(10px); opacity:0;
+    background:var(--ink); color:#fff; padding:9px 18px; border-radius:20px; font-size:12.5px;
+    pointer-events:none; transition:opacity .2s, transform .2s; z-index:100;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media (max-width:1180px){ .toast{bottom:56px;} }
+
+  /* ---------- Checklist / siguientes pasos ---------- */
+  .progress-wrap{display:flex; align-items:center; gap:14px; margin:0 0 24px;}
+  .progress-bar{flex:1; height:9px; border-radius:20px; background:var(--paper-2); overflow:hidden; border:1px solid var(--border-soft);}
+  .progress-bar-fill{height:100%; background:linear-gradient(90deg, var(--teal), var(--teal-light)); border-radius:20px; transition:width .25s ease; width:0%;}
+  .progress-label{font-family:var(--font-mono); font-size:12px; color:var(--muted); white-space:nowrap; flex-shrink:0;}
+
+  .step-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column;}
+  .step-item{display:flex; gap:16px; padding:0 0 22px; position:relative;}
+  .step-item:not(:last-child)::before{content:""; position:absolute; left:15px; top:34px; bottom:0; width:1.5px; background:var(--border);}
+  .step-num{
+    width:32px; height:32px; border-radius:50%; background:var(--teal-wash); color:var(--teal-deep);
+    display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700;
+    font-size:14px; flex-shrink:0; z-index:1;
+  }
+  .step-body .step-title{font-weight:600; font-size:13.8px; color:var(--ink); display:inline;}
+  .step-body .step-time{font-family:var(--font-mono); font-size:10.5px; color:var(--gold); margin-left:8px; text-transform:uppercase; letter-spacing:.03em;}
+  .step-body .step-desc{font-size:12.8px; color:var(--muted); margin-top:3px; line-height:1.5;}
+
+  .group-details{border:1.5px solid var(--border); border-radius:var(--radius-md); margin-bottom:12px; overflow:hidden; background:var(--surface);}
+  .group-summary{
+    list-style:none; cursor:pointer; padding:14px 18px; display:flex; align-items:center; justify-content:space-between;
+    font-weight:600; font-size:13.8px; background:var(--paper); gap:10px;
+  }
+  .group-summary::-webkit-details-marker{display:none;}
+  .group-summary .gs-left{display:flex; align-items:center; gap:10px;}
+  .group-summary .chev{transition:transform .2s; color:var(--muted); font-size:12px;}
+  .group-details[open] .group-summary .chev{transform:rotate(90deg);}
+  .group-summary .group-count{
+    font-family:var(--font-mono); font-size:10.5px; color:var(--teal); font-weight:600; background:var(--teal-wash);
+    padding:3px 10px; border-radius:20px; flex-shrink:0;
+  }
+  .group-body{padding:8px 18px 16px;}
+
+  .check-row{display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px dotted var(--border-soft);}
+  .check-row:last-child{border-bottom:none;}
+  .check-row input[type=checkbox]{margin-top:2px; width:16px; height:16px; accent-color:var(--teal); flex-shrink:0; cursor:pointer;}
+  .check-row label{font-size:12.8px; line-height:1.5; cursor:pointer; color:var(--ink-soft);}
+  .check-row input:checked ~ label{color:var(--muted); text-decoration:line-through; text-decoration-color:var(--border);}
+
+  .tips-list{display:flex; flex-direction:column; gap:10px; margin-bottom:24px;}
+  .tip-card{
+    background:var(--gold-wash); border-radius:var(--radius-sm); padding:13px 15px; font-size:12.8px;
+    color:#6B4E15; line-height:1.55; display:flex; gap:10px;
+  }
+  .tip-card b{color:#5A400F;}
+  .tip-card .ic{flex-shrink:0;}
+
+  /* ---------- Glosario ---------- */
+  .glossary-search{
+    width:100%; font-family:var(--font-body); font-size:14.5px; padding:12px 16px; border-radius:24px;
+    border:1.5px solid var(--border); background:var(--paper); color:var(--ink); outline:none; margin-bottom:22px;
+  }
+  .glossary-search:focus{border-color:var(--teal); background:#fff;}
+  .term-group{margin-bottom:26px;}
+  .term-group-title{
+    font-family:var(--font-display); font-size:15.5px; font-weight:600; color:var(--teal-deep);
+    margin:0 0 12px; padding-bottom:8px; border-bottom:1.5px solid var(--border);
+  }
+  .term-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:900px){ .term-grid{grid-template-columns:1fr;} }
+  .term-card{
+    border:1.5px solid var(--border); border-radius:var(--radius-md); padding:15px 17px; background:var(--surface);
+    border-left:3px solid var(--teal);
+  }
+  .term-name{font-weight:700; font-size:14px; color:var(--ink);}
+  .term-full{font-weight:400; font-size:11.5px; color:var(--muted); margin-left:5px;}
+  .term-def{font-size:12.8px; color:var(--ink-soft); line-height:1.55; margin-top:6px;}
+  .term-example{
+    font-family:var(--font-mono); font-size:11.5px; color:var(--teal-deep); background:var(--teal-wash);
+    border-radius:8px; padding:8px 10px; margin-top:9px; line-height:1.5;
+  }
+  .term-example b{color:var(--teal-deep);}
+  .no-results{font-size:12.8px; color:var(--muted); padding:20px 0; text-align:center;}
+
+  /* ---------- Exportar (Excel / PDF) ---------- */
+  .export-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .btn-export{
+    all:unset; cursor:pointer; display:flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700;
+    color:var(--teal-deep); background:var(--surface); border:1.5px solid var(--border);
+    padding:8px 14px; border-radius:20px; transition:border-color .15s, background .15s;
+  }
+  .btn-export:hover{border-color:var(--teal); background:var(--teal-wash);}
+  .btn-export:disabled{opacity:.55; cursor:wait;}
+
+  .print-only{display:none;}
+  @media print{
+    body *{visibility:hidden;}
+    #informe-print, #informe-print *{visibility:visible;}
+    #informe-print{
+      display:block !important; position:absolute; left:0; top:0; width:100%;
+      font-family:var(--font-body); color:#111; padding:0;
+    }
+    .informe-header{border-bottom:2px solid #111; padding-bottom:14px; margin-bottom:20px;}
+    .informe-header h1{font-family:var(--font-display); font-size:22px; margin:0 0 6px;}
+    .informe-header .informe-meta{font-size:11px; color:#444;}
+    .informe-seal{display:flex; justify-content:space-between; align-items:baseline; margin-top:10px; padding:10px 14px; background:#f2f2f2; border-radius:6px;}
+    .informe-seal b{font-size:15px;}
+    .informe-section{margin-bottom:18px; break-inside:avoid;}
+    .informe-section h2{font-family:var(--font-display); font-size:14px; border-bottom:1px solid #ccc; padding-bottom:4px; margin:0 0 8px;}
+    .informe-section table{width:100%; border-collapse:collapse; font-size:11.5px;}
+    .informe-section td{padding:4px 2px; border-bottom:1px dotted #ccc;}
+    .informe-section td:last-child{text-align:right; font-family:var(--font-mono); white-space:nowrap;}
+    .informe-section tr.total td{font-weight:700; border-top:1.5px solid #111; border-bottom:none;}
+    .informe-alertas{font-size:11px; margin:0; padding-left:18px;}
+    .informe-alertas li{margin-bottom:4px;}
+    .informe-footer{margin-top:24px; padding-top:12px; border-top:1px solid #ccc; font-size:9.5px; color:#555; line-height:1.5;}
+    @page{ margin:18mm 16mm; }
+  }
+
+  /* ============================================================
+     OPTIMIZACIÓN MÓVIL
+     ============================================================ */
+  .mobile-view-toggle{display:none;}
+  .back-to-form{display:none;}
+  .table-scroll{width:100%;}
+
+  @media (max-width:1180px){
+    .app{padding:16px 14px 92px;}
+
+    header.hero{padding-bottom:14px; margin-bottom:14px; gap:10px;}
+    .hero-sub{max-width:none;}
+    .hero-meta{text-align:left; white-space:normal; flex-direction:row; flex-wrap:wrap; gap:8px 14px;}
+
+    .mobile-view-toggle{
+      display:flex; gap:6px; background:var(--surface); border:1px solid var(--border);
+      border-radius:999px; padding:4px; margin-bottom:14px; position:sticky; top:8px; z-index:40;
+      box-shadow:var(--shadow-card);
+    }
+    .mobile-view-toggle button{
+      all:unset; box-sizing:border-box; flex:1; text-align:center; cursor:pointer; padding:11px 8px;
+      border-radius:999px; font-size:13px; font-weight:700; color:var(--ink-soft);
+    }
+    .mobile-view-toggle button.active{background:var(--teal); color:#fff;}
+
+    /* por defecto (sin la clase mv-results) se ve el formulario; con ella, los resultados */
+    .shell.mv-results .panels, .shell.mv-results nav.tabs{display:none;}
+    .shell:not(.mv-results) aside.dossier{display:none;}
+
+    .back-to-form{
+      display:flex; align-items:center; gap:6px; width:100%; text-align:left; font-size:13.5px;
+      font-weight:700; color:var(--teal); background:var(--surface); border:1px solid var(--border);
+      border-radius:999px; padding:10px 16px; margin-bottom:2px; cursor:pointer;
+    }
+
+    .panel{padding:20px 16px 18px;}
+    .card{padding:16px;}
+    nav.tabs button{padding:13px 16px;}
+
+    .seal-card{flex-wrap:wrap; gap:14px;}
+    .kpi-row{gap:10px;}
+    .kpi{padding:12px;}
+    .kpi .kpi-value{font-size:17px;}
+
+    .segmented{width:100%;}
+    .segmented button{flex:1; text-align:center; padding:11px 6px; font-size:12.5px;}
+
+    .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+    .table-scroll table{min-width:420px;}
+    #comparador-content{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+    #comparador-content .compare-table{min-width:640px;}
+
+    .check-row{padding:12px 0;}
+    .check-row input[type=checkbox]{width:20px; height:20px;}
+    .bonif-fields{grid-template-columns:1fr 1fr;}
+
+    .switch{width:44px; height:26px; flex-shrink:0;}
+    .switch::after{width:22px; height:22px;}
+    .chip-toggle.on .switch::after, .bonif-item.on .switch::after{transform:translateX(18px);}
+    .chip-toggle{padding:14px;}
+
+    .card-header-row{flex-wrap:wrap;}
+    .card-header-row .btn-ghost{white-space:normal; text-align:center;}
+
+    .sticky-bar{cursor:pointer;}
+
+    .glossary-search{padding:13px 16px; font-size:16px;}
+    .step-item{padding-bottom:20px;}
+  }
+
+  @media (max-width:420px){
+    h1.hero-title{font-size:23px;}
+    .hero-title-eyebrow{font-size:10px;}
+    .seal{width:84px; height:84px;}
+    .seal-inner .pct{font-size:20px;}
+    .kpi-row{grid-template-columns:1fr 1fr;}
+    .kpi .kpi-label{font-size:9.5px;}
+    .kpi .kpi-value{font-size:16px;}
+    nav.tabs button{font-size:12.5px; padding:11px 12px;}
+  }
+
+  /* Los inputs de tipo number en iOS no deben ir por debajo de 16px o Safari hace zoom automático */
+  @media (max-width:1180px){
+    .field input[type=number], .field input[type=text], .field input[type=date], .field select{
+      font-size:16px;
+    }
+  }
+  .bonif-top input.bonif-name{
+    flex:1; border:none; background:transparent; font-size:13.5px; font-weight:600; color:var(--ink);
+    font-family:var(--font-body); padding:2px 4px; outline:none; border-radius:4px;
+  }
+  .bonif-top input.bonif-name:focus{background:#fff;}
+  .bonif-top button.bonif-remove{
+    all:unset; cursor:pointer; color:var(--muted); font-size:14px; padding:2px 6px; border-radius:4px;
+  }
+  .bonif-top button.bonif-remove:hover{background:var(--brick-wash); color:var(--brick);}
+  .bonif-fields{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;}
+  .bonif-fields .bf{display:flex; flex-direction:column; gap:3px;}
+  .bonif-fields label{font-size:10.5px; color:var(--muted); font-weight:600;}
+  .bonif-fields .suffix-wrap input{font-size:12.5px; padding:7px 10px;}
+
+  ::-webkit-scrollbar{height:8px; width:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--border); border-radius:8px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="hero">
+    <div>
+      <div class="hero-title-eyebrow" id="hero-eyebrow">España · 2026</div>
+      <h1 class="hero-title">Cuánto necesito <em>realmente</em> para comprar</h1>
+      <p class="hero-sub">Simulador de hipoteca, ITP/IVA y bonificaciones bancarias, con la fiscalidad de cada comunidad autónoma. Ajusta cualquier variable y el dossier de la derecha se recalcula al instante.</p>
+    </div>
+    <div class="hero-meta">
+      <span id="hero-normativa">Normativa: <b>elige tu comunidad</b></span>
+      <span>Datos fiscales de las 17 CCAA + forales</span>
+      <span>Revisado a fecha <b>22.07.2026</b></span>
+    </div>
+  </header>
+
+  <div class="region-bar" id="region-bar">
+    <div class="region-field">
+      <label>Comunidad autónoma</label>
+      <select id="in-comunidad">
+        <option value="">— Selecciona —</option>
+      </select>
+    </div>
+    <div class="region-field">
+      <label>Ciudad / municipio <span class="opt">(opcional)</span></label>
+      <input type="text" id="in-ciudad" placeholder="p. ej. Sevilla">
+    </div>
+    <div class="region-note" id="region-note"></div>
+  </div>
+
+  <div class="mobile-view-toggle" id="mobile-view-toggle">
+    <button data-view="form" class="active">✏️ Editar datos</button>
+    <button data-view="results">📊 Ver resultados</button>
+  </div>
+
+  <div class="shell">
+
+    <!-- ============ TABS ============ -->
+    <nav class="tabs" id="tabs">
+      <button class="tab-btn active" data-tab="comprador"><span class="num">1</span> Comprador</button>
+      <button class="tab-btn" data-tab="fiscalidad"><span class="num">2</span> Fiscalidad</button>
+      <button class="tab-btn" data-tab="vivienda"><span class="num">3</span> Vivienda</button>
+      <button class="tab-btn" data-tab="financiacion"><span class="num">4</span> Financiación</button>
+      <button class="tab-btn" data-tab="gastos"><span class="num">5</span> Gastos y colchón</button>
+      <button class="tab-btn" data-tab="pasos"><span class="num">6</span> Siguientes pasos</button>
+      <button class="tab-btn" data-tab="glosario"><span class="num">7</span> Glosario</button>
+    </nav>
+
+    <!-- ============ FORM PANELS ============ -->
+    <div class="panels">
+
+      <!-- 1. COMPRADOR -->
+      <section class="panel active" id="panel-comprador">
+        <h2>El comprador</h2>
+        <p class="panel-sub">Estos datos determinan tu capacidad de endeudamiento y si accedes a tipos reducidos por edad o renta.</p>
+
+        <div class="grid3">
+          <div class="field">
+            <label>Edad</label>
+            <input type="number" inputmode="decimal" id="in-edad" value="" placeholder="p. ej. 30" min="18" max="99">
+            <div class="hint">≤ 35-40 años (según comunidad) suele abrir la puerta a un ITP reducido</div>
+          </div>
+          <div class="field">
+            <label>Nº de compradores</label>
+            <input type="number" inputmode="decimal" id="in-numCompradores" value="1" min="1" max="4">
+            <div class="hint">Si sois varios, cada titular debe cumplir requisitos por su parte proporcional</div>
+          </div>
+          <div class="field">
+            <label>Ahorros totales disponibles</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-ahorros" value="" placeholder="0" step="500"><span>€</span></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <p class="subhead">Ingresos</p>
+        <div class="grid3">
+          <div class="field">
+            <label>Ingreso neto mensual recurrente</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-ingresosMensuales" value="" placeholder="0" step="10"><span>€</span></div>
+            <div class="hint">El habitual, sin contar extras puntuales</div>
+          </div>
+          <div class="field">
+            <label>Nº de pagas al año</label>
+            <input type="number" inputmode="decimal" id="in-numPagas" value="12" min="12" max="14">
+          </div>
+          <div class="field">
+            <label>Ingresos extraordinarios anuales</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-ingresosExtra" value="0" step="100"><span>€</span></div>
+            <div class="hint">Pagas puntuales, bonus — no se usan para el ratio de esfuerzo</div>
+          </div>
+        </div>
+        <div class="field" style="max-width:280px;">
+          <label>Otras cuotas de deuda mensuales</label>
+          <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-otrasDeudas" value="0" step="10"><span>€</span></div>
+          <div class="hint">Préstamos, coche, tarjetas... para el ratio de endeudamiento total</div>
+        </div>
+      </section>
+
+      <!-- 2. FISCALIDAD -->
+      <section class="panel" id="panel-fiscalidad">
+        <h2>Fiscalidad y exenciones</h2>
+        <p class="panel-sub" id="fiscalidad-sub">Selecciona primero tu comunidad autónoma arriba para ver los colectivos con tipo reducido disponibles.</p>
+
+        <p class="subhead">Colectivo al que optas</p>
+        <div class="field" style="max-width:420px;">
+          <select id="in-colectivo">
+            <option value="ninguno" selected>Ninguno — tipo general</option>
+          </select>
+        </div>
+        <div class="field" id="wrap-hijosExcedentes" style="max-width:280px; display:none;">
+          <label>Hijos por encima del mínimo legal</label>
+          <input type="number" inputmode="decimal" id="in-hijosExcedentes" value="0" min="0" max="6">
+          <div class="hint">Cada hijo extra amplía el límite de renta</div>
+        </div>
+
+        <div class="callout teal" id="requisitos-callout" style="display:none;">
+          <span class="ic">📋</span>
+          <span id="requisitos-callout-text">—</span>
+        </div>
+
+        <div class="divider"></div>
+        <p class="subhead">Base para calcular tu renta fiscal (última declaración IRPF)</p>
+        <div class="grid3">
+          <div class="field">
+            <label>Base imponible general</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-baseGeneral" value="" placeholder="0" step="0.01"><span>€</span></div>
+          </div>
+          <div class="field">
+            <label>Base imponible del ahorro</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-baseAhorro" value="" placeholder="0" step="0.01"><span>€</span></div>
+          </div>
+          <div class="field">
+            <label>Mínimo personal y familiar</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-minimoPF" value="5550" step="10"><span>€</span></div>
+          </div>
+        </div>
+
+        <div class="callout teal" id="renta-callout">
+          <span class="ic">ⓘ</span>
+          <span id="renta-callout-text">—</span>
+        </div>
+
+        <div class="callout gold">
+          <span class="ic">⚠</span>
+          <span>Estos requisitos deben verificarse en la fecha real de la compraventa: la mayoría de comunidades exigen además destinar el inmueble a vivienda habitual (empadronarse en unos meses, mantenerla varios años). No se aplican automáticamente: hay que solicitarlos al liquidar el modelo 600 ante la hacienda autonómica (o foral) correspondiente.</span>
+        </div>
+      </section>
+
+      <!-- 3. VIVIENDA -->
+      <section class="panel" id="panel-vivienda">
+        <h2>La vivienda</h2>
+        <p class="panel-sub">Nueva tributa por IVA (o IGIC en Canarias) + AJD; segunda mano por ITP. La base del ITP es el mayor entre el precio y el valor de referencia catastral.</p>
+
+        <p class="subhead">Tipo de vivienda</p>
+        <div class="segmented" id="seg-tipoVivienda">
+          <button data-val="segundaMano" class="active">Segunda mano</button>
+          <button data-val="nueva">Nueva (promotor)</button>
+        </div>
+
+        <div id="wrap-habitual" class="chip-toggle on" style="margin-top:16px;">
+          <div><div class="ct-label">¿Va a ser tu vivienda habitual?</div><div class="ct-detail">Casi todos los tipos reducidos y descuentos exigen que lo sea</div></div>
+          <div class="switch"></div>
+        </div>
+
+        <div id="wrap-vpo" class="chip-toggle" style="margin-top:10px;">
+          <div><div class="ct-label">Vivienda de protección oficial (VPO)</div><div class="ct-detail" id="vpo-detail">Suele tener un tipo distinto al general — depende de tu comunidad</div></div>
+          <div class="switch"></div>
+        </div>
+
+        <div class="divider"></div>
+        <p class="subhead">Precio y negociación</p>
+        <div class="grid3">
+          <div class="field">
+            <label>Precio anunciado</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-precioAnunciado" value="" placeholder="0" step="1000"><span>€</span></div>
+          </div>
+          <div class="field">
+            <label>Precio ofertado / negociado</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-precioOfertado" value="" placeholder="0" step="1000"><span>€</span></div>
+          </div>
+          <div class="field">
+            <label>Precio de compra final</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-precioFinal" value="" placeholder="0" step="1000"><span>€</span></div>
+            <div class="hint">El que se usa en todos los cálculos</div>
+          </div>
+        </div>
+        <div class="callout teal" id="negociacion-callout">
+          <span class="ic">↓</span><span id="negociacion-text">—</span>
+        </div>
+
+        <div class="divider"></div>
+        <p class="subhead">Valores de referencia (opcional pero recomendable)</p>
+        <div class="grid2">
+          <div class="field">
+            <label>Valor de referencia catastral</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-valorReferencia" value="" step="1000" placeholder="si lo conoces"><span>€</span></div>
+            <div class="hint">Si supera el precio, la base del ITP sube a ese valor (norma estatal desde 2022)</div>
+          </div>
+          <div class="field">
+            <label>Valor de tasación</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-valorTasacion" value="" step="1000" placeholder="si ya la tienes"><span>€</span></div>
+            <div class="hint">El banco suele financiar sobre el menor entre precio y tasación</div>
+          </div>
+        </div>
+
+        <div class="divider" id="divider-especial-cataluna" style="display:none;"></div>
+        <details id="wrap-especial-cataluna" style="display:none;">
+          <summary class="subhead" style="cursor:pointer; display:inline-block;">Casos especiales de Catalunya (opcional)</summary>
+          <div class="grid2" style="margin-top:14px;">
+            <div class="field">
+              <label>Municipio</label>
+              <select id="in-municipioRural">
+                <option value="no" selected>Barcelona / urbano estándar</option>
+                <option value="rural">Municipio rural (ITP 4%)</option>
+                <option value="atencionEspecial">Municipio rural de atención especial (ITP 3%)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>¿Comprador "gran tenedor"?</label>
+              <select id="in-grandTenedor">
+                <option value="no" selected>No</option>
+                <option value="si">Sí (ITP 20%)</option>
+              </select>
+              <div class="hint">Más de 10 inmuebles residenciales en Cataluña, o 5+ en zonas de mercado tensionado (se suman todas las zonas desde la Ley 11/2026)</div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- 4. FINANCIACION -->
+      <section class="panel" id="panel-financiacion">
+        <h2>La hipoteca</h2>
+        <p class="panel-sub">Define el importe, plazo y tipo de interés. Las bonificaciones bancarias reducen el TIN pero tienen coste mensual: aquí ves su efecto neto sobre la TAE.</p>
+
+        <p class="subhead">Importe financiado</p>
+        <div class="segmented" id="seg-modoFinanciacion">
+          <button data-val="porcentaje" class="active">% del precio</button>
+          <button data-val="manual">Importe manual</button>
+        </div>
+
+        <div class="grid2" style="margin-top:16px;">
+          <div class="field" id="wrap-porcentajeFin">
+            <label>Porcentaje financiado</label>
+            <select id="in-porcentajeFin">
+              <option value="70">70%</option>
+              <option value="75">75%</option>
+              <option value="80" selected>80%</option>
+              <option value="85">85%</option>
+              <option value="90">90%</option>
+              <option value="95">95%</option>
+              <option value="100">100%</option>
+            </select>
+          </div>
+          <div class="field" id="wrap-importeManual" style="display:none;">
+            <label>Importe de hipoteca</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-importeManual" value="" placeholder="0" step="1000"><span>€</span></div>
+          </div>
+          <div class="field">
+            <label>Plazo</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-plazo" value="30" min="5" max="40"><span>años</span></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <p class="subhead">Tipo de interés</p>
+        <div class="segmented" id="seg-tipoInteres">
+          <button data-val="fijo" class="active">Fijo</button>
+          <button data-val="variable">Variable</button>
+          <button data-val="mixto">Mixto</button>
+        </div>
+        <div class="grid3" style="margin-top:16px;">
+          <div class="field">
+            <label>TIN base (sin vinculaciones)</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-tinBase" value="3.0" step="0.05"><span>%</span></div>
+            <div class="hint">En jul-2026 los fijos a 30 años suelen moverse entre ~2,3% y ~3,5% según banco</div>
+          </div>
+          <div class="field">
+            <label>Comisión de apertura</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-comisionApertura" value="0" step="0.1"><span>%</span></div>
+          </div>
+          <div class="field">
+            <label>TAE ofrecida por el banco</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-taeConocida" value="" step="0.01" placeholder="si te la han dado"><span>%</span></div>
+            <div class="hint">Para comparar contra la TAE estimada aquí</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <p class="subhead">Bonificaciones por vinculación bancaria</p>
+        <div id="bonificaciones-list"></div>
+        <button id="btn-add-bonif" style="all:unset; cursor:pointer; font-size:12.5px; font-weight:600; color:var(--teal); margin-top:6px;">+ Añadir otra vinculación</button>
+      </section>
+
+      <!-- 5. GASTOS -->
+      <section class="panel" id="panel-gastos">
+        <h2>Gastos, arras y colchón</h2>
+        <p class="panel-sub">Los gastos de la hipoteca (notaría, registro, gestoría, AJD) los asume el banco desde la Ley 5/2019 — aquí solo van los de la compraventa.</p>
+
+        <p class="subhead">Gastos de compraventa (editables)</p>
+        <div class="grid3">
+          <div class="field">
+            <label>Notaría</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-notaria" value="800" step="10"><span>€</span></div>
+          </div>
+          <div class="field">
+            <label>Registro de la propiedad</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-registro" value="450" step="10"><span>€</span></div>
+          </div>
+          <div class="field">
+            <label>Gestoría</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-gestoria" value="350" step="10"><span>€</span></div>
+          </div>
+          <div class="field">
+            <label>Tasación</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-tasacionCoste" value="350" step="10"><span>€</span></div>
+          </div>
+          <div class="field">
+            <label>Otros gastos</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-otrosGastos" value="0" step="10"><span>€</span></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <p class="subhead">Arras</p>
+        <div class="grid2">
+          <div class="field">
+            <label>Arras ya entregadas</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-arras" value="0" step="500"><span>€</span></div>
+            <div class="hint">Ya forman parte del precio: no se suman dos veces</div>
+          </div>
+        </div>
+        <div class="chip-toggle" id="wrap-condicionSuspensiva">
+          <div><div class="ct-label">Condición suspensiva de financiación</div><div class="ct-detail">Protege las arras si el banco no concede la hipoteca</div></div>
+          <div class="switch"></div>
+        </div>
+
+        <div class="divider"></div>
+        <p class="subhead">Costes de mantenimiento tras la compra (informativo)</p>
+        <div class="grid2">
+          <div class="field">
+            <label>IBI anual</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-ibiAnual" value="500" step="10"><span>€</span></div>
+            <div class="hint">Orientativo (400-700€/año en muchas ciudades); depende del valor catastral y el municipio</div>
+          </div>
+          <div class="field">
+            <label>Comunidad de propietarios (mensual)</label>
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-comunidadMensual" value="80" step="5"><span>€</span></div>
+          </div>
+        </div>
+        <div class="callout teal">
+          <span class="ic">ⓘ</span>
+          <span>Esto no forma parte del efectivo necesario para firmar, pero sí de lo que te cuesta vivir aquí cada mes. Lo verás reflejado en el ratio de esfuerzo real, en el dossier.</span>
+        </div>
+
+        <div class="divider"></div>
+        <p class="subhead">Colchón de seguridad</p>
+        <div class="field" style="max-width:280px;">
+          <label>Colchón mínimo deseado tras la compra</label>
+          <div class="suffix-wrap"><input type="number" inputmode="decimal" id="in-colchonDeseado" value="5000" step="500"><span>€</span></div>
+        </div>
+      </section>
+
+      <!-- 6. SIGUIENTES PASOS -->
+      <section class="panel" id="panel-pasos">
+        <h2>Siguientes pasos</h2>
+        <p class="panel-sub">Documentación a preparar, preguntas que hacer y cosas que revisar de la vivienda antes de comprometerte. Marca lo que ya tengas resuelto.</p>
+
+        <div class="progress-wrap">
+          <div class="progress-bar"><div class="progress-bar-fill" id="progreso-fill"></div></div>
+          <div class="progress-label" id="progreso-label">0/0 completado</div>
+        </div>
+
+        <p class="subhead">Cronología orientativa</p>
+        <ul class="step-list">
+          <li class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-body"><span class="step-title">Reserva o señal</span><span class="step-time">unos días</span>
+              <div class="step-desc">Acuerdo verbal o pequeña señal con la agencia para retirar el anuncio mientras se prepara todo.</div></div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-body"><span class="step-title">Contrato de arras</span><span class="step-time">1–4 semanas</span>
+              <div class="step-desc">Debe incluir condición suspensiva de financiación, plazo para escriturar y penalizaciones claras.</div></div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-body"><span class="step-title">Estudio y preaprobación de la hipoteca</span><span class="step-time">2–4 semanas</span>
+              <div class="step-desc">El banco analiza tu solvencia, pide documentación y encarga la tasación.</div></div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-body"><span class="step-title">FEIN y 10 días de reflexión</span><span class="step-time">obligatorio por ley</span>
+              <div class="step-desc">La FEIN es una oferta vinculante: úsala para comparar bancos antes de decidir.</div></div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-body"><span class="step-title">Firma en notaría</span><span class="step-time">el día D</span>
+              <div class="step-desc">Escritura de compraventa (e hipoteca, si la hay). Ya eres propietario desde este momento.</div></div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">6</div>
+            <div class="step-body"><span class="step-title">Liquidación de impuestos</span><span class="step-time">30 días hábiles</span>
+              <div class="step-desc">ITP o IVA+AJD ante la hacienda autonómica (o foral) correspondiente — modelo 600 o autoliquidación IVA/AJD.</div></div>
+          </li>
+          <li class="step-item">
+            <div class="step-num">7</div>
+            <div class="step-body"><span class="step-title">Inscripción en el Registro</span><span class="step-time">semanas después</span>
+              <div class="step-desc">Formaliza tu propiedad frente a terceros; el banco suele encargarse si hay hipoteca.</div></div>
+          </li>
+        </ul>
+
+        <div class="divider"></div>
+        <p class="subhead">Consejos clave</p>
+        <div class="tips-list">
+          <div class="tip-card"><span class="ic">💡</span><span>Pide tú mismo la <b>nota simple actualizada</b> en la sede electrónica del Registro (unos 10€): no te fíes solo de la que aporte la agencia.</span></div>
+          <div class="tip-card"><span class="ic">💡</span><span>El notario <b>no comprueba las deudas de la comunidad</b> de propietarios: pide tú el certificado de estar al corriente de pago, es tu responsabilidad reclamarlo antes de firmar.</span></div>
+          <div class="tip-card"><span class="ic">💡</span><span>En <b>Cataluña, Comunitat Valenciana, Illes Balears y Navarra</b> hace falta una <b>cédula de habitabilidad</b> vigente para escriturar; en el resto de España se exige en su lugar la licencia de primera ocupación o documento equivalente. Verifica qué aplica en tu comunidad.</span></div>
+          <div class="tip-card"><span class="ic">💡</span><span>Muchas comunidades exigen una <b>inspección técnica del edificio</b> a partir de cierta antigüedad (se llama ITE en Cataluña y Madrid, IEE en el resto, con plazos que varían por comunidad — habitualmente entre 30 y 50 años). Una inspección desfavorable puede anticipar derramas importantes.</span></div>
+          <div class="tip-card"><span class="ic">💡</span><span>La FEIN no es un trámite: es una <b>oferta vinculante</b>. Pide una FEIN a 2–3 bancos y compáralas antes de comprometerte con ninguno.</span></div>
+        </div>
+
+        <div class="divider"></div>
+        <p class="subhead">Checklist por fases</p>
+
+        <details class="group-details" open>
+          <summary class="group-summary"><span class="gs-left"><span class="chev">▸</span> Antes de arras: revisar la vivienda y el edificio</span><span class="group-count">0/11</span></summary>
+          <div class="group-body">
+            <div class="check-row"><input type="checkbox" id="ck-a1"><label for="ck-a1">Nota simple del Registro actualizada (cargas, embargos, titularidad real)</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-a2"><label for="ck-a2">Certificado de la comunidad de que el piso está al corriente de pago de cuotas</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-a3"><label for="ck-a3">Cédula de habitabilidad vigente (Cataluña, C. Valenciana, Baleares, Navarra) o licencia de primera ocupación (resto de España)</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-a4"><label for="ck-a4">Certificado de eficiencia energética vigente</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-a5"><label for="ck-a5">Último recibo del IBI pagado</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-a6"><label for="ck-a6">Si el edificio es antiguo: inspección técnica (ITE/IEE) pasada y vigente, según el plazo de tu comunidad</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-a7"><label for="ck-a7">Actas de las últimas 2–3 juntas de propietarios (derramas aprobadas o en estudio)</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-a8"><label for="ck-a8">Estatutos de la comunidad (alquiler turístico, mascotas, usos permitidos)</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-a9"><label for="ck-a9">La superficie de escritura, registro y catastro coincide</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-a10"><label for="ck-a10">Comprobado si hay inquilinos u ocupantes y su situación contractual</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-a11"><label for="ck-a11">Estado y antigüedad de instalaciones (electricidad, gas, agua, calefacción)</label></div>
+          </div>
+        </details>
+
+        <details class="group-details">
+          <summary class="group-summary"><span class="gs-left"><span class="chev">▸</span> El contrato de arras</span><span class="group-count">0/6</span></summary>
+          <div class="group-body">
+            <div class="check-row"><input type="checkbox" id="ck-b1"><label for="ck-b1">Incluye condición suspensiva de financiación</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-b2"><label for="ck-b2">Plazo máximo para firmar la escritura claramente fijado</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-b3"><label for="ck-b3">Penalización pactada si el vendedor o el comprador se echan atrás</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-b4"><label for="ck-b4">Queda claro quién paga cada gasto (p. ej. plusvalía municipal)</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-b5"><label for="ck-b5">Anexos incluidos identificados con precisión (trastero, parking)</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-b6"><label for="ck-b6">Revisado por una gestoría o abogado antes de firmar y entregar dinero</label></div>
+          </div>
+        </details>
+
+        <details class="group-details">
+          <summary class="group-summary"><span class="gs-left"><span class="chev">▸</span> Documentación para pedir la hipoteca</span><span class="group-count">0/8</span></summary>
+          <div class="group-body">
+            <div class="check-row"><input type="checkbox" id="ck-c1"><label for="ck-c1">DNI/NIE en vigor de todos los titulares</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-c2"><label for="ck-c2">Últimas 3 nóminas (o IRPF + IVA trimestral si eres autónomo)</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-c3"><label for="ck-c3">Última declaración de la Renta y certificado de retenciones</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-c4"><label for="ck-c4">Informe de vida laboral actualizado</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-c5"><label for="ck-c5">Contrato de trabajo vigente o antigüedad demostrable</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-c6"><label for="ck-c6">Extractos bancarios de los últimos 3–6 meses</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-c7"><label for="ck-c7">Relación de otros préstamos, tarjetas y avales vigentes</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-c8"><label for="ck-c8">Si aplica: certificado de familia numerosa, discapacidad o víctima de violencia machista</label></div>
+          </div>
+        </details>
+
+        <details class="group-details">
+          <summary class="group-summary"><span class="gs-left"><span class="chev">▸</span> Comparar bancos y ofertas</span><span class="group-count">0/5</span></summary>
+          <div class="group-body">
+            <div class="check-row"><input type="checkbox" id="ck-d1"><label for="ck-d1">FEIN pedida a 2–3 bancos antes de decidir</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-d2"><label for="ck-d2">Comparada la TAE real, no solo el TIN</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-d3"><label for="ck-d3">Preguntado el coste exacto de cada vinculación y si se pueden cambiar después</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-d4"><label for="ck-d4">Preguntado por comisiones de apertura, amortización anticipada y subrogación</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-d5"><label for="ck-d5">Tasación independiente considerada, si es posible</label></div>
+          </div>
+        </details>
+
+        <details class="group-details">
+          <summary class="group-summary"><span class="gs-left"><span class="chev">▸</span> Preguntas para el vendedor o la agencia</span><span class="group-count">0/7</span></summary>
+          <div class="group-body">
+            <div class="check-row"><input type="checkbox" id="ck-e1"><label for="ck-e1">¿Por qué venden?</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-e2"><label for="ck-e2">¿Hay alguna derrama aprobada o en estudio?</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-e3"><label for="ck-e3">¿Cuánto es la cuota de comunidad y qué incluye?</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-e4"><label for="ck-e4">¿Hay inquilinos, ocupantes o uso turístico actual?</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-e5"><label for="ck-e5">¿Antigüedad de caldera, electricidad y tuberías?</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-e6"><label for="ck-e6">¿Parking o trastero incluidos en el precio o aparte?</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-e7"><label for="ck-e7">¿Certificado energético y cédula de habitabilidad disponibles?</label></div>
+          </div>
+        </details>
+
+        <details class="group-details">
+          <summary class="group-summary"><span class="gs-left"><span class="chev">▸</span> El día de la firma en notaría</span><span class="group-count">0/5</span></summary>
+          <div class="group-body">
+            <div class="check-row"><input type="checkbox" id="ck-f1"><label for="ck-f1">DNI/NIE y documentación que pida el banco a mano</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-f2"><label for="ck-f2">Escritura revisada antes de firmar: precio, forma de pago, cargas, superficie</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-f3"><label for="ck-f3">Importe de la hipoteca coincide con lo pactado con el banco</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-f4"><label for="ck-f4">Copia simple de la escritura recibida ese mismo día</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-f5"><label for="ck-f5">Confirmado cómo y cuándo se entregan las llaves</label></div>
+          </div>
+        </details>
+
+        <details class="group-details">
+          <summary class="group-summary"><span class="gs-left"><span class="chev">▸</span> Después de firmar</span><span class="group-count">0/6</span></summary>
+          <div class="group-body">
+            <div class="check-row"><input type="checkbox" id="ck-g1"><label for="ck-g1">Empadronarte en la vivienda (necesario para mantener tipos reducidos)</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-g2"><label for="ck-g2">Cambiar la titularidad de agua, luz y gas</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-g3"><label for="ck-g3">Darte de alta en la comunidad de propietarios</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-g4"><label for="ck-g4">Liquidar el ITP o IVA+AJD dentro de los 30 días hábiles</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-g5"><label for="ck-g5">Guardar copia de la escritura y de la liquidación de impuestos</label></div>
+            <div class="check-row"><input type="checkbox" id="ck-g6"><label for="ck-g6">Anotada la fecha límite de permanencia como vivienda habitual (normalmente 3 años) si aplicaste un tipo reducido</label></div>
+          </div>
+        </details>
+      </section>
+
+      <!-- 7. GLOSARIO -->
+      <section class="panel" id="panel-glosario">
+        <h2>Glosario</h2>
+        <p class="panel-sub">Los términos que te vas a encontrar hablando con el banco, la agencia o la notaría, explicados en plata y con ejemplos sobre un piso de 280.000 €.</p>
+
+        <input type="text" class="glossary-search" id="glossary-search" placeholder="Buscar un término (p. ej. «TAE», «arras», «gran tenedor»)...">
+
+        <div class="term-group" data-group>
+          <p class="term-group-title">Impuestos y fiscalidad</p>
+          <div class="term-grid">
+            <div class="term-card" data-term>
+              <div class="term-name">ITP<span class="term-full">Impuesto de Transmisiones Patrimoniales</span></div>
+              <div class="term-def">Lo paga el comprador al adquirir una vivienda de segunda mano. Lo fija cada comunidad autónoma: varía entre el 4% (País Vasco) y el 10-13% (Cataluña, Cantabria), con tipos reducidos para jóvenes, familias numerosas u otros colectivos.</div>
+              <div class="term-example"><b>Ejemplo:</b> piso de 280.000 € → 28.000 € al tipo general (10%), o 14.000 € con el tipo reducido (5%).</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">IVA<span class="term-full">Impuesto sobre el Valor Añadido</span></div>
+              <div class="term-def">Se paga en vez del ITP cuando compras una vivienda nueva a un promotor. El tipo general es del 10% (4% si es VPO).</div>
+              <div class="term-example"><b>Ejemplo:</b> piso nuevo de 280.000 € × 10% = 28.000 € de IVA.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">AJD<span class="term-full">Actos Jurídicos Documentados</span></div>
+              <div class="term-def">Impuesto sobre la escritura notarial. Se paga junto al IVA en vivienda nueva (entre el 0% de País Vasco/Navarra y el 1,5% de varias comunidades). El AJD de la hipoteca lo paga el banco desde 2019, no tú.</div>
+              <div class="term-example"><b>Ejemplo:</b> 280.000 € × 1,5% = 4.200 € en la compraventa de una vivienda nueva.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Valor de referencia catastral</div>
+              <div class="term-def">Valor que fija el Catastro cada año para cada inmueble. Si es mayor que el precio de compra, Hacienda calcula el ITP sobre ese valor en vez de sobre el precio.</div>
+              <div class="term-example"><b>Ejemplo:</b> compras a 280.000 € pero el valor de referencia es 295.000 € → el ITP se calcula sobre 295.000 €.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Modelo 600</div>
+              <div class="term-def">El formulario con el que se liquida el ITP o el AJD ante la hacienda autonómica (o foral) correspondiente, dentro de los 30 días hábiles siguientes a la firma.</div>
+              <div class="term-example"><b>Ejemplo:</b> firmas el 3 de marzo → tienes hasta mediados de abril para presentarlo y pagar.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Vivienda habitual</div>
+              <div class="term-def">La que vas a habitar de forma efectiva en los 12 meses siguientes a la compra y mantener como tal al menos 3 años. Es el requisito clave para casi todos los tipos reducidos de ITP.</div>
+              <div class="term-example"><b>Ejemplo:</b> si te vas antes de los 3 años, Hacienda puede reclamarte la diferencia entre el 5% que pagaste y el tipo general, con intereses.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Gran tenedor</div>
+              <div class="term-def">Concepto usado en Cataluña: quien tiene más de 10 viviendas en la comunidad, o 5 o más en zonas de mercado tensionado. Paga un ITP del 20%. Otras comunidades pueden tener definiciones distintas o no contemplar esta figura.</div>
+              <div class="term-example"><b>Ejemplo:</b> no afecta a la inmensa mayoría de compradores de primera vivienda.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">IBI<span class="term-full">Impuesto sobre Bienes Inmuebles</span></div>
+              <div class="term-def">Impuesto municipal anual que paga todo propietario, cada año, independientemente de la compra. No es un gasto de la compraventa, sino de mantener la vivienda.</div>
+              <div class="term-example"><b>Ejemplo:</b> suele rondar 400-700 €/año en un piso estándar, aunque varía mucho según la ciudad y el valor catastral.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Plusvalía municipal</div>
+              <div class="term-def">Impuesto del ayuntamiento sobre el incremento de valor del suelo desde la última venta. La ley dice que la paga el vendedor, aunque a veces se negocia repartirla.</div>
+              <div class="term-example"><b>Ejemplo:</b> conviene dejarlo por escrito en las arras para que no te lo intenten trasladar.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="term-group" data-group>
+          <p class="term-group-title">La hipoteca</p>
+          <div class="term-grid">
+            <div class="term-card" data-term>
+              <div class="term-name">TIN<span class="term-full">Tipo de Interés Nominal</span></div>
+              <div class="term-def">El porcentaje de interés puro que usa el banco para calcular tu cuota mensual. No incluye comisiones ni seguros.</div>
+              <div class="term-example"><b>Ejemplo:</b> 224.000 € a 30 años al 3% TIN → cuota de ~944 €/mes.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">TAE<span class="term-full">Tasa Anual Equivalente</span></div>
+              <div class="term-def">El coste total real del préstamo en un solo número: TIN más comisiones, seguros y vinculaciones. Sirve para comparar ofertas de bancos de forma justa — casi siempre es más alta que el TIN.</div>
+              <div class="term-example"><b>Ejemplo:</b> un TIN del 3% con comisión de apertura y seguros puede convertirse en una TAE del 3,3-3,5%.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">FEIN<span class="term-full">Ficha Europea de Información Normalizada</span></div>
+              <div class="term-def">La oferta de hipoteca vinculante que el banco está obligado a entregarte por ley antes de firmar. Incluye TIN, TAE, cuota, plazo y todas las condiciones. Una vez la tienes, el banco no puede cambiarlas (salvo que cambien tus datos).</div>
+              <div class="term-example"><b>Ejemplo:</b> pide la FEIN a 2-3 bancos y compáralas línea a línea antes de decidir.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">FiAE<span class="term-full">Ficha de Advertencias Estandarizadas</span></div>
+              <div class="term-def">Documento que acompaña a la FEIN y resalta los riesgos concretos de tu hipoteca: tipo variable, cláusulas específicas, productos vinculados obligatorios, etc.</div>
+              <div class="term-example"><b>Ejemplo:</b> si ves aquí una cláusula que no entiendes, pregúntala antes de firmar, no en la notaría.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Periodo de reflexión</div>
+              <div class="term-def">Entre que el banco te entrega la FEIN y firmas ante notario deben pasar, por ley, al menos 10 días naturales, para que puedas comparar con calma.</div>
+              <div class="term-example"><b>Ejemplo:</b> si tienes prisa por firmar, este plazo no se puede saltar salvo renuncia expresa tuya ante notario.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">LTV<span class="term-full">Loan to Value</span></div>
+              <div class="term-def">El porcentaje del valor de la vivienda que cubre la hipoteca. Cuanto más alto, menos entrada necesitas pero más riesgo asume el banco.</div>
+              <div class="term-example"><b>Ejemplo:</b> hipoteca de 224.000 € sobre un piso de 280.000 € → LTV del 80%.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Comisión de apertura</div>
+              <div class="term-def">Coste único que algunos bancos cobran al formalizar el préstamo, como porcentaje del capital prestado. Muchas entidades ya no la aplican.</div>
+              <div class="term-example"><b>Ejemplo:</b> 1% sobre 224.000 € = 2.240 €, que se suman al efectivo que necesitas el día de la firma.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Vinculaciones / bonificaciones</div>
+              <div class="term-def">Productos que el banco te pide contratar (seguro de hogar, de vida, nómina, plan de pensiones...) a cambio de bajar el TIN. Bajan la cuota pero tienen coste mensual — no siempre compensan.</div>
+              <div class="term-example"><b>Ejemplo:</b> −0,10% de TIN a cambio de un seguro de 25 €/mes puede subir la TAE en vez de bajarla.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Amortización (sistema francés)</div>
+              <div class="term-def">El método estándar de las hipotecas españolas: pagas siempre la misma cuota cada mes, pero al principio la mayor parte es interés y al final es sobre todo capital.</div>
+              <div class="term-example"><b>Ejemplo:</b> en los primeros años de una hipoteca a 30 años, más de la mitad de la cuota son intereses.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Tasación</div>
+              <div class="term-def">Informe de un profesional homologado sobre el valor real de la vivienda. El banco lo usa para decidir cuánto presta: si tasa por debajo del precio, financia menos.</div>
+              <div class="term-example"><b>Ejemplo:</b> compras a 280.000 € pero tasa en 270.000 € → el banco puede financiar el 80% de 270.000 €, no de 280.000 €.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="term-group" data-group>
+          <p class="term-group-title">El proceso y los documentos</p>
+          <div class="term-grid">
+            <div class="term-card" data-term>
+              <div class="term-name">Arras</div>
+              <div class="term-def">La señal que entregas al firmar el compromiso de compra, antes de la escritura. Suele llevar una condición suspensiva de financiación para protegerte si el banco deniega la hipoteca.</div>
+              <div class="term-example"><b>Ejemplo:</b> 20.000 € de arras sobre 280.000 € de precio → quedan 260.000 € por pagar en la firma (menos la parte financiada).</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Nota simple</div>
+              <div class="term-def">Documento del Registro de la Propiedad que dice quién es el dueño real de una vivienda y si tiene cargas (hipotecas, embargos) pendientes. Pídela tú mismo, no te fíes solo de la que aporte la agencia.</div>
+              <div class="term-example"><b>Ejemplo:</b> cuesta unos 10 € en la sede electrónica del Registro y tarda minutos.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Cédula de habitabilidad</div>
+              <div class="term-def">Certificado exigido en Cataluña, Comunitat Valenciana, Illes Balears y Navarra que acredita que la vivienda cumple los requisitos mínimos para ser habitada. En el resto de España se exige en su lugar la licencia de primera ocupación.</div>
+              <div class="term-example"><b>Ejemplo:</b> dura 25 años si es de primera ocupación, 15 si es de segunda ocupación o rehabilitación.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">ITE / IEE<span class="term-full">Inspección Técnica del Edificio / Informe de Evaluación</span></div>
+              <div class="term-def">Revisión obligatoria del estado de conservación de edificios antiguos. Se llama ITE en Cataluña y Madrid, IEE en el resto de España; la antigüedad que la exige y la periodicidad varían por comunidad (Cataluña: más de 45 años, cada 10 años).</div>
+              <div class="term-example"><b>Ejemplo:</b> una ITE desfavorable puede anticipar una derrama importante para arreglar fachada o cubierta.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Derrama</div>
+              <div class="term-def">Pago extraordinario que aprueba la comunidad de propietarios para una obra puntual (ascensor, fachada, ITE...), aparte de la cuota mensual habitual.</div>
+              <div class="term-example"><b>Ejemplo:</b> pregunta siempre si hay alguna derrama aprobada o en estudio antes de firmar arras.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Escritura pública</div>
+              <div class="term-def">El documento notarial que formaliza la compraventa (y la hipoteca, si la hay). Desde que la firmas, ya eres el propietario, aunque el Registro tarde semanas en inscribirla.</div>
+              <div class="term-example"><b>Ejemplo:</b> pide la copia simple ese mismo día; la copia autorizada suele llegar después.</div>
+            </div>
+            <div class="term-card" data-term>
+              <div class="term-name">Colchón (de seguridad)</div>
+              <div class="term-def">No es un término oficial: en este simulador es lo que te queda ahorrado después de pagar todo lo necesario para comprar. Cuanto mayor sea, más margen tienes ante imprevistos.</div>
+              <div class="term-example"><b>Ejemplo:</b> con 77.000 € ahorrados y 71.950 € de efectivo necesario, tu colchón es de 5.050 €.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="no-results" id="glossary-no-results" style="display:none;">No hay ningún término que coincida con tu búsqueda.</div>
+      </section>
+    </div>
+
+    <!-- ============ DOSSIER (RESULTADOS) ============ -->
+    <aside class="dossier">
+
+      <button class="back-to-form" id="btn-back-to-form">← Editar datos</button>
+
+      <div class="card seal-card">
+        <div class="seal"><div class="seal-inner"><div class="pct" id="seal-pct">—</div><div class="lbl" id="seal-lbl">—</div></div></div>
+        <div class="seal-copy">
+          <div class="seal-title" id="seal-title">Tipo aplicado</div>
+          <div class="seal-desc" id="seal-desc">Ajusta los datos para calcular tu tipo.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-label">Efectivo total necesario</div><div class="kpi-value" id="kpi-efectivo">—</div><div class="kpi-sub">precio − hipoteca + impuestos + gastos + comisión</div></div>
+          <div class="kpi"><div class="kpi-label">Colchón restante</div><div class="kpi-value" id="kpi-colchon">—</div><div class="kpi-sub" id="kpi-colchon-sub">ahorros − efectivo total</div></div>
+          <div class="kpi"><div class="kpi-label">Cuota mensual</div><div class="kpi-value" id="kpi-cuota">—</div><div class="kpi-sub" id="kpi-cuota-sub">—</div></div>
+          <div class="kpi"><div class="kpi-label">TAE estimada</div><div class="kpi-value" id="kpi-tae">—</div><div class="kpi-sub" id="kpi-tae-sub">TIN + costes reales</div></div>
+        </div>
+      </div>
+
+      <div class="card" id="alerts-card">
+        <div class="ledger-title">Alertas</div>
+        <div id="alerts-list"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header-row">
+          <div class="ledger-title" style="margin:0;">Desglose de la operación</div>
+          <div class="export-row">
+            <button class="btn-ghost" id="btn-copiar-resumen">Copiar resumen</button>
+            <button class="btn-export" id="btn-exportar-excel">📊 Excel</button>
+            <button class="btn-export" id="btn-exportar-pdf">📄 PDF</button>
+          </div>
+        </div>
+        <div id="ledger-list"></div>
+      </div>
+
+      <div class="card">
+        <div class="ledger-title">Hipoteca en detalle</div>
+        <div id="hipoteca-list"></div>
+      </div>
+
+      <div class="card">
+        <div class="ledger-title">Sensibilidad al TIN</div>
+        <div class="table-scroll"><table class="sens" id="tabla-tin"></table></div>
+      </div>
+
+      <div class="card">
+        <div class="ledger-title">Sensibilidad al precio</div>
+        <div class="table-scroll"><table class="sens" id="tabla-precio"></table></div>
+      </div>
+
+      <div class="card">
+        <div class="ledger-title">Precio máximo compatible con tu colchón</div>
+        <div id="precio-max-content"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header-row">
+          <div class="ledger-title" style="margin:0;">Comparador de escenarios</div>
+          <button class="btn-ghost" id="btn-guardar-escenario">+ Guardar escenario actual</button>
+        </div>
+        <div id="comparador-content"></div>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <p class="foot-disclaimer">
+    Revisado a fecha 22.07.2026. Simulación orientativa basada en la normativa fiscal vigente en cada comunidad autónoma (impuesto cedido: ITP, AJD e IGIC en Canarias), consultada en fuentes especializadas actualizadas a julio de 2026. Los tipos y requisitos cambian con frecuencia por leyes autonómicas y, en algunos casos, forales (País Vasco, Navarra) — verifica siempre el estado vigente en la agencia tributaria de tu comunidad antes de liquidar cualquier impuesto. Para Ceuta y Melilla no se ha encontrado información suficientemente fiable y el simulador no calcula su ITP. Los tipos reducidos por vivienda habitual (jóvenes, familia numerosa, monoparental, discapacidad, víctima de violencia) exigen acreditar requisitos adicionales de renta, empadronamiento y permanencia que debes verificar en la fecha real de la operación; si además compras una VPO, el tipo aplicable puede depender de tu caso concreto. La TAE se estima mediante una TIR mensual sobre el capital neto recibido (descontando la comisión de apertura) y no es la TAE oficial del banco. Este simulador no constituye asesoramiento fiscal, financiero ni legal — contrasta siempre con una gestoría, notaría o asesor antes de decidir.
+  </p>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div id="informe-print" class="print-only">
+  <div class="informe-header">
+    <h1>Simulación de compra de vivienda</h1>
+    <p class="informe-meta" id="informe-meta">—</p>
+    <div class="informe-seal">
+      <span id="informe-seal-label">—</span>
+      <b id="informe-seal-valor">—</b>
+    </div>
+  </div>
+
+  <div class="informe-section">
+    <h2>Comprador y vivienda</h2>
+    <table id="informe-tabla-vivienda"></table>
+  </div>
+
+  <div class="informe-section">
+    <h2>Financiación</h2>
+    <table id="informe-tabla-hipoteca"></table>
+  </div>
+
+  <div class="informe-section">
+    <h2>Efectivo necesario para la compra</h2>
+    <table id="informe-tabla-efectivo"></table>
+  </div>
+
+  <div class="informe-section" id="informe-alertas-wrap">
+    <h2>Avisos a tener en cuenta</h2>
+    <ul class="informe-alertas" id="informe-alertas"></ul>
+  </div>
+
+  <div class="informe-footer" id="informe-footer"></div>
+</div>
+
+<div class="sticky-bar">
+  <span>Efectivo: <b id="sticky-efectivo">—</b></span>
+  <span>Cuota: <b id="sticky-cuota">—</b></span>
+  <span>Colchón: <b id="sticky-colchon">—</b></span>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   MOTOR DE CÁLCULO (validado por separado con casos del brief)
+   ============================================================ */
+
+/* ============================================================
+   DATOS FISCALES POR COMUNIDAD AUTÓNOMA
+   Fuentes: ATC, ATIB, hipotecas.me, rankia, guiafiscal.es, infoitp.es,
+   hipotips.com, guiareformas.es (consultadas en julio 2026).
+   ============================================================ */
+
+const REGIONES = {
+  andalucia: {
+    nombre: 'Andalucía', sistema: 'comun',
+    itp: { tipo:'flat', general:7, generalHabitual:{ valorMax:150000, tipo:6 } },
+    reducidos: {
+      joven: { label:'Joven (< 35 años)', tipo:3.5, edadMax:35, valorMax:150000 },
+      familiaNumerosa: { label:'Familia numerosa', tipo:3.5, valorMax:250000 },
+      discapacidad: { label:'Discapacidad ≥33%', tipo:3.5, valorMax:250000 },
+    },
+    vpo: { tipo:3.5 }, ajd: 1.20,
+    notas: 'Tipo único del 7% desde 2021, con tipo reducido del 6% para vivienda habitual ≤150.000€.'
+  },
+  aragon: {
+    nombre: 'Aragón', sistema:'comun',
+    itp: { tipo:'tramos', tramos:[[0,400000,8],[400000,450000,8.5],[450000,500000,9],[500000,750000,9.5],[750000,Infinity,10]] },
+    reducidos: {
+      joven: { label:'Joven (< 35 años)', tipo:7, edadMax:35, valorMax:100000, notas:'Bonificación del 12,5% de la cuota (tipo efectivo aprox. en el primer tramo).' },
+      discapacidad: { label:'Discapacidad ≥65%', tipo:7, valorMax:100000, notas:'Bonificación del 12,5% de la cuota.' },
+      familiaNumerosa: { label:'Familia numerosa', tipo:4, rentaMaxConjunta:35000, notas:'Bonificación del 50% de la cuota (60% en medio rural).' },
+    },
+    ajd: 1.50,
+    notas: 'Tramos progresivos 8–10%. Las reducciones son bonificaciones sobre la cuota: los porcentajes mostrados son aproximados para el primer tramo.'
+  },
+  asturias: {
+    nombre: 'Asturias', sistema:'comun',
+    itp: { tipo:'tramos', tramos:[[0,300000,8],[300000,500000,9],[500000,Infinity,10]] },
+    reducidos: {
+      joven: { label:'Joven (≤ 35 años)', tipo:4, edadMax:35, valorMax:150000, tipoSobreValorMax:6 },
+      familiaNumerosa: { label:'Familia numerosa', tipo:4, valorMax:150000 },
+    },
+    vpo: { tipo:3 }, ajd: 1.20,
+    notas: 'Asturias no tiene tipo reducido de ITP específico por discapacidad. El reducido de jóvenes/familia numerosa (4%) sube al 6% si la vivienda supera 150.000€.'
+  },
+  baleares: {
+    nombre: 'Illes Balears', sistema:'comun',
+    itp: { tipo:'tramos', tramos:[[0,400000,8],[400000,600000,9],[600000,1000000,10],[1000000,2000000,12],[2000000,Infinity,13]],
+      generalHabitual:{ valorMax:270151.20, tipo:4 } },
+    reducidos: {
+      joven: { label:'Joven (< 36 años)', tipo:2, edadMax:36, valorMax:270151.20 },
+      jovenPrimeraVivienda30: { label:'Primera vivienda, < 30 años', tipo:0, edadMax:30, valorMax:270151.20, notas:'Bonificación del 100%.' },
+      familiaNumerosa: { label:'Familia numerosa o monoparental', tipo:2, valorMax:350000 },
+      discapacidad: { label:'Discapacidad ≥33%', tipo:2, valorMax:270151.20 },
+    },
+    ajd: 1.50,
+    notas: 'Régimen reformado por la Ley 12/2023 y la Ley 4/2026: el tratamiento exacto de jóvenes <36 está pendiente de cotejar en el texto consolidado. Verifica con la ATIB antes de liquidar.'
+  },
+  canarias: {
+    nombre: 'Canarias', sistema:'comun', ivaEspecial:'igic',
+    itp: { tipo:'flat', general:6.5, generalHabitual:{ valorMax:200000, tipo:5 } },
+    reducidos: {
+      joven: { label:'Joven (< 40 años)', tipo:4, edadMax:40, valorMax:200000, rentaMaxIndividual:46455 },
+      familiaNumerosa: { label:'Familia numerosa', tipo:1, rentaMaxConjunta:46455, notas:'+18.200€ por hijo adicional.' },
+      discapacidad: { label:'Discapacidad ≥65%', tipo:1, rentaMaxConjunta:46455, notas:'+6.825€ por persona adicional.' },
+    },
+    igicGeneral: 7, igicVPO: 0, ajd: 0.75,
+    notas: 'En obra nueva no se aplica IVA sino IGIC (7% general, 0% en VPO).'
+  },
+  cantabria: {
+    nombre: 'Cantabria', sistema:'comun',
+    itp: { tipo:'tramos', tramos:[[0,300000,7],[300000,Infinity,9]] },
+    reducidos: {
+      joven: { label:'Joven (< 40 años)', tipo:4, edadMax:40, valorMax:300000 },
+      familiaNumerosa: { label:'Familia numerosa', tipo:5, valorMax:200000 },
+      discapacidad: { label:'Discapacidad ≥33%', tipo:5, valorMax:200000 },
+    },
+    vpo: { tipo:5, valorMax:200000 }, ajd: 1.50,
+    notas: 'Los tramos 7%/9% son para vivienda habitual; una segunda residencia o inversión tributa al 9%/10%.'
+  },
+  castillaLaMancha: {
+    nombre: 'Castilla-La Mancha', sistema:'comun',
+    itp: { tipo:'flat', general:9 },
+    reducidos: {
+      joven: { label:'Joven (< 36 años)', tipo:3, edadMax:36, valorMax:240000 },
+      familiaNumerosa: { label:'Familia numerosa', tipo:5, valorMax:240000 },
+      discapacidad: { label:'Discapacidad ≥65%', tipo:5, valorMax:240000 },
+    },
+    ajd: 1.50,
+    notas: 'El tramo entre 180.000€ y 240.000€ para jóvenes tiene matices adicionales: verifica con la Junta de Comunidades.'
+  },
+  castillaYLeon: {
+    nombre: 'Castilla y León', sistema:'comun',
+    itp: { tipo:'flat', general:8 },
+    reducidos: {
+      joven: { label:'Joven (< 36 años)', tipo:4, edadMax:36 },
+      jovenRural: { label:'Joven (< 36 años) en municipio rural', tipo:0.01, edadMax:36, valorMax:150000, notas:'Municipio ≤10.000 hab. (o ≤3.000 hab. a menos de 30km de la capital).' },
+      familiaNumerosa: { label:'Familia numerosa', tipo:4 },
+      discapacidad: { label:'Discapacidad ≥65%', tipo:4 },
+    },
+    vpo: { tipo:4 }, ajd: 1.50,
+    notas: 'El tipo del 0,01% para jóvenes en municipio rural exige comprobar la población exacta del municipio.'
+  },
+  cataluna: {
+    nombre: 'Catalunya', sistema:'comun', especial:'cataluna',
+    itp: { tipo:'tramos', tramos:[[0,600000,10],[600000,900000,11],[900000,1500000,12],[1500000,Infinity,13]] },
+    reducidos: {
+      joven: { label:'Joven (≤ 35 años)', tipo:5, edadMax:35, rentaMaxIndividual:36000 },
+      familiaNumerosa: { label:'Familia numerosa o monoparental', tipo:5, rentaMaxIndividual:36000, rentaPorHijoExtra:14000 },
+      discapacidad: { label:'Discapacidad ≥65%', tipo:5, rentaMaxIndividual:36000 },
+      victimaViolencia: { label:'Víctima de violencia machista', tipo:5 },
+    },
+    vpo: { tipo:7 }, ajd: 1.50, ajdBonifJovenPct: 100,
+    grandTenedorTipo: 20, ruralTipo:4, ruralAtencionEspecialTipo:3,
+    notas: 'DL 5/2025: escala progresiva vigente desde 27.06.2026, 20% para grandes tenedores. AJD bonificado al 100% para colectivos elegibles en vivienda nueva.'
+  },
+  valenciana: {
+    nombre: 'Comunitat Valenciana', sistema:'comun',
+    itp: { tipo:'tramos', tramos:[[0,1000000,9],[1000000,Infinity,11]] },
+    reducidos: {
+      joven: { label:'Joven (< 35 años)', tipo:6, edadMax:35, valorMax:180000, rentaMaxIndividual:30000, rentaMaxConjunta:47000, tipoSobreValorMax:8 },
+      familiaNumerosa: { label:'Familia numerosa', tipo:4 },
+      discapacidad: { label:'Discapacidad (física/sensorial ≥65% o psíquica ≥33%)', tipo:4 },
+    },
+    vpo: { tipo:4 }, ajd: 1.40,
+    notas: 'Tipo general bajado del 10% al 9% el 30 de junio de 2026 (11% para inmuebles > 1.000.000€).'
+  },
+  extremadura: {
+    nombre: 'Extremadura', sistema:'comun',
+    itp: { tipo:'tramos', tramos:[[0,360000,8],[360000,600000,10],[600000,Infinity,11]],
+      generalHabitual:{ valorMax:200000, tipo:7, rentaMaxIndividual:30000, rentaMaxConjunta:55000 } },
+    reducidos: {
+      joven: { label:'Joven (< 36 años)', tipo:4, edadMax:36, valorMax:200000, rentaMaxIndividual:30000, rentaMaxConjunta:55000 },
+      familiaNumerosa: { label:'Familia numerosa', tipo:4, valorMax:200000 },
+      discapacidad: { label:'Discapacidad ≥65%', tipo:4 },
+    },
+    vpo: { tipo:4 }, ajd: 1.50,
+    notas: 'Tramos 8/10/11% y tipo del 7% para vivienda habitual general ≤200.000€ (superreducido al 4% para jóvenes, familia numerosa o discapacidad).'
+  },
+  galicia: {
+    nombre: 'Galicia', sistema:'comun',
+    itp: { tipo:'flat', general:8, generalHabitual:{ valorMax:240000, tipo:7, notas:'Límite de patrimonio de los adquirentes ≤240.000€ (+30.000€/miembro adicional), no solo precio.' } },
+    reducidos: {
+      joven: { label:'Joven (< 36 años)', tipo:3, edadMax:36, valorMax:240000 },
+      familiaNumerosa: { label:'Familia numerosa', tipo:3, valorMax:400000 },
+      discapacidad: { label:'Discapacidad ≥65%', tipo:3, valorMax:240000 },
+      monoparental: { label:'Familia monoparental', tipo:3, valorMax:240000 },
+      victimaViolencia: { label:'Víctima de violencia de género', tipo:3, valorMax:240000 },
+    },
+    ajd: 1.50,
+    notas: 'Tipo general 8% fijo. El tipo reducido del 3% tiene un umbral de 240.000€ (400.000€ para familia numerosa).'
+  },
+  madrid: {
+    nombre: 'Comunidad de Madrid', sistema:'comun',
+    itp: { tipo:'flat', general:6, generalHabitual:{ valorMax:250000, tipo:5.4, notas:'Bonificación del 10% de la cuota.' } },
+    reducidos: {
+      familiaNumerosa: { label:'Familia numerosa', tipo:4, valorMax:250000, notas:'Exige vender la vivienda anterior en un plazo de ±2 años.' },
+      jovenRural: { label:'Joven (< 35 años) en municipio < 2.500 hab.', tipo:0, edadMax:35, valorMax:250000, notas:'Bonificación del 100%.' },
+    },
+    ajd: 0.75,
+    notas: 'Tipo general más bajo entre las grandes CCAA (6%). No se ha encontrado un tipo reducido específico de ITP por discapacidad en Madrid.'
+  },
+  murcia: {
+    nombre: 'Región de Murcia', sistema:'comun',
+    itp: { tipo:'flat', general:7.75 },
+    reducidos: {
+      joven: { label:'Joven (< 35 años)', tipo:3, edadMax:35, valorMax:150000, rentaMaxIndividual:26620 },
+      familiaNumerosa: { label:'Familia numerosa', tipo:3, valorMax:150000 },
+      discapacidad: { label:'Discapacidad ≥65%', tipo:3, valorMax:150000 },
+    },
+    vpo: { tipo:4 }, ajd: 1.50,
+    notas: 'Tipo general bajado del 8% al 7,75% desde el 25-jul-2025.'
+  },
+  navarra: {
+    nombre: 'Navarra', sistema:'foral',
+    itp: { tipo:'flat', general:6 },
+    reducidos: {
+      familiaConHijos: { label:'Familia con 2 o más hijos', tipo:5, valorMax:180304, notas:'No poseer más del 25% de otra vivienda.' },
+    },
+    ajd: 0.50,
+    notas: 'Navarra tiene competencia fiscal propia (régimen foral, Convenio Económico). Existe además un tipo del 4% en municipios en riesgo de despoblación.'
+  },
+  paisVasco: {
+    nombre: 'País Vasco', sistema:'foral',
+    itp: { tipo:'flat', general:4 },
+    reducidos: {
+      viviendaHabitual: { label:'Vivienda habitual (≤120m² o familia numerosa)', tipo:2.5, notas:'Superficie ≤120m² o familia numerosa, según normativa de cada territorio foral.' },
+    },
+    ajd: 0.50,
+    notas: 'Régimen foral: cada Diputación Foral (Álava, Bizkaia, Gipuzkoa) puede matizar los requisitos exactos. Verifica siempre con la Hacienda Foral de tu territorio.'
+  },
+  laRioja: {
+    nombre: 'La Rioja', sistema:'comun',
+    itp: { tipo:'flat', general:7 },
+    reducidos: {
+      joven: { label:'Joven (< 40 años)', tipo:4, edadMax:40, notas:'Primera vivienda habitual; 3% en municipios del Anexo I.' },
+      familiaNumerosa: { label:'Familia numerosa', tipo:5, valorMax:180000, rentaMaxIndividual:18030, rentaMaxConjunta:30050 },
+      discapacidad: { label:'Discapacidad ≥33%', tipo:5, valorMax:180000 },
+    },
+    ajd: 1.00,
+    notas: 'Tipo reducido del 4% para menores de 40 años desde 2025 (primera vivienda habitual).'
+  },
+  ceuta: {
+    nombre: 'Ceuta', sistema:'especial', datosNoFiables:true,
+    notas: 'Las fuentes consultadas no coinciden sobre el tipo general (6% frente a 8%) ni sobre la bonificación. Verifica directamente con la Ciudad Autónoma de Ceuta.'
+  },
+  melilla: {
+    nombre: 'Melilla', sistema:'especial', datosNoFiables:true,
+    notas: 'Las fuentes consultadas no coinciden sobre el tipo general (6% frente a 8%) ni sobre si existe bonificación. Verifica directamente con la Ciudad Autónoma de Melilla.'
+  },
+};
+
+const ORDEN_REGIONES = ['andalucia','aragon','asturias','baleares','canarias','cantabria','castillaLaMancha',
+  'castillaYLeon','cataluna','valenciana','extremadura','galicia','madrid','murcia','navarra','paisVasco','laRioja','ceuta','melilla'];
+
+/* ============================================================
+   MOTOR DE CÁLCULO
+   ============================================================ */
+
+function itpTramos(tramos, base){
+  let cuota = 0;
+  for (const [desde,hasta,tipo] of tramos){ if (base > desde) cuota += (Math.min(base,hasta)-desde)*(tipo/100); }
+  return cuota;
+}
+
+function cumpleRequisitosColectivo(item, ctx){
+  if (!item) return false;
+  if (item.edadMax != null && ctx.edad > item.edadMax) return false;
+  if (item.valorMax != null && item.tipoSobreValorMax == null && ctx.precio > item.valorMax) return false;
+  if (item.rentaMaxIndividual != null){
+    const limite = item.rentaMaxIndividual + (item.rentaPorHijoExtra && ctx.hijosExcedentes ? item.rentaPorHijoExtra*ctx.hijosExcedentes : 0);
+    if (ctx.rentaFiscal > limite) return false;
+  }
+  if (item.rentaMaxConjunta != null && ctx.rentaFiscal > item.rentaMaxConjunta) return false;
+  return true;
+}
+
+function calcularImpuestoRegion(regionKey, s){
+  const region = REGIONES[regionKey];
+  if (!region) return { cuotaImpuesto:0, tipoAplicadoLabel:'Selecciona una comunidad autónoma', tipoCorto:'—' };
+  if (region.datosNoFiables) return { sinDatos:true, cuotaImpuesto:0, tipoAplicadoLabel:'Sin datos fiables para esta ciudad', tipoCorto:'—' };
+
+  const baseITP = Math.max(s.vivienda.precioFinal, s.vivienda.valorReferencia || 0);
+  const ctx = { edad:s.comprador.edad, precio:baseITP, rentaFiscal:s.fiscalidad.rentaFiscal||0, hijosExcedentes:s.fiscalidad.hijosExcedentes||0 };
+
+  if (s.vivienda.tipoVivienda === 'nueva'){
+    let ivaRate = region.ivaEspecial === 'igic' ? (s.vivienda.esVPO ? region.igicVPO : region.igicGeneral) : (s.vivienda.esVPO ? 4 : 10);
+    const cuotaIVA = s.vivienda.precioFinal * (ivaRate/100);
+    let ajdRate = region.ajd, bonif = false;
+    if (region.especial === 'cataluna' && region.ajdBonifJovenPct && s.fiscalidad._elegibleReducido){
+      ajdRate = ajdRate * (1 - region.ajdBonifJovenPct/100); bonif = true;
+    }
+    const cuotaAJD = s.vivienda.precioFinal * (ajdRate/100);
+    return {
+      cuotaImpuesto: cuotaIVA + cuotaAJD,
+      tipoAplicadoLabel: `${region.ivaEspecial==='igic'?'IGIC':'IVA'} ${ivaRate}% + AJD ${ajdRate.toFixed(2)}%${bonif?' (bonificado)':''}`,
+      tipoCorto: `${ivaRate}+${ajdRate.toFixed(1)}`,
+    };
+  }
+
+  if (region.especial === 'cataluna' && s.vivienda.grandTenedor === 'si'){
+    const c = baseITP*(region.grandTenedorTipo/100);
+    return { cuotaImpuesto:c, tipoAplicadoLabel:`ITP ${region.grandTenedorTipo}% (gran tenedor)`, tipoCorto:`${region.grandTenedorTipo}%` };
+  }
+  if (region.especial === 'cataluna' && s.vivienda.municipioRural === 'atencionEspecial'){
+    const c = baseITP*(region.ruralAtencionEspecialTipo/100);
+    return { cuotaImpuesto:c, tipoAplicadoLabel:`ITP ${region.ruralAtencionEspecialTipo}% (rural, atención especial)`, tipoCorto:`${region.ruralAtencionEspecialTipo}%` };
+  }
+  if (region.especial === 'cataluna' && s.vivienda.municipioRural === 'rural'){
+    const c = baseITP*(region.ruralTipo/100);
+    return { cuotaImpuesto:c, tipoAplicadoLabel:`ITP ${region.ruralTipo}% (municipio rural)`, tipoCorto:`${region.ruralTipo}%` };
+  }
+  if (s.vivienda.esVPO && region.vpo){
+    const c = baseITP*(region.vpo.tipo/100);
+    return { cuotaImpuesto:c, tipoAplicadoLabel:`ITP ${region.vpo.tipo}% (VPO)`, tipoCorto:`${region.vpo.tipo}%` };
+  }
+  const colectivo = s.fiscalidad.colectivo;
+  if (colectivo && colectivo !== 'ninguno' && region.reducidos && region.reducidos[colectivo]){
+    const item = region.reducidos[colectivo];
+    if (cumpleRequisitosColectivo(item, ctx)){
+      let tipo = item.tipo;
+      if (item.tipoSobreValorMax != null && item.valorMax != null && baseITP > item.valorMax) tipo = item.tipoSobreValorMax;
+      const c = baseITP*(tipo/100);
+      return { cuotaImpuesto:c, tipoAplicadoLabel:`ITP ${tipo}% (${item.label})`, tipoCorto:`${tipo}%`, elegible:true };
+    }
+  }
+  if (s.vivienda.esViviendaHabitual !== false && region.itp.generalHabitual && baseITP <= region.itp.generalHabitual.valorMax){
+    const tipo = region.itp.generalHabitual.tipo;
+    const c = baseITP*(tipo/100);
+    return { cuotaImpuesto:c, tipoAplicadoLabel:`ITP ${tipo}% (vivienda habitual)`, tipoCorto:`${tipo}%` };
+  }
+  if (region.itp.tipo === 'tramos'){
+    const c = itpTramos(region.itp.tramos, baseITP);
+    const tipoEf = baseITP>0 ? (c/baseITP)*100 : 0;
+    return { cuotaImpuesto:c, tipoAplicadoLabel:`ITP general (escala progresiva, efectivo ${tipoEf.toFixed(1)}%)`, tipoCorto:`${tipoEf.toFixed(1)}%` };
+  }
+  const c = baseITP*(region.itp.general/100);
+  return { cuotaImpuesto:c, tipoAplicadoLabel:`ITP general ${region.itp.general}%`, tipoCorto:`${region.itp.general}%` };
+}
+
+function cuotaFrancesa(principal, tinAnualPct, anios){
+  const r = (tinAnualPct/100)/12;
+  const n = Math.round(anios*12);
+  if (n <= 0 || principal <= 0) return 0;
+  if (r === 0) return principal/n;
+  return principal * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
+}
+
+function taeEstimadaIRR(principal, cuota, costesMensualesExtra, comisionAperturaImporte, n){
+  const netoRecibido = principal - comisionAperturaImporte;
+  const flujo = cuota + costesMensualesExtra;
+  if (netoRecibido <= 0 || flujo <= 0 || n <= 0) return null;
+  function npv(r){
+    if (r === 0) return netoRecibido - flujo*n;
+    return netoRecibido - flujo*(1-Math.pow(1+r,-n))/r;
+  }
+  let lo = -0.01, hi = 0.08, fLo = npv(lo);
+  for (let i=0;i<200;i++){
+    const mid=(lo+hi)/2, fMid=npv(mid);
+    if (Math.abs(fMid) < 1e-8){ lo=hi=mid; break; }
+    if ((fLo<0) !== (fMid<0)) hi = mid; else { lo = mid; fLo = fMid; }
+  }
+  const rMensual = (lo+hi)/2;
+  const resultado = (Math.pow(1+rMensual,12)-1)*100;
+  return isFinite(resultado) ? resultado : null;
+}
+
+function calcularEscenario(s){
+  const rentaFiscal = s.fiscalidad.baseGeneral + s.fiscalidad.baseAhorro - s.fiscalidad.minimoPersonalFamiliar;
+  s.fiscalidad.rentaFiscal = rentaFiscal;
+
+  const baseITP = Math.max(s.vivienda.precioFinal, s.vivienda.valorReferencia || 0);
+  const region = REGIONES[s.vivienda.comunidad];
+
+  let elegibleReducido = false, requisitosColectivo = null;
+  if (region && !region.datosNoFiables && s.fiscalidad.colectivo !== 'ninguno' && region.reducidos && region.reducidos[s.fiscalidad.colectivo]){
+    requisitosColectivo = region.reducidos[s.fiscalidad.colectivo];
+    elegibleReducido = cumpleRequisitosColectivo(requisitosColectivo, { edad:s.comprador.edad, precio:baseITP, rentaFiscal, hijosExcedentes:s.fiscalidad.hijosExcedentes||0 });
+  }
+  s.fiscalidad._elegibleReducido = elegibleReducido;
+
+  const impuestoResult = calcularImpuestoRegion(s.vivienda.comunidad, s);
+  const cuotaImpuesto = impuestoResult.cuotaImpuesto || 0;
+  const tipoAplicadoLabel = impuestoResult.tipoAplicadoLabel;
+  const tipoCorto = impuestoResult.tipoCorto;
+  const regionSinDatos = !!impuestoResult.sinDatos;
+
+  const valorFinanciable = s.vivienda.valorTasacion ? Math.min(s.vivienda.precioFinal, s.vivienda.valorTasacion) : s.vivienda.precioFinal;
+  const hipoteca = s.financiacion.modo === 'manual' ? s.financiacion.importeManual : s.vivienda.precioFinal*(s.financiacion.porcentaje/100);
+  const aportacionAlPrecio = s.vivienda.precioFinal - hipoteca;
+  const ltvPrecio = s.vivienda.precioFinal>0 ? (hipoteca/s.vivienda.precioFinal)*100 : 0;
+  const ltvFinanciable = valorFinanciable>0 ? (hipoteca/valorFinanciable)*100 : 0;
+
+  const bonifs = s.financiacion.bonificaciones || [];
+  const descuentoBonif = bonifs.filter(b=>b.activo).reduce((a,b)=>a+(Number(b.descuentoPuntos)||0),0);
+  const costeMensualBonif = bonifs.filter(b=>b.activo).reduce((a,b)=>a+(Number(b.costeMensual)||0),0);
+  const tinFinal = Math.max(0, s.financiacion.tinBase - descuentoBonif);
+  const cuotaMensual = cuotaFrancesa(hipoteca, tinFinal, s.financiacion.plazoAnios);
+  const nMeses = Math.round(s.financiacion.plazoAnios*12);
+  const interesesTotales = cuotaMensual*nMeses - hipoteca;
+  const comisionAperturaImporte = hipoteca*(s.financiacion.comisionAperturaPct/100);
+  const taeEstimada = taeEstimadaIRR(hipoteca, cuotaMensual, costeMensualBonif, comisionAperturaImporte, nMeses);
+
+  const ingresosEquiv = (s.comprador.ingresosNetosMensuales * s.comprador.numPagas)/12;
+  const ratioCuota = ingresosEquiv>0 ? (cuotaMensual/ingresosEquiv)*100 : null;
+  const ratioDeudaTotal = ingresosEquiv>0 ? ((cuotaMensual+s.comprador.otrasDeudasMensuales)/ingresosEquiv)*100 : null;
+
+  const gastosCompraventa = s.operacion.notaria + s.operacion.registro + s.operacion.gestoria + s.operacion.tasacionCoste + s.operacion.otros;
+  const efectivoTotalNecesario = aportacionAlPrecio + cuotaImpuesto + gastosCompraventa + comisionAperturaImporte;
+  const efectivoPendienteFirma = efectivoTotalNecesario - s.operacion.arrasEntregadas;
+  const colchonRestante = s.comprador.ahorros - efectivoTotalNecesario;
+
+  const comunidadMensual = s.operacion.comunidadMensual || 0;
+  const ibiMensualizado = (s.operacion.ibiAnual || 0) / 12;
+  const costeMensualTotalVivienda = cuotaMensual + costeMensualBonif + comunidadMensual + ibiMensualizado;
+  const ratioEsfuerzoReal = ingresosEquiv>0 ? (costeMensualTotalVivienda/ingresosEquiv)*100 : null;
+
+  return { rentaFiscal, elegibleReducido, requisitosColectivo, regionSinDatos, baseITP, cuotaImpuesto,
+    tipoAplicadoLabel, tipoCorto, hipoteca, aportacionAlPrecio, ltvPrecio, ltvFinanciable,
+    valorFinanciable, tinFinal, cuotaMensual, interesesTotales, taeEstimada, ratioCuota, ratioDeudaTotal,
+    gastosCompraventa, comisionAperturaImporte, efectivoTotalNecesario, efectivoPendienteFirma, colchonRestante, descuentoBonif,
+    costeMensualBonif, ingresosEquiv, nMeses, comunidadMensual, ibiMensualizado, costeMensualTotalVivienda, ratioEsfuerzoReal };
+}
+
+function precioMaximoCompatible(sBase, colchonDeseado){
+  const objetivo = sBase.comprador.ahorros - colchonDeseado;
+  function efectivoParaPrecio(precio){
+    const sTmp = JSON.parse(JSON.stringify(sBase));
+    sTmp.vivienda.precioFinal = precio;
+    return calcularEscenario(sTmp).efectivoTotalNecesario;
+  }
+  let lo=0, hi=3000000;
+  for (let i=0;i<60;i++){
+    const mid=(lo+hi)/2;
+    if (efectivoParaPrecio(mid) > objetivo) hi=mid; else lo=mid;
+  }
+  return (lo+hi)/2;
+}
+
+/* ============================================================
+   ESTADO
+   ============================================================ */
+
+const state = {
+  comprador: { edad:0, numCompradores:1, ingresosNetosMensuales:0, numPagas:12, ingresosExtraordinarios:0, otrasDeudasMensuales:0, ahorros:0 },
+  fiscalidad: { baseGeneral:0, baseAhorro:0, minimoPersonalFamiliar:5550, colectivo:'ninguno', hijosExcedentes:0 },
+  vivienda: { comunidad:'', ciudad:'', tipoVivienda:'segundaMano', esVPO:false, esViviendaHabitual:true, precioAnunciado:0, precioOfertado:0, precioFinal:0, valorReferencia:null, valorTasacion:null, municipioRural:'no', grandTenedor:'no' },
+  financiacion: { modo:'porcentaje', porcentaje:80, importeManual:0, plazoAnios:30, tinBase:3.0, comisionAperturaPct:0, taeConocida:null, tipoInteres:'fijo',
+    bonificaciones: [
+      { id:1, nombre:'Seguro de hogar', activo:false, descuentoPuntos:0.10, costeMensual:25 },
+      { id:2, nombre:'Seguro de vida', activo:false, descuentoPuntos:0.15, costeMensual:30 },
+      { id:3, nombre:'Domiciliación de nómina', activo:false, descuentoPuntos:0.05, costeMensual:0 },
+      { id:4, nombre:'Plan de pensiones', activo:false, descuentoPuntos:0.10, costeMensual:50 },
+      { id:5, nombre:'Tarjeta de crédito/débito', activo:false, descuentoPuntos:0.05, costeMensual:5 },
+    ]
+  },
+  operacion: { notaria:800, registro:450, gestoria:350, tasacionCoste:350, otros:0, arrasEntregadas:0, condicionSuspensiva:false, colchonMinimoDeseado:5000, ibiAnual:500, comunidadMensual:80 },
+};
+let bonifCounter = 6;
+
+/* ============================================================
+   HELPERS DE FORMATO
+   ============================================================ */
+
+const fmtEUR = (v) => v==null || isNaN(v) ? '—' : new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(v);
+const fmtEUR2 = (v) => v==null || isNaN(v) ? '—' : new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(v);
+const fmtPct = (v, d=1) => v==null || isNaN(v) ? '—' : v.toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d})+'%';
+const el = (id) => document.getElementById(id);
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+
+function render(){
+  const r = calcularEscenario(state);
+  const region = REGIONES[state.vivienda.comunidad];
+
+  // --- Renta callout (panel fiscalidad): solo relevante si el colectivo elegido usa renta ---
+  if (r.requisitosColectivo && (r.requisitosColectivo.rentaMaxIndividual != null || r.requisitosColectivo.rentaMaxConjunta != null)){
+    const limite = r.requisitosColectivo.rentaMaxIndividual != null
+      ? r.requisitosColectivo.rentaMaxIndividual + (r.requisitosColectivo.rentaPorHijoExtra && state.fiscalidad.hijosExcedentes ? r.requisitosColectivo.rentaPorHijoExtra*state.fiscalidad.hijosExcedentes : 0)
+      : r.requisitosColectivo.rentaMaxConjunta;
+    const cumple = r.rentaFiscal <= limite;
+    el('renta-callout-text').innerHTML = `Renta fiscal computada: <b>${fmtEUR2(r.rentaFiscal)}</b> (base general + ahorro − mínimo personal/familiar) frente a un límite de <b>${fmtEUR(limite)}</b>. ${cumple ? 'Cumples el requisito de renta.' : 'No cumples el requisito de renta.'}`;
+  } else if (!state.vivienda.comunidad){
+    el('renta-callout-text').textContent = 'Selecciona tu comunidad autónoma para saber si tu colectivo exige un límite de renta.';
+  } else if (state.fiscalidad.colectivo === 'ninguno'){
+    el('renta-callout-text').textContent = 'Elige un colectivo arriba para ver si tu renta fiscal cumple el requisito (si tu comunidad lo exige).';
+  } else {
+    el('renta-callout-text').textContent = 'Este colectivo, en tu comunidad, no exige un límite de renta: solo edad y/o valor de la vivienda.';
+  }
+
+  const descAbsPreview = state.vivienda.precioAnunciado - state.vivienda.precioFinal;
+  const descPctPreview = state.vivienda.precioAnunciado>0 ? (descAbsPreview/state.vivienda.precioAnunciado)*100 : 0;
+  if (state.vivienda.precioAnunciado > 0 && state.vivienda.precioFinal > 0){
+    el('negociacion-text').textContent = descAbsPreview >= 0
+      ? `Negociación: ${fmtEUR(descAbsPreview)} por debajo del precio anunciado (${fmtPct(descPctPreview)} de descuento).`
+      : `El precio final es ${fmtEUR(-descAbsPreview)} superior al anunciado.`;
+  } else {
+    el('negociacion-text').textContent = 'Introduce el precio anunciado y el precio final para ver el descuento negociado.';
+  }
+
+  // --- Estado "en blanco": falta comunidad autónoma y/o precio de vivienda ---
+  if (!state.vivienda.comunidad || state.vivienda.precioFinal <= 0){
+    el('seal-pct').textContent = '—';
+    el('seal-lbl').textContent = 'Sin datos';
+    el('seal-title').textContent = !state.vivienda.comunidad ? 'Empieza eligiendo tu comunidad autónoma' : 'Introduce el precio de la vivienda';
+    el('seal-desc').textContent = !state.vivienda.comunidad
+      ? 'Selecciona arriba dónde está la vivienda para calcular el ITP/IVA que corresponde.'
+      : 'Ve a la pestaña «Vivienda» para introducir el precio de compra.';
+
+    el('kpi-efectivo').textContent = '—';
+    el('kpi-colchon').textContent = '—';
+    el('kpi-colchon').className = 'kpi-value';
+    el('kpi-colchon-sub').textContent = 'introduce tus datos';
+    el('kpi-cuota').textContent = '—';
+    el('kpi-cuota-sub').textContent = 'introduce tus datos';
+    el('kpi-tae').textContent = '—';
+    el('kpi-tae-sub').textContent = 'introduce tus datos';
+
+    el('sticky-efectivo').textContent = '—';
+    el('sticky-cuota').textContent = '—';
+    el('sticky-colchon').textContent = '—';
+
+    el('alerts-list').innerHTML = `<div class="alert info"><span class="ic">ⓘ</span><span>Este simulador está en blanco para que puedas usarlo con tus propios números, en cualquier comunidad autónoma. Elige arriba dónde compras y recorre las pestañas 1 a 5 — los gastos de notaría, registro, TIN, plazo, IBI y comunidad ya llevan valores de referencia orientativos que puedes ajustar.</span></div>`;
+    el('ledger-list').innerHTML = `<p style="font-size:12.5px; color:var(--muted);">El desglose aparecerá aquí en cuanto elijas comunidad autónoma e introduzcas un precio de compra.</p>`;
+    el('hipoteca-list').innerHTML = `<p style="font-size:12.5px; color:var(--muted);">Los datos de la hipoteca aparecerán aquí en cuanto completes esos datos.</p>`;
+    el('tabla-tin').innerHTML = '';
+    el('tabla-precio').innerHTML = '';
+    el('precio-max-content').innerHTML = `<p style="font-size:12.5px; color:var(--muted);">Introduce tus ahorros, comunidad y un precio de compra para calcular tu precio máximo.</p>`;
+    return;
+  }
+
+  // --- Región sin datos fiables (Ceuta / Melilla) ---
+  if (r.regionSinDatos){
+    el('seal-pct').textContent = '—';
+    el('seal-lbl').textContent = 'Sin datos';
+    el('seal-title').textContent = 'Datos no disponibles con fiabilidad';
+    el('seal-desc').textContent = region.notas;
+
+    ['kpi-efectivo','kpi-colchon','kpi-cuota','kpi-tae'].forEach(id => el(id).textContent = '—');
+    el('kpi-colchon').className = 'kpi-value';
+    ['kpi-colchon-sub','kpi-cuota-sub','kpi-tae-sub'].forEach(id => el(id).textContent = 'sin datos fiables');
+    el('sticky-efectivo').textContent = '—'; el('sticky-cuota').textContent = '—'; el('sticky-colchon').textContent = '—';
+
+    el('alerts-list').innerHTML = `<div class="alert warn"><span class="ic">⚠</span><span>${region.notas}</span></div>`;
+    el('ledger-list').innerHTML = `<p style="font-size:12.5px; color:var(--muted);">No se puede calcular el desglose sin un tipo de ITP fiable para ${region.nombre}.</p>`;
+    el('hipoteca-list').innerHTML = '';
+    el('tabla-tin').innerHTML = ''; el('tabla-precio').innerHTML = ''; el('precio-max-content').innerHTML = '';
+    return;
+  }
+
+  // --- Seal ---
+  if (!r.regionSinDatos){
+    el('seal-pct').textContent = r.tipoCorto;
+    el('seal-lbl').textContent = state.vivienda.tipoVivienda === 'nueva' ? (region.ivaEspecial==='igic'?'IGIC + AJD':'IVA + AJD') : 'ITP aplicado';
+    el('seal-title').textContent = r.tipoAplicadoLabel;
+    if (state.vivienda.tipoVivienda !== 'nueva'){
+      if (state.fiscalidad.colectivo === 'ninguno'){
+        el('seal-desc').textContent = `Tipo general de ${region.nombre}. Revisa la pestaña Fiscalidad por si algún colectivo te da un tipo reducido.`;
+      } else if (r.elegibleReducido){
+        el('seal-desc').textContent = `Cumples los requisitos de "${region.reducidos[state.fiscalidad.colectivo].label}" en ${region.nombre}.`;
+      } else {
+        el('seal-desc').textContent = `No cumples todos los requisitos de "${region.reducidos[state.fiscalidad.colectivo] ? region.reducidos[state.fiscalidad.colectivo].label : state.fiscalidad.colectivo}" en ${region.nombre} (revisa edad, valor o renta).`;
+      }
+    } else {
+      el('seal-desc').textContent = (region.especial === 'cataluna' && region.ajdBonifJovenPct)
+        ? (r.elegibleReducido ? 'AJD bonificado por cumplir requisitos de vivienda habitual.' : 'AJD al tipo general: no cumples los requisitos para la bonificación.')
+        : `${region.ivaEspecial==='igic'?'IGIC':'IVA'} y AJD de ${region.nombre} sobre el precio escriturado.`;
+    }
+  }
+
+  // --- KPIs ---
+  el('kpi-efectivo').textContent = fmtEUR(r.efectivoTotalNecesario);
+  el('kpi-colchon').textContent = fmtEUR(r.colchonRestante);
+  el('kpi-colchon').className = 'kpi-value ' + (r.colchonRestante >= state.operacion.colchonMinimoDeseado ? 'pos' : 'neg');
+  el('kpi-colchon-sub').textContent = `deseado: ${fmtEUR(state.operacion.colchonMinimoDeseado)}`;
+  el('kpi-cuota').textContent = fmtEUR2(r.cuotaMensual);
+  el('kpi-cuota-sub').textContent = r.ratioCuota==null ? 'informa tus ingresos para ver el ratio' : `${fmtPct(r.ratioCuota)} de tus ingresos`;
+  el('kpi-tae').textContent = r.taeEstimada==null ? '—' : fmtPct(r.taeEstimada, 2);
+  el('kpi-tae-sub').textContent = state.taeConocidaDiff || 'TIN + comisión + vinculaciones';
+
+  // sticky bar
+  el('sticky-efectivo').textContent = fmtEUR(r.efectivoTotalNecesario);
+  el('sticky-cuota').textContent = fmtEUR2(r.cuotaMensual);
+  el('sticky-colchon').textContent = fmtEUR(r.colchonRestante);
+
+  // --- Alertas ---
+  const alerts = [];
+  if (r.ingresosEquiv <= 0){
+    alerts.push({t:'info', m:`Indica tus ingresos netos mensuales en la pestaña "Comprador" para ver los ratios de esfuerzo.`});
+  }
+  if (r.hipoteca > state.vivienda.precioFinal && state.vivienda.precioFinal > 0){
+    alerts.push({t:'warn', m:`El importe de la hipoteca (${fmtEUR(r.hipoteca)}) supera el precio de la vivienda: revisa el % financiado o el importe manual introducido.`});
+  }
+  if (r.colchonRestante < state.operacion.colchonMinimoDeseado){
+    if (r.colchonRestante < 0){
+      alerts.push({t:'warn', m:`No te llega el efectivo disponible: te faltarían ${fmtEUR(-r.colchonRestante)} para cerrar la operación.`});
+    } else {
+      alerts.push({t:'warn', m:`Podrías comprar, pero tu colchón quedaría en ${fmtEUR(r.colchonRestante)}, por debajo del mínimo deseado (${fmtEUR(state.operacion.colchonMinimoDeseado)}).`});
+    }
+  } else {
+    alerts.push({t:'good', m:`Tras la compra conservarías ${fmtEUR(r.colchonRestante)} de colchón, por encima de tu mínimo deseado.`});
+  }
+  if (r.ratioCuota > 35){
+    alerts.push({t:'warn', m:`La cuota supone el ${fmtPct(r.ratioCuota)} de tus ingresos netos recurrentes, por encima del 35% que suelen exigir los bancos.`});
+  }
+  if (r.ratioEsfuerzoReal > 40 && r.ratioEsfuerzoReal > r.ratioCuota + 0.5){
+    alerts.push({t:'warn', m:`Contando también IBI y comunidad, el coste mensual real de vivir aquí sube al ${fmtPct(r.ratioEsfuerzoReal)} de tus ingresos.`});
+  }
+  if (state.comprador.edad <= 35 && state.financiacion.modo==='porcentaje' && state.financiacion.porcentaje < 95){
+    alerts.push({t:'info', m:`Por tu edad, podrías explorar líneas de aval público (ICO) para primera vivienda habitual, que en algunos casos permiten financiar hasta el 95–100% sin necesitar una entrada tan alta. Consulta condiciones vigentes con tu banco.`});
+  }
+  if (state.vivienda.valorReferencia && state.vivienda.valorReferencia > state.vivienda.precioFinal){
+    alerts.push({t:'warn', m:`El valor de referencia catastral (${fmtEUR(state.vivienda.valorReferencia)}) supera el precio de compra: la base del ITP se calcula sobre ese valor, no sobre el precio.`});
+  }
+  if (state.vivienda.valorTasacion && state.vivienda.valorTasacion < state.vivienda.precioFinal){
+    alerts.push({t:'warn', m:`La tasación (${fmtEUR(state.vivienda.valorTasacion)}) es inferior al precio: el banco podría financiar menos de lo previsto y necesitarás más efectivo propio.`});
+  }
+  if (state.operacion.arrasEntregadas > 0 && !state.operacion.condicionSuspensiva && r.hipoteca > 0){
+    alerts.push({t:'warn', m:`Has entregado arras sin marcar la condición suspensiva de financiación: si el banco no concede la hipoteca, podrías perderlas.`});
+  }
+  if (state.vivienda.tipoVivienda === 'segundaMano' && !r.elegibleReducido && state.fiscalidad.colectivo !== 'ninguno'){
+    alerts.push({t:'info', m:`No cumples todos los requisitos de tu colectivo en ${region.nombre} — ahora mismo se aplica un tipo distinto. Revisa edad, valor de la vivienda o renta en la pestaña Fiscalidad.`});
+  }
+  if (state.vivienda.esVPO && state.fiscalidad.colectivo !== 'ninguno' && r.elegibleReducido && region.vpo){
+    alerts.push({t:'info', m:`Al ser VPO y cumplir además los requisitos de tu colectivo, el tipo aplicable exacto puede depender de tu caso concreto: verifícalo con tu comunidad antes de liquidar el impuesto.`});
+  }
+  if (!state.financiacion.taeConocida){
+    alerts.push({t:'info', m:`La TAE no puede deducirse solo del TIN: añade seguros, comisiones y vinculaciones para comparar ofertas de forma justa. Aquí se estima con una TIR sobre el capital neto recibido.`});
+  } else {
+    const diff = state.financiacion.taeConocida - r.taeEstimada;
+    state.taeConocidaDiff = `Banco: ${fmtPct(state.financiacion.taeConocida,2)} (diferencia: ${diff>=0?'+':''}${fmtPct(diff,2)})`;
+  }
+  if (state.vivienda.tipoVivienda === 'nueva' && region.especial === 'cataluna' && region.ajdBonifJovenPct && r.elegibleReducido){
+    alerts.push({t:'good', m:`Al ser vivienda nueva y cumplir los requisitos, el AJD queda bonificado: ahorras ${fmtEUR(state.vivienda.precioFinal*(region.ajd/100)*(region.ajdBonifJovenPct/100))} respecto al tipo general.`});
+  }
+  if (region.sistema === 'foral'){
+    alerts.push({t:'info', m:`${region.nombre} tiene régimen fiscal foral: los datos mostrados son una referencia general. Verifica siempre con la Hacienda Foral correspondiente antes de liquidar.`});
+  }
+  if (region.notas && (region.especial === 'baleares' || state.vivienda.comunidad === 'baleares' || state.vivienda.comunidad === 'castillaLaMancha')){
+    alerts.push({t:'info', m:region.notas});
+  }
+  if (state.comprador.numCompradores > 1){
+    alerts.push({t:'info', m:`Con ${state.comprador.numCompradores} compradores, verifica si el límite de renta y el requisito de edad se valoran por unidad familiar o de forma individual y proporcional a cada titular.`});
+  }
+
+  el('alerts-list').innerHTML = alerts.map(a => `<div class="alert ${a.t}"><span class="ic">${a.t==='warn'?'⚠':a.t==='good'?'✓':'ⓘ'}</span><span>${a.m}</span></div>`).join('') || '<div class="alert info">Sin alertas por ahora.</div>';
+
+  // --- Ledger (desglose operación) ---
+  const rows = [];
+  rows.push(['Precio de compra', fmtEUR(state.vivienda.precioFinal), false]);
+  rows.push(['− Hipoteca', '−'+fmtEUR(r.hipoteca), true]);
+  rows.push(['= Aportación al precio', fmtEUR(r.aportacionAlPrecio), false, 'total']);
+  rows.push(['+ ' + (state.vivienda.tipoVivienda==='nueva' ? 'IVA + AJD' : 'ITP'), '+'+fmtEUR(r.cuotaImpuesto), true]);
+  rows.push(['+ Notaría, registro, gestoría', '+'+fmtEUR(state.operacion.notaria+state.operacion.registro+state.operacion.gestoria), true]);
+  rows.push(['+ Tasación', '+'+fmtEUR(state.operacion.tasacionCoste), true]);
+  if (state.operacion.otros>0) rows.push(['+ Otros gastos', '+'+fmtEUR(state.operacion.otros), true]);
+  if (r.comisionAperturaImporte>0) rows.push(['+ Comisión de apertura de la hipoteca', '+'+fmtEUR(r.comisionAperturaImporte), true]);
+  rows.push(['= EFECTIVO TOTAL NECESARIO', fmtEUR(r.efectivoTotalNecesario), false, 'total']);
+  if (state.operacion.arrasEntregadas>0){
+    rows.push(['− Arras ya entregadas', '−'+fmtEUR(state.operacion.arrasEntregadas), true]);
+    rows.push(['= Efectivo pendiente para la firma', fmtEUR(r.efectivoPendienteFirma), false, 'total']);
+  }
+  rows.push(['Ahorros iniciales', fmtEUR(state.comprador.ahorros), false]);
+  rows.push(['− Efectivo total utilizado', '−'+fmtEUR(r.efectivoTotalNecesario), true]);
+  rows.push(['= COLCHÓN RESTANTE', fmtEUR(r.colchonRestante), false, 'total']);
+
+  el('ledger-list').innerHTML = rows.map(([label,val,sub,cls]) =>
+    `<div class="ledger-row ${cls||''} ${sub?'sub':''}"><span class="lr-label">${label}</span><span class="lr-value">${val}</span></div>`
+  ).join('');
+
+  // --- Hipoteca en detalle ---
+  const hrows = [
+    ['Importe financiado', fmtEUR(r.hipoteca)],
+    ['LTV sobre precio', fmtPct(r.ltvPrecio)],
+    ['LTV sobre valor financiable', fmtPct(r.ltvFinanciable)],
+    ['TIN final aplicado', fmtPct(r.tinFinal,2) + (r.descuentoBonif>0 ? ` (−${fmtPct(r.descuentoBonif,2)} por vinculaciones)`:'')],
+    ['TAE estimada', r.taeEstimada==null?'—':fmtPct(r.taeEstimada,2)],
+    ['Plazo', state.financiacion.plazoAnios + ' años'],
+    ['Cuota mensual', fmtEUR2(r.cuotaMensual)],
+    ['Coste vinculaciones/mes', fmtEUR2(r.costeMensualBonif)],
+    ['Intereses totales', fmtEUR(r.interesesTotales)],
+    ['Coste total del préstamo', fmtEUR(r.hipoteca + r.interesesTotales)],
+    ['Ratio cuota/ingresos', fmtPct(r.ratioCuota)],
+    ['Ratio deuda total/ingresos', fmtPct(r.ratioDeudaTotal)],
+    ['+ IBI mensualizado', fmtEUR2(r.ibiMensualizado)],
+    ['+ Comunidad', fmtEUR2(r.comunidadMensual)],
+    ['= Coste mensual total de vivienda', fmtEUR2(r.costeMensualTotalVivienda)],
+    ['Ratio de esfuerzo real', fmtPct(r.ratioEsfuerzoReal)],
+  ];
+  el('hipoteca-list').innerHTML = hrows.map(([l,v]) => `<div class="ledger-row"><span class="lr-label">${l}</span><span class="lr-value">${v}</span></div>`).join('');
+
+  // --- Sensibilidad TIN ---
+  const deltasTin = [-1,-0.5,0,0.5,1];
+  let tinHtml = '<tr><th>TIN</th><th>Cuota</th><th>Coste total</th></tr>';
+  deltasTin.forEach(d => {
+    const tin = Math.max(0, r.tinFinal + d);
+    const cuota = cuotaFrancesa(r.hipoteca, tin, state.financiacion.plazoAnios);
+    const costeTotal = cuota*r.nMeses;
+    const isCurrent = d === 0;
+    tinHtml += `<tr class="${isCurrent?'current':''}"><td>${fmtPct(tin,2)}</td><td>${fmtEUR2(cuota)}</td><td>${fmtEUR(costeTotal)}</td></tr>`;
+  });
+  el('tabla-tin').innerHTML = tinHtml;
+
+  // --- Sensibilidad precio ---
+  const deltasPrecio = [-15000,-10000,-5000,0,5000,10000,15000];
+  let precioHtml = '<tr><th>Precio</th><th>Efectivo total</th><th>Colchón</th></tr>';
+  deltasPrecio.forEach(d => {
+    const precio = state.vivienda.precioFinal + d;
+    if (precio <= 0) return;
+    const sTmp = JSON.parse(JSON.stringify(state));
+    sTmp.vivienda.precioFinal = precio;
+    if (sTmp.financiacion.modo === 'manual'){
+      // mantenemos el mismo importe manual de hipoteca para ver el efecto puro del precio
+    }
+    const rr = calcularEscenario(sTmp);
+    const isCurrent = d === 0;
+    precioHtml += `<tr class="${isCurrent?'current':''}"><td>${fmtEUR(precio)}</td><td>${fmtEUR(rr.efectivoTotalNecesario)}</td><td>${fmtEUR(rr.colchonRestante)}</td></tr>`;
+  });
+  el('tabla-precio').innerHTML = precioHtml;
+
+  // --- Precio máximo compatible ---
+  const pMax = precioMaximoCompatible(state, state.operacion.colchonMinimoDeseado);
+  const diffPrecio = pMax - state.vivienda.precioFinal;
+  if (pMax < 1000){
+    el('precio-max-content').innerHTML = `
+      <div class="alert warn"><span class="ic">⚠</span><span>Ni siquiera a precio cero cubrirías el colchón deseado: tus gastos fijos (impuestos mínimos, notaría, registro, gestoría, tasación${r.comisionAperturaImporte>0?', comisión de apertura':''}) ya superan tus ahorros menos el colchón que quieres conservar. Reduce el colchón deseado, tus gastos fijos, o aumenta tus ahorros.</span></div>`;
+  } else {
+    el('precio-max-content').innerHTML = `
+      <div class="ledger-row total"><span class="lr-label">Precio máximo</span><span class="lr-value">${fmtEUR(pMax)}</span></div>
+      <p style="font-size:12px; color:var(--muted); margin-top:10px; line-height:1.5;">
+        Manteniendo el mismo % de financiación, tipo de vivienda, tasas fiscales y gastos actuales, este es el precio de compra
+        más alto que te permite conservar tu colchón mínimo de ${fmtEUR(state.operacion.colchonMinimoDeseado)}.
+        ${diffPrecio >= 0 ? `Tienes un margen de ${fmtEUR(diffPrecio)} sobre el precio actual.` : `Estás ${fmtEUR(-diffPrecio)} por encima de ese máximo.`}
+        ${state.financiacion.modo==='manual' ? ` (Ojo: en modo de importe manual, la hipoteca se mantiene fija en ${fmtEUR(state.financiacion.importeManual)} al variar el precio, no escala con él).` : ''}
+      </p>`;
+  }
+}
+
+/* ============================================================
+   RENDER DE BONIFICACIONES
+   ============================================================ */
+
+function renderBonificaciones(){
+  const list = el('bonificaciones-list');
+  list.innerHTML = state.financiacion.bonificaciones.map(b => `
+    <div class="bonif-item ${b.activo?'on':''}" data-id="${b.id}">
+      <div class="bonif-top">
+        <div class="switch" data-action="toggle"></div>
+        <input class="bonif-name" data-action="nombre" value="${b.nombre}">
+        <button class="bonif-remove" data-action="remove">✕</button>
+      </div>
+      <div class="bonif-fields">
+        <div class="bf">
+          <label>Descuento en TIN</label>
+          <div class="suffix-wrap"><input type="number" inputmode="decimal" step="0.01" data-action="descuento" value="${b.descuentoPuntos}"><span>pp</span></div>
+        </div>
+        <div class="bf">
+          <label>Coste mensual</label>
+          <div class="suffix-wrap"><input type="number" inputmode="decimal" step="1" data-action="coste" value="${b.costeMensual}"><span>€</span></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.bonif-item').forEach(item => {
+    const id = Number(item.dataset.id);
+    const bonif = state.financiacion.bonificaciones.find(b => b.id === id);
+    item.querySelector('[data-action="toggle"]').addEventListener('click', () => {
+      bonif.activo = !bonif.activo;
+      item.classList.toggle('on', bonif.activo);
+      render();
+    });
+    item.querySelector('[data-action="nombre"]').addEventListener('input', (e) => { bonif.nombre = e.target.value; });
+    item.querySelector('[data-action="descuento"]').addEventListener('input', (e) => { bonif.descuentoPuntos = parseFloat(e.target.value)||0; render(); });
+    item.querySelector('[data-action="coste"]').addEventListener('input', (e) => { bonif.costeMensual = parseFloat(e.target.value)||0; render(); });
+    item.querySelector('[data-action="remove"]').addEventListener('click', () => {
+      state.financiacion.bonificaciones = state.financiacion.bonificaciones.filter(b => b.id !== id);
+      renderBonificaciones(); render();
+    });
+  });
+}
+
+el('btn-add-bonif').addEventListener('click', () => {
+  state.financiacion.bonificaciones.push({ id: bonifCounter++, nombre:'Nueva vinculación', activo:true, descuentoPuntos:0.05, costeMensual:0 });
+  renderBonificaciones(); render();
+});
+
+/* ============================================================
+   WIRING: TABS, SEGMENTED CONTROLS, CHIPS, INPUTS
+   ============================================================ */
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    el('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---- Vista móvil: Editar datos / Ver resultados ---- */
+const shellEl = document.querySelector('.shell');
+
+function setMobileView(view){
+  if (view === 'results') shellEl.classList.add('mv-results');
+  else shellEl.classList.remove('mv-results');
+  document.querySelectorAll('#mobile-view-toggle button').forEach(b => {
+    b.classList.toggle('active', b.dataset.view === view);
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.querySelectorAll('#mobile-view-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => setMobileView(btn.dataset.view));
+});
+
+const btnBackToForm = el('btn-back-to-form');
+if (btnBackToForm) btnBackToForm.addEventListener('click', () => setMobileView('form'));
+
+const stickyBarEl = document.querySelector('.sticky-bar');
+if (stickyBarEl) stickyBarEl.addEventListener('click', () => setMobileView('results'));
+
+function wireSegmented(id, onChange){
+  const wrap = el(id);
+  wrap.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wrap.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      onChange(btn.dataset.val);
+      render();
+    });
+  });
+}
+
+wireSegmented('seg-tipoVivienda', (val) => { state.vivienda.tipoVivienda = val; });
+wireSegmented('seg-modoFinanciacion', (val) => {
+  state.financiacion.modo = val;
+  el('wrap-porcentajeFin').style.display = val==='porcentaje' ? '' : 'none';
+  el('wrap-importeManual').style.display = val==='manual' ? '' : 'none';
+});
+wireSegmented('seg-tipoInteres', (val) => { state.financiacion.tipoInteres = val; });
+
+function wireChipToggle(wrapId, onChange){
+  const wrap = el(wrapId);
+  wrap.addEventListener('click', () => {
+    const isOn = wrap.classList.toggle('on');
+    onChange(isOn);
+    render();
+  });
+}
+wireChipToggle('wrap-vpo', (on) => { state.vivienda.esVPO = on; });
+wireChipToggle('wrap-habitual', (on) => { state.vivienda.esViviendaHabitual = on; });
+wireChipToggle('wrap-condicionSuspensiva', (on) => { state.operacion.condicionSuspensiva = on; });
+
+/* ---- Comunidad autónoma: poblar selector y reaccionar a cambios ---- */
+const selComunidad = el('in-comunidad');
+ORDEN_REGIONES.forEach(key => {
+  const opt = document.createElement('option');
+  opt.value = key;
+  opt.textContent = REGIONES[key].nombre;
+  selComunidad.appendChild(opt);
+});
+
+function poblarColectivos(){
+  const region = REGIONES[state.vivienda.comunidad];
+  const sel = el('in-colectivo');
+  const valorPrevio = state.fiscalidad.colectivo;
+  sel.innerHTML = '<option value="ninguno">Ninguno — tipo general</option>';
+  if (region && !region.datosNoFiables && region.reducidos){
+    Object.keys(region.reducidos).forEach(key => {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = region.reducidos[key].label;
+      sel.appendChild(opt);
+    });
+  }
+  // conservar la selección previa si sigue existiendo en la nueva región
+  const sigueExistiendo = [...sel.options].some(o => o.value === valorPrevio);
+  sel.value = sigueExistiendo ? valorPrevio : 'ninguno';
+  state.fiscalidad.colectivo = sel.value;
+}
+
+function actualizarBloqueCataluna(){
+  const esCataluna = REGIONES[state.vivienda.comunidad] && REGIONES[state.vivienda.comunidad].especial === 'cataluna';
+  el('wrap-especial-cataluna').style.display = esCataluna ? '' : 'none';
+  el('divider-especial-cataluna').style.display = esCataluna ? '' : 'none';
+  if (!esCataluna){ state.vivienda.municipioRural = 'no'; state.vivienda.grandTenedor = 'no'; }
+}
+
+function actualizarDetalleVPO(){
+  const region = REGIONES[state.vivienda.comunidad];
+  const detalle = el('vpo-detail');
+  if (!region || region.datosNoFiables){ detalle.textContent = 'Selecciona primero tu comunidad autónoma'; return; }
+  if (region.ivaEspecial === 'igic'){
+    detalle.textContent = `IGIC ${region.igicVPO}% en obra nueva` + (region.vpo ? ` / ITP ${region.vpo.tipo}% en segunda mano` : '');
+  } else {
+    detalle.textContent = 'IVA 4% en obra nueva' + (region.vpo ? ` / ITP ${region.vpo.tipo}% en segunda mano` : '');
+  }
+}
+
+function actualizarNotaRegion(){
+  const region = REGIONES[state.vivienda.comunidad];
+  const noteEl = el('region-note');
+  const subEl = el('fiscalidad-sub');
+  if (!region){
+    noteEl.innerHTML = '';
+    subEl.textContent = 'Selecciona primero tu comunidad autónoma arriba para ver los colectivos con tipo reducido disponibles.';
+    el('hero-eyebrow').textContent = 'España · 2026';
+    el('hero-normativa').innerHTML = 'Normativa: <b>elige tu comunidad</b>';
+    return;
+  }
+  el('hero-eyebrow').textContent = `${region.nombre} · 2026`;
+  el('hero-normativa').innerHTML = region.sistema === 'foral' ? `Régimen <b>foral</b> (${region.nombre})` : `Normativa autonómica de <b>${region.nombre}</b>`;
+  if (region.datosNoFiables){
+    noteEl.innerHTML = `⚠ ${region.notas}`;
+    noteEl.className = 'region-note warn';
+    subEl.textContent = 'No hay datos suficientemente fiables para calcular con precisión en esta ciudad autónoma.';
+    return;
+  }
+  noteEl.className = 'region-note';
+  noteEl.innerHTML = `<b>${region.sistema === 'foral' ? 'Régimen foral' : 'ITP'}: ${region.itp.tipo==='tramos' ? 'escala progresiva' : region.itp.general+'%'}</b> · AJD ${region.ajd}%. ${region.notas}`;
+  subEl.textContent = `${region.nombre} reduce el ITP` + (region.ajdBonifJovenPct ? ' (o bonifica el AJD)' : '') + ' para determinados colectivos en vivienda habitual, si cumples los requisitos.';
+}
+
+function actualizarRequisitosCallout(){
+  const region = REGIONES[state.vivienda.comunidad];
+  const wrap = el('requisitos-callout');
+  const colectivo = state.fiscalidad.colectivo;
+  if (!region || region.datosNoFiables || !colectivo || colectivo === 'ninguno' || !region.reducidos || !region.reducidos[colectivo]){
+    wrap.style.display = 'none';
+    return;
+  }
+  const item = region.reducidos[colectivo];
+  const partes = [];
+  if (item.edadMax != null) partes.push(`edad ≤ ${item.edadMax} años`);
+  if (item.valorMax != null){
+    partes.push(item.tipoSobreValorMax != null
+      ? `valor de la vivienda ≤ ${fmtEUR(item.valorMax)} (por encima, tipo ${item.tipoSobreValorMax}%)`
+      : `valor de la vivienda ≤ ${fmtEUR(item.valorMax)}`);
+  }
+  if (item.rentaMaxIndividual != null) partes.push(`renta fiscal ≤ ${fmtEUR(item.rentaMaxIndividual)}${item.rentaPorHijoExtra ? ' (+' + fmtEUR(item.rentaPorHijoExtra) + '/hijo extra)' : ''}`);
+  if (item.rentaMaxConjunta != null) partes.push(`renta conjunta ≤ ${fmtEUR(item.rentaMaxConjunta)}`);
+  const requisitosTxt = partes.length ? partes.join(' · ') : 'sin más requisitos numéricos conocidos';
+  wrap.style.display = '';
+  el('requisitos-callout-text').innerHTML = `<b>${item.label}</b> en ${region.nombre}: tipo ${item.tipo}%. Requisitos: ${requisitosTxt}.${item.notas ? ' ' + item.notas : ''}`;
+}
+
+selComunidad.addEventListener('change', (e) => {
+  state.vivienda.comunidad = e.target.value;
+  poblarColectivos();
+  actualizarBloqueCataluna();
+  actualizarDetalleVPO();
+  actualizarNotaRegion();
+  actualizarRequisitosCallout();
+  render();
+});
+el('in-ciudad').addEventListener('input', (e) => { state.vivienda.ciudad = e.target.value; render(); });
+
+el('in-colectivo').addEventListener('change', (e) => {
+  state.fiscalidad.colectivo = e.target.value;
+  const region = REGIONES[state.vivienda.comunidad];
+  const usaHijosExtra = region && region.reducidos && region.reducidos[e.target.value] && region.reducidos[e.target.value].rentaPorHijoExtra;
+  el('wrap-hijosExcedentes').style.display = usaHijosExtra ? '' : 'none';
+  actualizarRequisitosCallout();
+  render();
+});
+el('in-municipioRural').addEventListener('change', (e) => { state.vivienda.municipioRural = e.target.value; render(); });
+el('in-grandTenedor').addEventListener('change', (e) => { state.vivienda.grandTenedor = e.target.value; render(); });
+el('in-porcentajeFin').addEventListener('change', (e) => { state.financiacion.porcentaje = parseFloat(e.target.value); render(); });
+
+// bind del resto de inputs numéricos genéricos
+const nonNeg = (v) => (v==null || isNaN(v)) ? v : Math.max(0, v);
+const clampRange = (min, max) => (v) => (v==null || isNaN(v)) ? v : Math.min(max, Math.max(min, v));
+
+const bindings = [
+  ['in-edad','comprador','edad',parseFloat, clampRange(0,120)],
+  ['in-numCompradores','comprador','numCompradores',parseFloat, clampRange(1,10)],
+  ['in-ahorros','comprador','ahorros',parseFloat, nonNeg],
+  ['in-ingresosMensuales','comprador','ingresosNetosMensuales',parseFloat, nonNeg],
+  ['in-numPagas','comprador','numPagas',parseFloat, clampRange(1,14)],
+  ['in-ingresosExtra','comprador','ingresosExtraordinarios',parseFloat, nonNeg],
+  ['in-otrasDeudas','comprador','otrasDeudasMensuales',parseFloat, nonNeg],
+
+  ['in-hijosExcedentes','fiscalidad','hijosExcedentes',parseFloat, clampRange(0,10)],
+  ['in-baseGeneral','fiscalidad','baseGeneral',parseFloat, nonNeg],
+  ['in-baseAhorro','fiscalidad','baseAhorro',parseFloat, nonNeg],
+  ['in-minimoPF','fiscalidad','minimoPersonalFamiliar',parseFloat, nonNeg],
+
+  ['in-precioAnunciado','vivienda','precioAnunciado',parseFloat, nonNeg],
+  ['in-precioOfertado','vivienda','precioOfertado',parseFloat, nonNeg],
+  ['in-precioFinal','vivienda','precioFinal',parseFloat, nonNeg],
+  ['in-valorReferencia','vivienda','valorReferencia',v=>v===''?null:parseFloat(v), nonNeg],
+  ['in-valorTasacion','vivienda','valorTasacion',v=>v===''?null:parseFloat(v), nonNeg],
+
+  ['in-importeManual','financiacion','importeManual',parseFloat, nonNeg],
+  ['in-plazo','financiacion','plazoAnios',parseFloat, clampRange(1,50)],
+  ['in-tinBase','financiacion','tinBase',parseFloat, nonNeg],
+  ['in-comisionApertura','financiacion','comisionAperturaPct',parseFloat, nonNeg],
+  ['in-taeConocida','financiacion','taeConocida',v=>v===''?null:parseFloat(v), nonNeg],
+
+  ['in-notaria','operacion','notaria',parseFloat, nonNeg],
+  ['in-registro','operacion','registro',parseFloat, nonNeg],
+  ['in-gestoria','operacion','gestoria',parseFloat, nonNeg],
+  ['in-tasacionCoste','operacion','tasacionCoste',parseFloat, nonNeg],
+  ['in-otrosGastos','operacion','otros',parseFloat, nonNeg],
+  ['in-arras','operacion','arrasEntregadas',parseFloat, nonNeg],
+  ['in-colchonDeseado','operacion','colchonMinimoDeseado',parseFloat, nonNeg],
+  ['in-ibiAnual','operacion','ibiAnual',parseFloat, nonNeg],
+  ['in-comunidadMensual','operacion','comunidadMensual',parseFloat, nonNeg],
+];
+
+bindings.forEach(([id, group, key, parser, clamp]) => {
+  const node = el(id);
+  if (!node) return;
+  node.addEventListener('input', (e) => {
+    let v = parser(e.target.value);
+    if (typeof v === 'number' && isNaN(v)) v = 0;
+    if (clamp) v = clamp(v);
+    state[group][key] = v;
+    render();
+  });
+  // al perder el foco, el campo refleja el valor realmente usado (evita mostrar p.ej. "-500" cuando internamente ya se usa 0)
+  node.addEventListener('change', () => {
+    const v = state[group][key];
+    node.value = (v === null || v === undefined) ? '' : v;
+  });
+});
+
+/* ============================================================
+   COPIAR RESUMEN
+   ============================================================ */
+
+function mostrarToast(msg){
+  const t = el('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(mostrarToast._tid);
+  mostrarToast._tid = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function construirResumenTexto(){
+  const r = calcularEscenario(state);
+  const v = state.vivienda, o = state.operacion, f = state.financiacion;
+  const lineas = [
+    `SIMULACIÓN DE COMPRA — ${v.tipoVivienda === 'nueva' ? 'Vivienda nueva' : 'Segunda mano'} en ${REGIONES[v.comunidad] ? REGIONES[v.comunidad].nombre : '(elige comunidad)'}${v.ciudad ? ', ' + v.ciudad : ''}`,
+    `Precio de compra: ${fmtEUR(v.precioFinal)}`,
+    `${r.tipoAplicadoLabel}: ${fmtEUR(r.cuotaImpuesto)}`,
+    `Hipoteca: ${fmtEUR(r.hipoteca)} (${fmtPct(r.ltvPrecio)} LTV) a ${state.financiacion.plazoAnios} años, TIN ${fmtPct(r.tinFinal,2)}`,
+    `Cuota mensual: ${fmtEUR2(r.cuotaMensual)} · TAE estimada: ${r.taeEstimada==null?'—':fmtPct(r.taeEstimada,2)}`,
+    ``,
+    `Aportación al precio: ${fmtEUR(r.aportacionAlPrecio)}`,
+    `Gastos de compraventa (notaría+registro+gestoría+tasación+otros): ${fmtEUR(r.gastosCompraventa)}`,
+    r.comisionAperturaImporte>0 ? `Comisión de apertura de la hipoteca: ${fmtEUR(r.comisionAperturaImporte)}` : null,
+    `EFECTIVO TOTAL NECESARIO: ${fmtEUR(r.efectivoTotalNecesario)}`,
+    o.arrasEntregadas>0 ? `Arras ya entregadas: ${fmtEUR(o.arrasEntregadas)} · Pendiente para la firma: ${fmtEUR(r.efectivoPendienteFirma)}` : null,
+    ``,
+    `Ahorros disponibles: ${fmtEUR(state.comprador.ahorros)}`,
+    `COLCHÓN RESTANTE: ${fmtEUR(r.colchonRestante)}`,
+    ``,
+    `Ratio cuota/ingresos: ${fmtPct(r.ratioCuota)} · Ratio de esfuerzo real (con IBI+comunidad): ${fmtPct(r.ratioEsfuerzoReal)}`,
+    `— Simulación orientativa, no vinculante —`,
+  ].filter(x => x !== null);
+  return lineas.join('\n');
+}
+
+function copiarResumen(){
+  const texto = construirResumenTexto();
+  const done = () => mostrarToast('Resumen copiado ✓');
+  const fail = () => mostrarToast('No se pudo copiar automáticamente');
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(texto).then(done).catch(() => {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = texto; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        done();
+      } catch(e){ fail(); }
+    });
+  } else {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = texto; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      done();
+    } catch(e){ fail(); }
+  }
+}
+
+el('btn-copiar-resumen').addEventListener('click', copiarResumen);
+
+/* ============================================================
+   EXPORTAR A EXCEL (SheetJS, cargado bajo demanda)
+   ============================================================ */
+
+function cargarSheetJS(){
+  return new Promise((resolve, reject) => {
+    if (window.XLSX) return resolve();
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error('No se pudo cargar la librería de Excel'));
+    document.head.appendChild(s);
+  });
+}
+
+// helpers para construir filas de hoja con formato asociado
+function filaTxt(label, value){ return { label, value: value==null?'':value, fmt:null }; }
+function filaNum(label, value){ return { label, value: value==null?0:value, fmt:'#,##0' }; }
+function filaMoneda(label, value){ return { label, value: value==null?0:value, fmt:'#,##0.00 "€"' }; }
+function filaPct(label, value){ return { label, value: value==null?0:(value/100), fmt:'0.00%' }; }
+function filaVacia(){ return { label:'', value:'', fmt:null }; }
+function filaTitulo(label){ return { label, value:'', fmt:null }; }
+
+function filasAHoja(filas, colWidths){
+  const aoa = filas.map(f => [f.label, f.value]);
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = colWidths || [{wch:32},{wch:22}];
+  filas.forEach((f, i) => {
+    if (f.fmt){
+      const ref = XLSX.utils.encode_cell({ r:i, c:1 });
+      if (ws[ref]) ws[ref].z = f.fmt;
+    }
+  });
+  return ws;
+}
+
+function construirLibroExcel(){
+  const r = calcularEscenario(state);
+  const region = REGIONES[state.vivienda.comunidad];
+  const wb = XLSX.utils.book_new();
+
+  // --- Hoja 1: Resumen ---
+  const filas = [
+    filaTitulo('SIMULACIÓN DE COMPRA DE VIVIENDA'),
+    filaTxt('Generado', new Date().toLocaleDateString('es-ES')),
+    filaTxt('Comunidad autónoma', region ? region.nombre : ''),
+    filaTxt('Ciudad', state.vivienda.ciudad || ''),
+    filaVacia(),
+
+    filaTitulo('COMPRADOR'),
+    filaNum('Edad', state.comprador.edad),
+    filaMoneda('Ahorros disponibles', state.comprador.ahorros),
+    filaMoneda('Ingreso neto mensual', state.comprador.ingresosNetosMensuales),
+    filaVacia(),
+
+    filaTitulo('VIVIENDA'),
+    filaTxt('Tipo', state.vivienda.tipoVivienda === 'nueva' ? 'Nueva (promotor)' : 'Segunda mano'),
+    filaTxt('¿Vivienda habitual?', state.vivienda.esViviendaHabitual !== false ? 'Sí' : 'No'),
+    filaMoneda('Precio anunciado', state.vivienda.precioAnunciado),
+    filaMoneda('Precio de compra final', state.vivienda.precioFinal),
+    filaVacia(),
+
+    filaTitulo('FISCALIDAD'),
+    filaTxt('Impuesto aplicado', r.regionSinDatos ? 'Sin datos fiables' : r.tipoAplicadoLabel),
+    filaMoneda('Cuota del impuesto', r.cuotaImpuesto),
+    filaVacia(),
+
+    filaTitulo('FINANCIACIÓN'),
+    filaMoneda('Importe financiado (hipoteca)', r.hipoteca),
+    filaPct('LTV sobre precio', r.ltvPrecio),
+    filaPct('TIN aplicado', r.tinFinal),
+    filaPct('TAE estimada', r.taeEstimada),
+    filaNum('Plazo (años)', state.financiacion.plazoAnios),
+    filaMoneda('Cuota mensual', r.cuotaMensual),
+    filaMoneda('Intereses totales del préstamo', r.interesesTotales),
+    r.ratioCuota==null ? filaTxt('Ratio cuota/ingresos', 'sin datos de ingresos') : filaPct('Ratio cuota/ingresos', r.ratioCuota),
+    filaVacia(),
+
+    filaTitulo('EFECTIVO NECESARIO PARA LA COMPRA'),
+    filaMoneda('Aportación al precio (precio − hipoteca)', r.aportacionAlPrecio),
+    filaMoneda('Impuesto (ITP/IVA+AJD)', r.cuotaImpuesto),
+    filaMoneda('Gastos de notaría, registro, gestoría y tasación', r.gastosCompraventa),
+    filaMoneda('Comisión de apertura de la hipoteca', r.comisionAperturaImporte),
+    filaMoneda('EFECTIVO TOTAL NECESARIO', r.efectivoTotalNecesario),
+    filaVacia(),
+    filaMoneda('Ahorros disponibles', state.comprador.ahorros),
+    filaMoneda('COLCHÓN RESTANTE', r.colchonRestante),
+  ];
+  XLSX.utils.book_append_sheet(wb, filasAHoja(filas), 'Resumen');
+
+  // --- Hoja 2: Sensibilidad al TIN ---
+  const tinRows = [['TIN', 'Cuota mensual (€)', 'Coste total del préstamo (€)']];
+  [-1,-0.5,0,0.5,1].forEach(delta => {
+    const tin = Math.max(0, r.tinFinal + delta);
+    const cuota = cuotaFrancesa(r.hipoteca, tin, state.financiacion.plazoAnios);
+    tinRows.push([tin/100, Math.round(cuota*100)/100, Math.round(cuota*r.nMeses*100)/100]);
+  });
+  const wsTin = XLSX.utils.aoa_to_sheet(tinRows);
+  wsTin['!cols'] = [{wch:10},{wch:18},{wch:24}];
+  for (let i=1;i<=5;i++){ const refA = XLSX.utils.encode_cell({r:i,c:0}); if (wsTin[refA]) wsTin[refA].z = '0.00%'; }
+  XLSX.utils.book_append_sheet(wb, wsTin, 'Sensibilidad TIN');
+
+  // --- Hoja 3: Sensibilidad al precio ---
+  const precioRows = [['Precio (€)', 'Efectivo total necesario (€)', 'Colchón restante (€)']];
+  [-15000,-10000,-5000,0,5000,10000,15000].forEach(delta => {
+    const precio = state.vivienda.precioFinal + delta;
+    if (precio <= 0) return;
+    const sTmp = JSON.parse(JSON.stringify(state));
+    sTmp.vivienda.precioFinal = precio;
+    const rr = calcularEscenario(sTmp);
+    precioRows.push([precio, Math.round(rr.efectivoTotalNecesario), Math.round(rr.colchonRestante)]);
+  });
+  const wsPrecio = XLSX.utils.aoa_to_sheet(precioRows);
+  wsPrecio['!cols'] = [{wch:14},{wch:24},{wch:20}];
+  XLSX.utils.book_append_sheet(wb, wsPrecio, 'Sensibilidad precio');
+
+  // --- Hoja 4: Escenarios comparados (si hay alguno guardado) ---
+  if (savedScenarios.length > 0){
+    const compRows = [['Escenario','Precio','Impuesto','Hipoteca','Cuota mensual','TAE','Efectivo total','Colchón']];
+    savedScenarios.forEach(sc => {
+      compRows.push([sc.nombre, sc.resumen.precioFinal, sc.resumen.cuotaImpuesto, sc.resumen.hipoteca,
+        sc.resumen.cuotaMensual, sc.resumen.taeEstimada==null?'':sc.resumen.taeEstimada/100, sc.resumen.efectivoTotalNecesario, sc.resumen.colchonRestante]);
+    });
+    const wsComp = XLSX.utils.aoa_to_sheet(compRows);
+    wsComp['!cols'] = [{wch:20},{wch:12},{wch:12},{wch:12},{wch:14},{wch:10},{wch:14},{wch:12}];
+    XLSX.utils.book_append_sheet(wb, wsComp, 'Escenarios comparados');
+  }
+
+  return wb;
+}
+
+async function exportarExcel(){
+  const btn = el('btn-exportar-excel');
+  const textoOriginal = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Generando…';
+  try {
+    await cargarSheetJS();
+    const wb = construirLibroExcel();
+    const region = REGIONES[state.vivienda.comunidad];
+    const nombre = `simulacion-hipoteca-${region ? region.nombre.toLowerCase().replace(/\s+/g,'-') : 'espana'}.xlsx`;
+    XLSX.writeFile(wb, nombre);
+    mostrarToast('Excel descargado ✓');
+  } catch (e){
+    mostrarToast('No se pudo generar el Excel');
+  } finally {
+    btn.disabled = false; btn.textContent = textoOriginal;
+  }
+}
+el('btn-exportar-excel').addEventListener('click', exportarExcel);
+
+/* ============================================================
+   EXPORTAR A PDF (informe formal + impresión del navegador)
+   ============================================================ */
+
+function filaInforme(label, value, esTotal){
+  return `<tr${esTotal?' class="total"':''}><td>${label}</td><td>${value}</td></tr>`;
+}
+
+function poblarInformePDF(){
+  const r = calcularEscenario(state);
+  const region = REGIONES[state.vivienda.comunidad];
+
+  el('informe-meta').textContent = `${region ? region.nombre : 'Comunidad no seleccionada'}${state.vivienda.ciudad ? ', ' + state.vivienda.ciudad : ''} — generado el ${new Date().toLocaleDateString('es-ES', {day:'numeric', month:'long', year:'numeric'})}`;
+  el('informe-seal-label').textContent = state.vivienda.tipoVivienda === 'nueva' ? (region && region.ivaEspecial==='igic' ? 'IGIC + AJD' : 'IVA + AJD') : 'ITP aplicado';
+  el('informe-seal-valor').textContent = r.regionSinDatos ? 'Sin datos fiables' : r.tipoAplicadoLabel;
+
+  el('informe-tabla-vivienda').innerHTML = [
+    filaInforme('Tipo de vivienda', state.vivienda.tipoVivienda === 'nueva' ? 'Nueva (promotor)' : 'Segunda mano'),
+    filaInforme('¿Vivienda habitual?', state.vivienda.esViviendaHabitual !== false ? 'Sí' : 'No'),
+    filaInforme('Precio de compra', fmtEUR(state.vivienda.precioFinal)),
+    filaInforme('Edad del comprador', state.comprador.edad || '—'),
+    filaInforme('Ahorros disponibles', fmtEUR(state.comprador.ahorros)),
+  ].join('');
+
+  el('informe-tabla-hipoteca').innerHTML = [
+    filaInforme('Importe financiado', fmtEUR(r.hipoteca)),
+    filaInforme('LTV sobre precio', fmtPct(r.ltvPrecio)),
+    filaInforme('TIN aplicado', fmtPct(r.tinFinal, 2)),
+    filaInforme('TAE estimada', r.taeEstimada==null?'—':fmtPct(r.taeEstimada, 2)),
+    filaInforme('Plazo', state.financiacion.plazoAnios + ' años'),
+    filaInforme('Cuota mensual', fmtEUR2(r.cuotaMensual), true),
+  ].join('');
+
+  const filasEfectivo = [
+    filaInforme('Aportación al precio', fmtEUR(r.aportacionAlPrecio)),
+    filaInforme('Impuesto (ITP/IVA+AJD)', fmtEUR(r.cuotaImpuesto)),
+    filaInforme('Gastos de notaría, registro, gestoría y tasación', fmtEUR(r.gastosCompraventa)),
+  ];
+  if (r.comisionAperturaImporte > 0) filasEfectivo.push(filaInforme('Comisión de apertura', fmtEUR(r.comisionAperturaImporte)));
+  filasEfectivo.push(filaInforme('EFECTIVO TOTAL NECESARIO', fmtEUR(r.efectivoTotalNecesario), true));
+  filasEfectivo.push(filaInforme('Ahorros disponibles', fmtEUR(state.comprador.ahorros)));
+  filasEfectivo.push(filaInforme('COLCHÓN RESTANTE', fmtEUR(r.colchonRestante), true));
+  el('informe-tabla-efectivo').innerHTML = filasEfectivo.join('');
+
+  const items = [...document.querySelectorAll('#alerts-list .alert span:last-child')].map(s => s.textContent);
+  const alertasWrap = el('informe-alertas-wrap');
+  if (items.length){
+    el('informe-alertas').innerHTML = items.map(t => `<li>${t}</li>`).join('');
+    alertasWrap.style.display = '';
+  } else {
+    alertasWrap.style.display = 'none';
+  }
+
+  el('informe-footer').textContent = 'Simulación orientativa, no vinculante. Verifica siempre los datos con una gestoría, notaría o asesor antes de decidir. Normativa autonómica sujeta a cambios.';
+}
+
+function exportarPDF(){
+  poblarInformePDF();
+  window.print();
+}
+el('btn-exportar-pdf').addEventListener('click', exportarPDF);
+
+/* ============================================================
+   COMPARADOR DE ESCENARIOS
+   ============================================================ */
+
+let savedScenarios = [];
+let scenarioCounter = 1;
+
+function guardarEscenarioActual(){
+  const clone = JSON.parse(JSON.stringify({
+    comprador: state.comprador, fiscalidad: state.fiscalidad, vivienda: state.vivienda,
+    financiacion: state.financiacion, operacion: state.operacion,
+  }));
+  const r = calcularEscenario(state);
+  savedScenarios.push({
+    id: Date.now()+Math.random(),
+    nombre: `Escenario ${scenarioCounter++}`,
+    clone,
+    resumen: {
+      precioFinal: state.vivienda.precioFinal,
+      tipoLabel: r.tipoAplicadoLabel,
+      cuotaImpuesto: r.cuotaImpuesto,
+      hipoteca: r.hipoteca,
+      cuotaMensual: r.cuotaMensual,
+      taeEstimada: r.taeEstimada,
+      efectivoTotalNecesario: r.efectivoTotalNecesario,
+      colchonRestante: r.colchonRestante,
+    }
+  });
+  renderComparador();
+}
+
+function eliminarEscenario(id){
+  savedScenarios = savedScenarios.filter(s => s.id !== id);
+  renderComparador();
+}
+
+function syncUIFromState(){
+  // inputs numéricos genéricos
+  bindings.forEach(([id, group, key]) => {
+    const node = el(id);
+    if (!node) return;
+    const v = state[group][key];
+    node.value = (v === null || v === undefined) ? '' : v;
+  });
+
+  // comunidad / ciudad / colectivo dinámico
+  el('in-comunidad').value = state.vivienda.comunidad || '';
+  el('in-ciudad').value = state.vivienda.ciudad || '';
+  poblarColectivos();
+  el('in-colectivo').value = state.fiscalidad.colectivo;
+  actualizarBloqueCataluna();
+  actualizarDetalleVPO();
+  actualizarNotaRegion();
+  actualizarRequisitosCallout();
+  const region = REGIONES[state.vivienda.comunidad];
+  const usaHijosExtra = region && region.reducidos && region.reducidos[state.fiscalidad.colectivo] && region.reducidos[state.fiscalidad.colectivo].rentaPorHijoExtra;
+  el('wrap-hijosExcedentes').style.display = usaHijosExtra ? '' : 'none';
+  el('in-municipioRural').value = state.vivienda.municipioRural;
+  el('in-grandTenedor').value = state.vivienda.grandTenedor;
+  el('in-porcentajeFin').value = String(state.financiacion.porcentaje);
+
+  // segmentados
+  function setSegmented(wrapId, val){
+    const wrap = el(wrapId);
+    wrap.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.val === val));
+  }
+  setSegmented('seg-tipoVivienda', state.vivienda.tipoVivienda);
+  setSegmented('seg-modoFinanciacion', state.financiacion.modo);
+  setSegmented('seg-tipoInteres', state.financiacion.tipoInteres);
+  el('wrap-porcentajeFin').style.display = state.financiacion.modo==='porcentaje' ? '' : 'none';
+  el('wrap-importeManual').style.display = state.financiacion.modo==='manual' ? '' : 'none';
+
+  // chip toggles
+  el('wrap-vpo').classList.toggle('on', !!state.vivienda.esVPO);
+  el('wrap-habitual').classList.toggle('on', state.vivienda.esViviendaHabitual !== false);
+  el('wrap-condicionSuspensiva').classList.toggle('on', !!state.operacion.condicionSuspensiva);
+
+  renderBonificaciones();
+}
+
+function cargarEscenario(id){
+  const sc = savedScenarios.find(s => s.id === id);
+  if (!sc) return;
+  const clone = JSON.parse(JSON.stringify(sc.clone));
+  state.comprador = clone.comprador;
+  state.fiscalidad = clone.fiscalidad;
+  state.vivienda = clone.vivienda;
+  state.financiacion = clone.financiacion;
+  state.operacion = clone.operacion;
+  syncUIFromState();
+  render();
+  mostrarToast(`Escenario "${sc.nombre}" cargado`);
+}
+
+function renderComparador(){
+  const wrap = el('comparador-content');
+  if (savedScenarios.length === 0){
+    wrap.innerHTML = '<p class="compare-empty">Todavía no has guardado ningún escenario. Ajusta los datos y pulsa «Guardar escenario actual» para comparar distintas ofertas o precios.</p>';
+    return;
+  }
+  let html = `<table class="compare-table"><tr>
+    <th>Escenario</th><th>Precio</th><th>Impuesto</th><th>Hipoteca</th><th>Cuota</th><th>TAE</th><th>Efectivo</th><th>Colchón</th><th></th>
+  </tr>`;
+  savedScenarios.forEach(sc => {
+    const colClass = sc.resumen.colchonRestante < 0 ? 'negative' : 'positive';
+    html += `<tr class="${colClass}" data-id="${sc.id}">
+      <td><input class="compare-name" data-action="rename" value="${sc.nombre}"></td>
+      <td>${fmtEUR(sc.resumen.precioFinal)}</td>
+      <td>${fmtEUR(sc.resumen.cuotaImpuesto)}</td>
+      <td>${fmtEUR(sc.resumen.hipoteca)}</td>
+      <td>${fmtEUR2(sc.resumen.cuotaMensual)}</td>
+      <td>${sc.resumen.taeEstimada==null?'—':fmtPct(sc.resumen.taeEstimada,2)}</td>
+      <td>${fmtEUR(sc.resumen.efectivoTotalNecesario)}</td>
+      <td class="col-colchon">${fmtEUR(sc.resumen.colchonRestante)}</td>
+      <td><div class="compare-actions">
+        <button class="mini-btn" data-action="cargar" title="Cargar este escenario">↺</button>
+        <button class="mini-btn danger" data-action="eliminar" title="Eliminar">✕</button>
+      </div></td>
+    </tr>`;
+  });
+  html += `</table>`;
+  wrap.innerHTML = html;
+
+  wrap.querySelectorAll('tr[data-id]').forEach(tr => {
+    const id = Number(tr.dataset.id) || tr.dataset.id;
+    const scId = savedScenarios.find(s => String(s.id) === String(tr.dataset.id))?.id;
+    tr.querySelector('[data-action="cargar"]').addEventListener('click', () => cargarEscenario(scId));
+    tr.querySelector('[data-action="eliminar"]').addEventListener('click', () => eliminarEscenario(scId));
+    tr.querySelector('[data-action="rename"]').addEventListener('input', (e) => {
+      const sc = savedScenarios.find(s => s.id === scId);
+      if (sc) sc.nombre = e.target.value;
+    });
+  });
+}
+
+el('btn-guardar-escenario').addEventListener('click', guardarEscenarioActual);
+
+/* ============================================================
+   CHECKLIST DE SIGUIENTES PASOS
+   ============================================================ */
+
+function actualizarProgresoChecklist(){
+  const todas = document.querySelectorAll('#panel-pasos .check-row input[type=checkbox]');
+  const marcadas = document.querySelectorAll('#panel-pasos .check-row input[type=checkbox]:checked');
+  const total = todas.length, hechas = marcadas.length;
+  el('progreso-fill').style.width = (total ? (hechas/total*100) : 0) + '%';
+  el('progreso-label').textContent = `${hechas}/${total} completado`;
+
+  document.querySelectorAll('.group-details').forEach(gd => {
+    const boxes = gd.querySelectorAll('input[type=checkbox]');
+    const c = gd.querySelectorAll('input[type=checkbox]:checked').length;
+    const countEl = gd.querySelector('.group-count');
+    if (countEl) countEl.textContent = `${c}/${boxes.length}`;
+  });
+}
+document.querySelectorAll('#panel-pasos .check-row input[type=checkbox]').forEach(cb => {
+  cb.addEventListener('change', actualizarProgresoChecklist);
+});
+
+/* ============================================================
+   GLOSARIO — BÚSQUEDA
+   ============================================================ */
+
+const glossarySearch = el('glossary-search');
+if (glossarySearch){
+  glossarySearch.addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    let totalVisible = 0;
+    document.querySelectorAll('[data-group]').forEach(group => {
+      let visibleInGroup = 0;
+      group.querySelectorAll('[data-term]').forEach(card => {
+        const matches = !q || card.textContent.toLowerCase().includes(q);
+        card.style.display = matches ? '' : 'none';
+        if (matches) visibleInGroup++;
+      });
+      group.style.display = visibleInGroup > 0 ? '' : 'none';
+      totalVisible += visibleInGroup;
+    });
+    el('glossary-no-results').style.display = totalVisible === 0 ? '' : 'none';
+  });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+
+el('wrap-hijosExcedentes').style.display = 'none';
+el('wrap-importeManual').style.display = state.financiacion.modo === 'manual' ? '' : 'none';
+poblarColectivos();
+actualizarBloqueCataluna();
+actualizarDetalleVPO();
+actualizarNotaRegion();
+actualizarRequisitosCallout();
+renderBonificaciones();
+renderComparador();
+actualizarProgresoChecklist();
+render();
+
+})();
+</script>
+</body>
+</html>
