@@ -267,6 +267,24 @@
   table.sens tr.current td:first-child{border-radius:6px 0 0 6px;}
   table.sens tr.current td:last-child{border-radius:0 6px 6px 0;}
 
+  /* ---------- Comparativa de bonificaciones ---------- */
+  .badge-compensa{
+    font-family:var(--font-mono); font-size:10.5px; font-weight:700; padding:4px 11px; border-radius:20px;
+    white-space:nowrap;
+  }
+  .badge-compensa.si{background:var(--sage-wash); color:#2F5A40;}
+  .badge-compensa.no{background:var(--brick-wash); color:#7A3323;}
+  .comparativa-sub{font-size:12.5px; color:var(--muted); margin:0;}
+  table.compare-simple{width:100%; border-collapse:collapse; font-size:12.5px; margin-top:4px;}
+  table.compare-simple th{
+    font-family:var(--font-mono); font-weight:600; text-align:right; color:var(--muted); font-size:10px;
+    padding:6px 4px; border-bottom:1px solid var(--border); text-transform:uppercase;
+  }
+  table.compare-simple th:first-child{text-align:left;}
+  table.compare-simple td{padding:7px 4px; text-align:right; font-family:var(--font-mono); border-bottom:1px dotted var(--border-soft);}
+  table.compare-simple td:first-child{text-align:left; font-family:var(--font-body); color:var(--ink-soft);}
+  table.compare-simple tr.total td{border-top:1.5px solid var(--ink); border-bottom:none; font-weight:700; padding-top:9px;}
+
   .foot-disclaimer{
     margin-top:28px; padding-top:18px; border-top:1px solid var(--border); font-size:11.5px; color:var(--muted);
     max-width:80ch; line-height:1.6;
@@ -435,7 +453,49 @@
     .informe-section tr.total td{font-weight:700; border-top:1.5px solid #111; border-bottom:none;}
     .informe-alertas{font-size:11px; margin:0; padding-left:18px;}
     .informe-alertas li{margin-bottom:4px;}
+    .informe-texto{font-size:11px; color:#333; line-height:1.5; margin:0 0 8px;}
+    .informe-break{page-break-before:always;}
+
+    /* Tablas de sensibilidad clonadas (reutilizan .sens) */
+    #informe-tabla-tin-wrap table, #informe-tabla-precio-wrap table{width:100%; border-collapse:collapse; font-size:10.5px;}
+    #informe-tabla-tin-wrap th, #informe-tabla-precio-wrap th{
+      font-weight:700; text-align:right; font-size:9px; text-transform:uppercase; padding:4px; border-bottom:1px solid #111;
+    }
+    #informe-tabla-tin-wrap th:first-child, #informe-tabla-precio-wrap th:first-child{text-align:left;}
+    #informe-tabla-tin-wrap td, #informe-tabla-precio-wrap td{padding:4px; text-align:right; border-bottom:1px dotted #ccc;}
+    #informe-tabla-tin-wrap td:first-child, #informe-tabla-precio-wrap td:first-child{text-align:left;}
+    #informe-tabla-tin-wrap tr.current td, #informe-tabla-precio-wrap tr.current td{font-weight:700; background:#f2f2f2;}
+
+    /* Cronología clonada (reutiliza .step-list) */
+    #informe-cronologia .step-list{list-style:none; margin:0; padding:0;}
+    #informe-cronologia .step-item{padding:0 0 10px; border-bottom:1px dotted #ddd; margin-bottom:8px; break-inside:avoid;}
+    #informe-cronologia .step-num{display:inline-block; width:16px; height:16px; border-radius:50%; background:#111; color:#fff; font-size:9px; text-align:center; line-height:16px; margin-right:6px;}
+    #informe-cronologia .step-title{font-weight:700; font-size:11px;}
+    #informe-cronologia .step-time{font-size:9px; color:#888; margin-left:6px;}
+    #informe-cronologia .step-desc{font-size:9.5px; color:#444; margin-top:2px; margin-left:22px;}
+
+    /* Consejos clonados (reutiliza .tip-card) */
+    #informe-consejos .tip-card{font-size:9.5px; color:#333; padding:6px 0; border-bottom:1px dotted #ddd; break-inside:avoid;}
+
+    /* Checklist clonado (reutiliza .group-details / .check-row) */
+    #informe-checklist .group-details{margin-bottom:10px; break-inside:avoid;}
+    #informe-checklist .group-summary{font-weight:700; font-size:11px; padding:4px 0; border-bottom:1px solid #ccc; margin-bottom:4px;}
+    #informe-checklist .check-row{font-size:9.5px; padding:2px 0; color:#333;}
+    #informe-checklist .check-row.done{color:#888; text-decoration:line-through;}
+
+    /* Glosario clonado (reutiliza .term-card) */
+    #informe-glosario .term-group-title{font-weight:700; font-size:12px; margin:10px 0 6px; border-bottom:1px solid #111; padding-bottom:2px;}
+    #informe-glosario .term-grid{display:block;}
+    #informe-glosario .term-card{font-size:9px; padding:5px 0; border-bottom:1px dotted #ddd; break-inside:avoid;}
+    #informe-glosario .term-name{font-weight:700;}
+    #informe-glosario .term-full{font-weight:400; color:#666; font-size:8.5px; margin-left:4px;}
+    #informe-glosario .term-def{color:#333; margin-top:1px;}
+    #informe-glosario .term-example{color:#555; font-style:italic; margin-top:1px;}
+
     .informe-footer{margin-top:24px; padding-top:12px; border-top:1px solid #ccc; font-size:9.5px; color:#555; line-height:1.5;}
+    .informe-bonif-veredicto{font-size:10.5px; color:#333; background:#f2f2f2; padding:8px 10px; border-radius:6px; margin-top:8px; line-height:1.5;}
+    #informe-tabla-bonif td:nth-child(2), #informe-tabla-bonif td:nth-child(3){text-align:right; font-family:var(--font-mono);}
+    #informe-tabla-bonif tr:first-child td{font-weight:700; border-bottom:1.5px solid #111;}
     @page{ margin:18mm 16mm; }
   }
 
@@ -493,7 +553,7 @@
 
     .check-row{padding:12px 0;}
     .check-row input[type=checkbox]{width:20px; height:20px;}
-    .bonif-fields{grid-template-columns:1fr 1fr;}
+    .bonif-fields{grid-template-columns:1fr 1fr 1fr;}
 
     .switch{width:44px; height:26px; flex-shrink:0;}
     .switch::after{width:22px; height:22px;}
@@ -518,6 +578,7 @@
     .kpi .kpi-label{font-size:9.5px;}
     .kpi .kpi-value{font-size:16px;}
     nav.tabs button{font-size:12.5px; padding:11px 12px;}
+    .bonif-fields{grid-template-columns:1fr 1fr;}
   }
 
   /* Los inputs de tipo number en iOS no deben ir por debajo de 16px o Safari hace zoom automático */
@@ -535,7 +596,7 @@
     all:unset; cursor:pointer; color:var(--muted); font-size:14px; padding:2px 6px; border-radius:4px;
   }
   .bonif-top button.bonif-remove:hover{background:var(--brick-wash); color:var(--brick);}
-  .bonif-fields{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;}
+  .bonif-fields{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:10px;}
   .bonif-fields .bf{display:flex; flex-direction:column; gap:3px;}
   .bonif-fields label{font-size:10.5px; color:var(--muted); font-weight:600;}
   .bonif-fields .suffix-wrap input{font-size:12.5px; padding:7px 10px;}
@@ -1262,6 +1323,32 @@
         <div id="hipoteca-list"></div>
       </div>
 
+      <div class="card" id="card-comparativa-bonif">
+        <div class="card-header-row">
+          <div class="ledger-title" style="margin:0;">Bonificaciones: ¿compensan a largo plazo?</div>
+          <span class="badge-compensa" id="badge-compensa"></span>
+        </div>
+        <p class="comparativa-sub" id="comparativa-sub">Activa alguna vinculación bancaria en la pestaña Financiación para ver esta comparativa.</p>
+        <div id="comparativa-content" style="display:none;">
+          <table class="compare-simple">
+            <tr><th></th><th>Sin vinculaciones</th><th>Con vinculaciones</th></tr>
+            <tr><td>TIN aplicado</td><td id="comp-tin-sin"></td><td id="comp-tin-con"></td></tr>
+            <tr><td>Cuota mensual inicial</td><td id="comp-cuota-sin"></td><td id="comp-cuota-con"></td></tr>
+            <tr><td>Intereses totales del préstamo</td><td id="comp-intereses-sin"></td><td id="comp-intereses-con"></td></tr>
+            <tr><td>Coste de las vinculaciones</td><td id="comp-vinc-sin"></td><td id="comp-vinc-con"></td></tr>
+            <tr class="total"><td>Coste conjunto total</td><td id="comp-total-sin"></td><td id="comp-total-con"></td></tr>
+          </table>
+
+          <div class="callout teal" id="comparativa-veredicto" style="margin-top:14px;">—</div>
+
+          <p class="subhead" style="margin-top:18px;">Desglose por producto</p>
+          <table class="compare-simple" id="tabla-desglose-vinculaciones"></table>
+
+          <p class="subhead" style="margin-top:18px;">Coste acumulado de las vinculaciones, año a año</p>
+          <div class="table-scroll"><table class="sens" id="tabla-vinculaciones-anual"></table></div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="ledger-title">Sensibilidad al TIN</div>
         <div class="table-scroll"><table class="sens" id="tabla-tin"></table></div>
@@ -1312,9 +1399,20 @@
     <table id="informe-tabla-vivienda"></table>
   </div>
 
+  <div class="informe-section" id="informe-requisitos-wrap">
+    <h2>Requisitos del tipo reducido</h2>
+    <p id="informe-requisitos-texto" class="informe-texto"></p>
+  </div>
+
   <div class="informe-section">
     <h2>Financiación</h2>
     <table id="informe-tabla-hipoteca"></table>
+  </div>
+
+  <div class="informe-section" id="informe-bonif-wrap">
+    <h2 id="informe-bonif-titulo">Bonificaciones: ¿compensan a largo plazo?</h2>
+    <table id="informe-tabla-bonif"></table>
+    <p class="informe-bonif-veredicto" id="informe-bonif-veredicto"></p>
   </div>
 
   <div class="informe-section">
@@ -1325,6 +1423,37 @@
   <div class="informe-section" id="informe-alertas-wrap">
     <h2>Avisos a tener en cuenta</h2>
     <ul class="informe-alertas" id="informe-alertas"></ul>
+  </div>
+
+  <div class="informe-section informe-break">
+    <h2>Sensibilidad al TIN</h2>
+    <div id="informe-tabla-tin-wrap"></div>
+  </div>
+
+  <div class="informe-section">
+    <h2>Sensibilidad al precio</h2>
+    <div id="informe-tabla-precio-wrap"></div>
+  </div>
+
+  <div class="informe-section informe-break">
+    <h2>Cronología orientativa del proceso</h2>
+    <div id="informe-cronologia"></div>
+  </div>
+
+  <div class="informe-section">
+    <h2>Consejos clave</h2>
+    <div id="informe-consejos"></div>
+  </div>
+
+  <div class="informe-section informe-break">
+    <h2>Checklist — tu progreso</h2>
+    <p class="informe-texto" id="informe-checklist-progreso"></p>
+    <div id="informe-checklist"></div>
+  </div>
+
+  <div class="informe-section informe-break">
+    <h2>Glosario de términos</h2>
+    <div id="informe-glosario"></div>
   </div>
 
   <div class="informe-footer" id="informe-footer"></div>
@@ -1665,6 +1794,13 @@ function taeEstimadaIRR(principal, cuota, costesMensualesExtra, comisionApertura
   return isFinite(resultado) ? resultado : null;
 }
 
+function costeTotalCreciente(costeMensualInicial, incrementoAnualPct, anios){
+  const g = (incrementoAnualPct||0)/100;
+  if (anios <= 0 || costeMensualInicial <= 0) return 0;
+  if (Math.abs(g) < 1e-9) return costeMensualInicial * 12 * anios;
+  return costeMensualInicial * 12 * ((Math.pow(1+g, anios) - 1) / g);
+}
+
 function calcularEscenario(s){
   const rentaFiscal = s.fiscalidad.baseGeneral + s.fiscalidad.baseAhorro - s.fiscalidad.minimoPersonalFamiliar;
   s.fiscalidad.rentaFiscal = rentaFiscal;
@@ -1715,11 +1851,31 @@ function calcularEscenario(s){
   const costeMensualTotalVivienda = cuotaMensual + costeMensualBonif + comunidadMensual + ibiMensualizado;
   const ratioEsfuerzoReal = ingresosEquiv>0 ? (costeMensualTotalVivienda/ingresosEquiv)*100 : null;
 
+  // --- Comparativa: coste total con vs. sin bonificaciones ---
+  const bonifsActivas = bonifs.filter(b => b.activo);
+  const cuotaSinBonif = cuotaFrancesa(hipoteca, s.financiacion.tinBase, s.financiacion.plazoAnios);
+  const interesesSinBonif = cuotaSinBonif*nMeses - hipoteca;
+  const ahorroIntereses = interesesSinBonif - interesesTotales;
+
+  const desgloseVinculaciones = bonifsActivas.map(b => ({
+    nombre: b.nombre,
+    costeMensualInicial: b.costeMensual,
+    incrementoAnualPct: b.incrementoAnualPct || 0,
+    costeTotalPrestamo: costeTotalCreciente(b.costeMensual, b.incrementoAnualPct, s.financiacion.plazoAnios),
+  }));
+  const costeTotalVinculaciones = desgloseVinculaciones.reduce((a,d) => a + d.costeTotalPrestamo, 0);
+  const costeConjuntoConBonif = interesesTotales + costeTotalVinculaciones;
+  const diferenciaVsSinBonif = costeConjuntoConBonif - interesesSinBonif;
+  const compensaBonificaciones = costeTotalVinculaciones > 0 ? diferenciaVsSinBonif < 0 : null;
+  const costeMensualEquilibrio = costeTotalVinculaciones > 0 ? costeMensualBonif * (ahorroIntereses / costeTotalVinculaciones) : null;
+
   return { rentaFiscal, elegibleReducido, requisitosColectivo, regionSinDatos, baseITP, cuotaImpuesto,
     tipoAplicadoLabel, tipoCorto, hipoteca, aportacionAlPrecio, ltvPrecio, ltvFinanciable,
     valorFinanciable, tinFinal, cuotaMensual, interesesTotales, taeEstimada, ratioCuota, ratioDeudaTotal,
     gastosCompraventa, comisionAperturaImporte, efectivoTotalNecesario, efectivoPendienteFirma, colchonRestante, descuentoBonif,
-    costeMensualBonif, ingresosEquiv, nMeses, comunidadMensual, ibiMensualizado, costeMensualTotalVivienda, ratioEsfuerzoReal };
+    costeMensualBonif, ingresosEquiv, nMeses, comunidadMensual, ibiMensualizado, costeMensualTotalVivienda, ratioEsfuerzoReal,
+    cuotaSinBonif, interesesSinBonif, ahorroIntereses, desgloseVinculaciones, costeTotalVinculaciones,
+    costeConjuntoConBonif, diferenciaVsSinBonif, compensaBonificaciones, costeMensualEquilibrio };
 }
 
 function precioMaximoCompatible(sBase, colchonDeseado){
@@ -1747,11 +1903,11 @@ const state = {
   vivienda: { comunidad:'', ciudad:'', tipoVivienda:'segundaMano', esVPO:false, esViviendaHabitual:true, precioAnunciado:0, precioOfertado:0, precioFinal:0, valorReferencia:null, valorTasacion:null, municipioRural:'no', grandTenedor:'no' },
   financiacion: { modo:'porcentaje', porcentaje:80, importeManual:0, plazoAnios:30, tinBase:3.0, comisionAperturaPct:0, taeConocida:null, tipoInteres:'fijo',
     bonificaciones: [
-      { id:1, nombre:'Seguro de hogar', activo:false, descuentoPuntos:0.10, costeMensual:25 },
-      { id:2, nombre:'Seguro de vida', activo:false, descuentoPuntos:0.15, costeMensual:30 },
-      { id:3, nombre:'Domiciliación de nómina', activo:false, descuentoPuntos:0.05, costeMensual:0 },
-      { id:4, nombre:'Plan de pensiones', activo:false, descuentoPuntos:0.10, costeMensual:50 },
-      { id:5, nombre:'Tarjeta de crédito/débito', activo:false, descuentoPuntos:0.05, costeMensual:5 },
+      { id:1, nombre:'Seguro de hogar', activo:false, descuentoPuntos:0.10, costeMensual:25, incrementoAnualPct:3 },
+      { id:2, nombre:'Seguro de vida', activo:false, descuentoPuntos:0.15, costeMensual:30, incrementoAnualPct:3 },
+      { id:3, nombre:'Domiciliación de nómina', activo:false, descuentoPuntos:0.05, costeMensual:0, incrementoAnualPct:0 },
+      { id:4, nombre:'Plan de pensiones', activo:false, descuentoPuntos:0.10, costeMensual:50, incrementoAnualPct:3 },
+      { id:5, nombre:'Tarjeta de crédito/débito', activo:false, descuentoPuntos:0.05, costeMensual:5, incrementoAnualPct:0 },
     ]
   },
   operacion: { notaria:800, registro:450, gestoria:350, tasacionCoste:350, otros:0, arrasEntregadas:0, condicionSuspensiva:false, colchonMinimoDeseado:5000, ibiAnual:500, comunidadMensual:80 },
@@ -1825,6 +1981,10 @@ function render(){
     el('alerts-list').innerHTML = `<div class="alert info"><span class="ic">ⓘ</span><span>Este simulador está en blanco para que puedas usarlo con tus propios números, en cualquier comunidad autónoma. Elige arriba dónde compras y recorre las pestañas 1 a 5 — los gastos de notaría, registro, TIN, plazo, IBI y comunidad ya llevan valores de referencia orientativos que puedes ajustar.</span></div>`;
     el('ledger-list').innerHTML = `<p style="font-size:12.5px; color:var(--muted);">El desglose aparecerá aquí en cuanto elijas comunidad autónoma e introduzcas un precio de compra.</p>`;
     el('hipoteca-list').innerHTML = `<p style="font-size:12.5px; color:var(--muted);">Los datos de la hipoteca aparecerán aquí en cuanto completes esos datos.</p>`;
+    el('comparativa-sub').textContent = 'Completa los datos de vivienda y financiación para ver esta comparativa.';
+    el('comparativa-sub').style.display = '';
+    el('comparativa-content').style.display = 'none';
+    el('badge-compensa').textContent = '';
     el('tabla-tin').innerHTML = '';
     el('tabla-precio').innerHTML = '';
     el('precio-max-content').innerHTML = `<p style="font-size:12.5px; color:var(--muted);">Introduce tus ahorros, comunidad y un precio de compra para calcular tu precio máximo.</p>`;
@@ -1846,6 +2006,10 @@ function render(){
     el('alerts-list').innerHTML = `<div class="alert warn"><span class="ic">⚠</span><span>${region.notas}</span></div>`;
     el('ledger-list').innerHTML = `<p style="font-size:12.5px; color:var(--muted);">No se puede calcular el desglose sin un tipo de ITP fiable para ${region.nombre}.</p>`;
     el('hipoteca-list').innerHTML = '';
+    el('comparativa-sub').textContent = 'No disponible para esta ciudad autónoma.';
+    el('comparativa-sub').style.display = '';
+    el('comparativa-content').style.display = 'none';
+    el('badge-compensa').textContent = '';
     el('tabla-tin').innerHTML = ''; el('tabla-precio').innerHTML = ''; el('precio-max-content').innerHTML = '';
     return;
   }
@@ -1991,6 +2155,57 @@ function render(){
   ];
   el('hipoteca-list').innerHTML = hrows.map(([l,v]) => `<div class="ledger-row"><span class="lr-label">${l}</span><span class="lr-value">${v}</span></div>`).join('');
 
+  // --- Comparativa: bonificaciones, ¿compensan a largo plazo? ---
+  const hayBonifActivas = r.desgloseVinculaciones && r.desgloseVinculaciones.length > 0 && (r.costeMensualBonif > 0 || r.descuentoBonif > 0);
+  if (!hayBonifActivas){
+    el('comparativa-sub').style.display = '';
+    el('comparativa-content').style.display = 'none';
+    el('badge-compensa').textContent = '';
+  } else {
+    el('comparativa-sub').style.display = 'none';
+    el('comparativa-content').style.display = '';
+
+    const badge = el('badge-compensa');
+    if (r.compensaBonificaciones === true){ badge.textContent = 'Compensa ✓'; badge.className = 'badge-compensa si'; }
+    else if (r.compensaBonificaciones === false){ badge.textContent = 'No compensa ✗'; badge.className = 'badge-compensa no'; }
+    else { badge.textContent = ''; badge.className = 'badge-compensa'; }
+
+    el('comp-tin-sin').textContent = fmtPct(state.financiacion.tinBase, 2);
+    el('comp-tin-con').textContent = fmtPct(r.tinFinal, 2);
+    el('comp-cuota-sin').textContent = fmtEUR2(r.cuotaSinBonif);
+    el('comp-cuota-con').textContent = fmtEUR2(r.cuotaMensual);
+    el('comp-intereses-sin').textContent = fmtEUR(r.interesesSinBonif);
+    el('comp-intereses-con').textContent = fmtEUR(r.interesesTotales);
+    el('comp-vinc-sin').textContent = fmtEUR(0);
+    el('comp-vinc-con').textContent = fmtEUR(r.costeTotalVinculaciones);
+    el('comp-total-sin').textContent = fmtEUR(r.interesesSinBonif);
+    el('comp-total-con').textContent = fmtEUR(r.costeConjuntoConBonif);
+
+    const veredicto = el('comparativa-veredicto');
+    const difAbs = Math.abs(r.diferenciaVsSinBonif);
+    if (r.compensaBonificaciones){
+      veredicto.innerHTML = `<b>Compensa.</b> A lo largo de los ${state.financiacion.plazoAnios} años del préstamo, ahorras ${fmtEUR(difAbs)} en total gracias a las vinculaciones, incluso pagando sus recibos (asumiendo que suben de precio con los años).`;
+    } else {
+      veredicto.innerHTML = `<b>No compensa.</b> A lo largo de los ${state.financiacion.plazoAnios} años del préstamo, pagarías ${fmtEUR(difAbs)} más en total que si hubieras rechazado las vinculaciones y asumido el TIN sin bonificar.`;
+    }
+    if (r.costeMensualEquilibrio != null){
+      veredicto.innerHTML += ` Punto de equilibrio: con el mismo reparto entre productos, podrías pagar hasta <b>${fmtEUR2(r.costeMensualEquilibrio)}/mes</b> en total por tus vinculaciones (ahora mismo pagas ${fmtEUR2(r.costeMensualBonif)}/mes) antes de que dejen de compensar.`;
+    }
+
+    el('tabla-desglose-vinculaciones').innerHTML = '<tr><th>Producto</th><th>Hoy/mes</th><th>Incr. anual</th><th>Coste total préstamo</th></tr>' +
+      r.desgloseVinculaciones.map(d => `<tr><td>${d.nombre}</td><td>${fmtEUR2(d.costeMensualInicial)}</td><td>${fmtPct(d.incrementoAnualPct,1)}</td><td>${fmtEUR(d.costeTotalPrestamo)}</td></tr>`).join('') +
+      `<tr class="total"><td>Total</td><td>${fmtEUR2(r.costeMensualBonif)}</td><td></td><td>${fmtEUR(r.costeTotalVinculaciones)}</td></tr>`;
+
+    let acumulado = 0;
+    let filasAnuales = '<tr><th>Año</th><th>Coste ese año</th><th>Acumulado</th></tr>';
+    for (let anio=1; anio<=state.financiacion.plazoAnios; anio++){
+      const costeAnio = r.desgloseVinculaciones.reduce((acc,d) => acc + d.costeMensualInicial*12*Math.pow(1+(d.incrementoAnualPct||0)/100, anio-1), 0);
+      acumulado += costeAnio;
+      filasAnuales += `<tr><td>Año ${anio}</td><td>${fmtEUR(costeAnio)}</td><td>${fmtEUR(acumulado)}</td></tr>`;
+    }
+    el('tabla-vinculaciones-anual').innerHTML = filasAnuales;
+  }
+
   // --- Sensibilidad TIN ---
   const deltasTin = [-1,-0.5,0,0.5,1];
   let tinHtml = '<tr><th>TIN</th><th>Cuota</th><th>Coste total</th></tr>';
@@ -2051,14 +2266,18 @@ function renderBonificaciones(){
         <input class="bonif-name" data-action="nombre" value="${b.nombre}">
         <button class="bonif-remove" data-action="remove">✕</button>
       </div>
-      <div class="bonif-fields">
+      <div class="bonif-fields bonif-fields-3">
         <div class="bf">
           <label>Descuento en TIN</label>
           <div class="suffix-wrap"><input type="number" inputmode="decimal" step="0.01" data-action="descuento" value="${b.descuentoPuntos}"><span>pp</span></div>
         </div>
         <div class="bf">
-          <label>Coste mensual</label>
+          <label>Coste mensual hoy</label>
           <div class="suffix-wrap"><input type="number" inputmode="decimal" step="1" data-action="coste" value="${b.costeMensual}"><span>€</span></div>
+        </div>
+        <div class="bf">
+          <label>Incremento anual</label>
+          <div class="suffix-wrap"><input type="number" inputmode="decimal" step="0.5" data-action="incremento" value="${b.incrementoAnualPct != null ? b.incrementoAnualPct : 3}"><span>%</span></div>
         </div>
       </div>
     </div>
@@ -2075,6 +2294,7 @@ function renderBonificaciones(){
     item.querySelector('[data-action="nombre"]').addEventListener('input', (e) => { bonif.nombre = e.target.value; });
     item.querySelector('[data-action="descuento"]').addEventListener('input', (e) => { bonif.descuentoPuntos = parseFloat(e.target.value)||0; render(); });
     item.querySelector('[data-action="coste"]').addEventListener('input', (e) => { bonif.costeMensual = parseFloat(e.target.value)||0; render(); });
+    item.querySelector('[data-action="incremento"]').addEventListener('input', (e) => { bonif.incrementoAnualPct = parseFloat(e.target.value)||0; render(); });
     item.querySelector('[data-action="remove"]').addEventListener('click', () => {
       state.financiacion.bonificaciones = state.financiacion.bonificaciones.filter(b => b.id !== id);
       renderBonificaciones(); render();
@@ -2083,7 +2303,7 @@ function renderBonificaciones(){
 }
 
 el('btn-add-bonif').addEventListener('click', () => {
-  state.financiacion.bonificaciones.push({ id: bonifCounter++, nombre:'Nueva vinculación', activo:true, descuentoPuntos:0.05, costeMensual:0 });
+  state.financiacion.bonificaciones.push({ id: bonifCounter++, nombre:'Nueva vinculación', activo:true, descuentoPuntos:0.05, costeMensual:0, incrementoAnualPct:3 });
   renderBonificaciones(); render();
 });
 
@@ -2393,131 +2613,265 @@ function copiarResumen(){
 el('btn-copiar-resumen').addEventListener('click', copiarResumen);
 
 /* ============================================================
-   EXPORTAR A EXCEL (SheetJS, cargado bajo demanda)
+   EXPORTAR A EXCEL (ExcelJS, cargado bajo demanda, con estilo)
    ============================================================ */
 
-function cargarSheetJS(){
+const XC = {
+  tealDeep:'FF0A3F3F', teal:'FF0F5C5C', tealWash:'FFE4EEEC',
+  gold:'FFC68A2E', ink:'FF1C2B2B', white:'FFFFFFFF',
+  border:'FFDBD5C3', muted:'FF6B7876', brick:'FFAC4530', sage:'FF4C7A5B',
+};
+
+function cargarExcelJS(){
   return new Promise((resolve, reject) => {
-    if (window.XLSX) return resolve();
+    if (window.ExcelJS) return resolve();
     const s = document.createElement('script');
-    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';
     s.onload = () => resolve();
     s.onerror = () => reject(new Error('No se pudo cargar la librería de Excel'));
     document.head.appendChild(s);
   });
 }
 
-// helpers para construir filas de hoja con formato asociado
-function filaTxt(label, value){ return { label, value: value==null?'':value, fmt:null }; }
-function filaNum(label, value){ return { label, value: value==null?0:value, fmt:'#,##0' }; }
-function filaMoneda(label, value){ return { label, value: value==null?0:value, fmt:'#,##0.00 "€"' }; }
-function filaPct(label, value){ return { label, value: value==null?0:(value/100), fmt:'0.00%' }; }
-function filaVacia(){ return { label:'', value:'', fmt:null }; }
-function filaTitulo(label){ return { label, value:'', fmt:null }; }
-
-function filasAHoja(filas, colWidths){
-  const aoa = filas.map(f => [f.label, f.value]);
-  const ws = XLSX.utils.aoa_to_sheet(aoa);
-  ws['!cols'] = colWidths || [{wch:32},{wch:22}];
-  filas.forEach((f, i) => {
-    if (f.fmt){
-      const ref = XLSX.utils.encode_cell({ r:i, c:1 });
-      if (ws[ref]) ws[ref].z = f.fmt;
-    }
-  });
-  return ws;
+async function descargarWorkbook(wb, nombre){
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = nombre;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
-function construirLibroExcel(){
+// helpers para construir una hoja "de informe" (dos columnas: etiqueta / valor) con estilo del simulador
+function hojaInforme(ws, anchoA, anchoB){
+  ws.columns = [{width:anchoA||42},{width:anchoB||22}];
+  let row = 1;
+  return {
+    banner(texto){
+      ws.mergeCells(row,1,row,2);
+      const c = ws.getCell(row,1);
+      c.value = texto; c.font = {bold:true, color:{argb:XC.white}, size:13};
+      c.fill = {type:'pattern', pattern:'solid', fgColor:{argb:XC.tealDeep}};
+      c.alignment = {vertical:'middle'};
+      ws.getRow(row).height = 22;
+      row++;
+    },
+    subtitulo(texto){
+      ws.mergeCells(row,1,row,2);
+      ws.getCell(row,1).value = texto;
+      ws.getCell(row,1).font = {italic:true, size:9.5, color:{argb:XC.muted}};
+      row++;
+    },
+    seccion(texto){
+      ws.mergeCells(row,1,row,2);
+      const c = ws.getCell(row,1);
+      c.value = texto; c.font = {bold:true, color:{argb:XC.tealDeep}, size:11};
+      c.fill = {type:'pattern', pattern:'solid', fgColor:{argb:XC.tealWash}};
+      row++;
+    },
+    fila(label, valor, fmt){
+      const a = ws.getCell(row,1), b = ws.getCell(row,2);
+      a.value = label; a.font = {color:{argb:XC.ink}, size:10.5};
+      a.border = {bottom:{style:'hair', color:{argb:XC.border}}};
+      b.value = valor; b.font = {color:{argb:XC.ink}, size:10.5};
+      b.alignment = {horizontal:'right'};
+      b.border = {bottom:{style:'hair', color:{argb:XC.border}}};
+      if (fmt) b.numFmt = fmt;
+      row++;
+    },
+    total(label, valor, fmt, color){
+      const a = ws.getCell(row,1), b = ws.getCell(row,2);
+      a.value = label; a.font = {bold:true, color:{argb:color||XC.tealDeep}, size:11};
+      a.border = {top:{style:'medium', color:{argb:XC.ink}}};
+      b.value = valor; b.font = {bold:true, color:{argb:color||XC.tealDeep}, size:11};
+      b.alignment = {horizontal:'right'};
+      b.border = {top:{style:'medium', color:{argb:XC.ink}}};
+      if (fmt) b.numFmt = fmt;
+      row++;
+    },
+    vacia(){ row++; },
+  };
+}
+
+function hojaTabla(ws, headers, colWidths){
+  ws.columns = colWidths.map(w => ({width:w}));
+  const headerRow = ws.getRow(1);
+  headers.forEach((h,i) => {
+    const c = headerRow.getCell(i+1);
+    c.value = h; c.font = {bold:true, color:{argb:XC.white}, size:10};
+    c.fill = {type:'pattern', pattern:'solid', fgColor:{argb:XC.teal}};
+    c.alignment = {horizontal:i===0?'left':'right'};
+  });
+  headerRow.height = 18;
+  return {
+    addRow(valores, resaltar){
+      const r = ws.addRow(valores);
+      r.eachCell((c,i) => {
+        c.font = {size:10, bold:!!resaltar, color:{argb: resaltar?XC.tealDeep:XC.ink}};
+        c.alignment = {horizontal:i===1?'left':'right'};
+        c.border = {bottom:{style:'hair', color:{argb:XC.border}}};
+        if (resaltar) c.fill = {type:'pattern', pattern:'solid', fgColor:{argb:XC.tealWash}};
+      });
+      return r;
+    }
+  };
+}
+
+async function construirLibroExcel(){
   const r = calcularEscenario(state);
   const region = REGIONES[state.vivienda.comunidad];
-  const wb = XLSX.utils.book_new();
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'Simulador hipotecario y fiscal — España';
+  wb.created = new Date();
 
-  // --- Hoja 1: Resumen ---
-  const filas = [
-    filaTitulo('SIMULACIÓN DE COMPRA DE VIVIENDA'),
-    filaTxt('Generado', new Date().toLocaleDateString('es-ES')),
-    filaTxt('Comunidad autónoma', region ? region.nombre : ''),
-    filaTxt('Ciudad', state.vivienda.ciudad || ''),
-    filaVacia(),
+  // ===== HOJA 1: RESUMEN =====
+  const ws1 = wb.addWorksheet('Resumen', { views:[{state:'frozen', ySplit:1}] });
+  const h = hojaInforme(ws1);
+  h.banner('🏠 SIMULACIÓN DE COMPRA DE VIVIENDA');
+  h.subtitulo(`${region ? region.nombre : 'Comunidad no seleccionada'}${state.vivienda.ciudad ? ', ' + state.vivienda.ciudad : ''} — generado el ${new Date().toLocaleDateString('es-ES')}`);
+  h.vacia();
 
-    filaTitulo('COMPRADOR'),
-    filaNum('Edad', state.comprador.edad),
-    filaMoneda('Ahorros disponibles', state.comprador.ahorros),
-    filaMoneda('Ingreso neto mensual', state.comprador.ingresosNetosMensuales),
-    filaVacia(),
+  h.seccion('COMPRADOR');
+  h.fila('Edad', state.comprador.edad || 0);
+  h.fila('Ahorros disponibles', state.comprador.ahorros || 0, '#,##0.00 "€"');
+  h.fila('Ingreso neto mensual', state.comprador.ingresosNetosMensuales || 0, '#,##0.00 "€"');
+  h.vacia();
 
-    filaTitulo('VIVIENDA'),
-    filaTxt('Tipo', state.vivienda.tipoVivienda === 'nueva' ? 'Nueva (promotor)' : 'Segunda mano'),
-    filaTxt('¿Vivienda habitual?', state.vivienda.esViviendaHabitual !== false ? 'Sí' : 'No'),
-    filaMoneda('Precio anunciado', state.vivienda.precioAnunciado),
-    filaMoneda('Precio de compra final', state.vivienda.precioFinal),
-    filaVacia(),
+  h.seccion('VIVIENDA');
+  h.fila('Tipo', state.vivienda.tipoVivienda === 'nueva' ? 'Nueva (promotor)' : 'Segunda mano');
+  h.fila('¿Vivienda habitual?', state.vivienda.esViviendaHabitual !== false ? 'Sí' : 'No');
+  h.fila('Precio anunciado', state.vivienda.precioAnunciado || 0, '#,##0.00 "€"');
+  h.fila('Precio de compra final', state.vivienda.precioFinal || 0, '#,##0.00 "€"');
+  h.vacia();
 
-    filaTitulo('FISCALIDAD'),
-    filaTxt('Impuesto aplicado', r.regionSinDatos ? 'Sin datos fiables' : r.tipoAplicadoLabel),
-    filaMoneda('Cuota del impuesto', r.cuotaImpuesto),
-    filaVacia(),
+  h.seccion('FISCALIDAD');
+  h.fila('Impuesto aplicado', r.regionSinDatos ? 'Sin datos fiables' : r.tipoAplicadoLabel);
+  h.fila('Cuota del impuesto', r.cuotaImpuesto, '#,##0.00 "€"');
+  h.vacia();
 
-    filaTitulo('FINANCIACIÓN'),
-    filaMoneda('Importe financiado (hipoteca)', r.hipoteca),
-    filaPct('LTV sobre precio', r.ltvPrecio),
-    filaPct('TIN aplicado', r.tinFinal),
-    filaPct('TAE estimada', r.taeEstimada),
-    filaNum('Plazo (años)', state.financiacion.plazoAnios),
-    filaMoneda('Cuota mensual', r.cuotaMensual),
-    filaMoneda('Intereses totales del préstamo', r.interesesTotales),
-    r.ratioCuota==null ? filaTxt('Ratio cuota/ingresos', 'sin datos de ingresos') : filaPct('Ratio cuota/ingresos', r.ratioCuota),
-    filaVacia(),
+  h.seccion('FINANCIACIÓN');
+  h.fila('Importe financiado (hipoteca)', r.hipoteca, '#,##0.00 "€"');
+  h.fila('LTV sobre precio', (r.ltvPrecio||0)/100, '0.00%');
+  h.fila('TIN aplicado', (r.tinFinal||0)/100, '0.00%');
+  if (r.taeEstimada != null) h.fila('TAE estimada', r.taeEstimada/100, '0.00%'); else h.fila('TAE estimada', 'no calculable');
+  h.fila('Plazo', state.financiacion.plazoAnios + ' años');
+  h.fila('Cuota mensual', r.cuotaMensual, '#,##0.00 "€"');
+  h.fila('Intereses totales del préstamo', r.interesesTotales, '#,##0.00 "€"');
+  if (r.ratioCuota != null) h.fila('Ratio cuota/ingresos', r.ratioCuota/100, '0.00%'); else h.fila('Ratio cuota/ingresos', 'sin datos de ingresos');
+  h.vacia();
 
-    filaTitulo('EFECTIVO NECESARIO PARA LA COMPRA'),
-    filaMoneda('Aportación al precio (precio − hipoteca)', r.aportacionAlPrecio),
-    filaMoneda('Impuesto (ITP/IVA+AJD)', r.cuotaImpuesto),
-    filaMoneda('Gastos de notaría, registro, gestoría y tasación', r.gastosCompraventa),
-    filaMoneda('Comisión de apertura de la hipoteca', r.comisionAperturaImporte),
-    filaMoneda('EFECTIVO TOTAL NECESARIO', r.efectivoTotalNecesario),
-    filaVacia(),
-    filaMoneda('Ahorros disponibles', state.comprador.ahorros),
-    filaMoneda('COLCHÓN RESTANTE', r.colchonRestante),
-  ];
-  XLSX.utils.book_append_sheet(wb, filasAHoja(filas), 'Resumen');
+  h.seccion('EFECTIVO NECESARIO PARA LA COMPRA');
+  h.fila('Aportación al precio (precio − hipoteca)', r.aportacionAlPrecio, '#,##0.00 "€"');
+  h.fila('Impuesto (ITP/IVA+AJD)', r.cuotaImpuesto, '#,##0.00 "€"');
+  h.fila('Gastos de notaría, registro, gestoría y tasación', r.gastosCompraventa, '#,##0.00 "€"');
+  if (r.comisionAperturaImporte > 0) h.fila('Comisión de apertura de la hipoteca', r.comisionAperturaImporte, '#,##0.00 "€"');
+  h.total('EFECTIVO TOTAL NECESARIO', r.efectivoTotalNecesario, '#,##0.00 "€"');
+  h.vacia();
+  h.fila('Ahorros disponibles', state.comprador.ahorros || 0, '#,##0.00 "€"');
+  h.total('COLCHÓN RESTANTE', r.colchonRestante, '#,##0.00 "€"', r.colchonRestante >= state.operacion.colchonMinimoDeseado ? XC.sage : XC.brick);
 
-  // --- Hoja 2: Sensibilidad al TIN ---
-  const tinRows = [['TIN', 'Cuota mensual (€)', 'Coste total del préstamo (€)']];
+  // ===== HOJA 2: BONIFICACIONES, ¿COMPENSAN? (solo si hay alguna vinculación activa) =====
+  const hayBonifActivasXls = r.desgloseVinculaciones && r.desgloseVinculaciones.length > 0 && (r.costeMensualBonif > 0 || r.descuentoBonif > 0);
+  if (hayBonifActivasXls){
+    const wsB = wb.addWorksheet('Bonificaciones');
+    const hb = hojaInforme(wsB, 38, 20);
+    hb.banner('☕ ¿COMPENSAN TUS BONIFICACIONES A LARGO PLAZO?');
+    hb.subtitulo(r.compensaBonificaciones ? 'Compensan a lo largo de todo el préstamo' : 'NO compensan a lo largo de todo el préstamo');
+    hb.vacia();
+    hb.seccion('SIN VINCULACIONES');
+    hb.fila('TIN', (state.financiacion.tinBase||0)/100, '0.00%');
+    hb.fila('Cuota mensual inicial', r.cuotaSinBonif, '#,##0.00 "€"');
+    hb.fila('Intereses totales del préstamo', r.interesesSinBonif, '#,##0.00 "€"');
+    hb.vacia();
+    hb.seccion('CON VINCULACIONES');
+    hb.fila('TIN', (r.tinFinal||0)/100, '0.00%');
+    hb.fila('Cuota mensual inicial', r.cuotaMensual, '#,##0.00 "€"');
+    hb.fila('Intereses totales del préstamo', r.interesesTotales, '#,##0.00 "€"');
+    hb.fila('Coste total de las vinculaciones', r.costeTotalVinculaciones, '#,##0.00 "€"');
+    hb.total('Coste conjunto (intereses + vinculaciones)', r.costeConjuntoConBonif, '#,##0.00 "€"');
+    hb.vacia();
+    hb.total(
+      r.compensaBonificaciones ? 'AHORRO TOTAL CON VINCULACIONES' : 'SOBRECOSTE TOTAL CON VINCULACIONES',
+      Math.abs(r.diferenciaVsSinBonif), '#,##0.00 "€"', r.compensaBonificaciones ? XC.sage : XC.brick
+    );
+    if (r.costeMensualEquilibrio != null){
+      hb.vacia();
+      hb.fila('Coste mensual actual de las vinculaciones', r.costeMensualBonif, '#,##0.00 "€"');
+      hb.fila('Coste mensual de equilibrio (punto a partir del cual deja de compensar)', r.costeMensualEquilibrio, '#,##0.00 "€"');
+    }
+    hb.vacia();
+
+    wsB.addRow([]);
+    const filaTituloDesglose = wsB.rowCount + 1;
+    wsB.mergeCells(filaTituloDesglose,1,filaTituloDesglose,2);
+    wsB.getCell(filaTituloDesglose,1).value = 'DESGLOSE POR PRODUCTO';
+    wsB.getCell(filaTituloDesglose,1).font = {bold:true, color:{argb:XC.tealDeep}, size:11};
+    wsB.getCell(filaTituloDesglose,1).fill = {type:'pattern', pattern:'solid', fgColor:{argb:XC.tealWash}};
+
+    const filaHeaderDesglose = filaTituloDesglose + 1;
+    ['Producto','Coste hoy/mes','Incremento anual','Coste total préstamo'].forEach((h,i) => {
+      const c = wsB.getRow(filaHeaderDesglose).getCell(i+1);
+      c.value = h; c.font = {bold:true, color:{argb:XC.white}, size:10};
+      c.fill = {type:'pattern', pattern:'solid', fgColor:{argb:XC.teal}};
+      c.alignment = {horizontal:i===0?'left':'right'};
+    });
+    r.desgloseVinculaciones.forEach(d => {
+      const row = wsB.addRow([d.nombre, d.costeMensualInicial, d.incrementoAnualPct/100, d.costeTotalPrestamo]);
+      row.getCell(2).numFmt = '#,##0.00 "€"'; row.getCell(3).numFmt = '0.0%'; row.getCell(4).numFmt = '#,##0.00 "€"';
+      row.eachCell((c,i) => { c.font = {size:10}; c.alignment = {horizontal:i===1?'left':'right'}; });
+    });
+
+    // hoja de detalle año a año
+    const wsAnual = wb.addWorksheet('Vinculaciones año a año');
+    const tAnual = hojaTabla(wsAnual, ['Año','Coste ese año (€)','Acumulado (€)'], [10,20,20]);
+    let acumuladoXls = 0;
+    for (let anio=1; anio<=state.financiacion.plazoAnios; anio++){
+      const costeAnio = r.desgloseVinculaciones.reduce((acc,d) => acc + d.costeMensualInicial*12*Math.pow(1+(d.incrementoAnualPct||0)/100, anio-1), 0);
+      acumuladoXls += costeAnio;
+      tAnual.addRow([anio, Math.round(costeAnio*100)/100, Math.round(acumuladoXls*100)/100]);
+    }
+    wsAnual.getColumn(2).numFmt = '#,##0.00 "€"';
+    wsAnual.getColumn(3).numFmt = '#,##0.00 "€"';
+  }
+
+  // ===== HOJA 3: SENSIBILIDAD AL TIN =====
+  const ws2 = wb.addWorksheet('Sensibilidad TIN');
+  const t2 = hojaTabla(ws2, ['TIN','Cuota mensual (€)','Coste total (€)'], [12,20,20]);
   [-1,-0.5,0,0.5,1].forEach(delta => {
     const tin = Math.max(0, r.tinFinal + delta);
     const cuota = cuotaFrancesa(r.hipoteca, tin, state.financiacion.plazoAnios);
-    tinRows.push([tin/100, Math.round(cuota*100)/100, Math.round(cuota*r.nMeses*100)/100]);
+    t2.addRow([tin/100, Math.round(cuota*100)/100, Math.round(cuota*r.nMeses*100)/100], delta===0);
   });
-  const wsTin = XLSX.utils.aoa_to_sheet(tinRows);
-  wsTin['!cols'] = [{wch:10},{wch:18},{wch:24}];
-  for (let i=1;i<=5;i++){ const refA = XLSX.utils.encode_cell({r:i,c:0}); if (wsTin[refA]) wsTin[refA].z = '0.00%'; }
-  XLSX.utils.book_append_sheet(wb, wsTin, 'Sensibilidad TIN');
+  ws2.getColumn(1).numFmt = '0.00%';
+  ws2.getColumn(2).numFmt = '#,##0.00 "€"';
+  ws2.getColumn(3).numFmt = '#,##0.00 "€"';
 
-  // --- Hoja 3: Sensibilidad al precio ---
-  const precioRows = [['Precio (€)', 'Efectivo total necesario (€)', 'Colchón restante (€)']];
+  // ===== HOJA 4: SENSIBILIDAD AL PRECIO =====
+  const ws3 = wb.addWorksheet('Sensibilidad precio');
+  const t3 = hojaTabla(ws3, ['Precio (€)','Efectivo total necesario (€)','Colchón restante (€)'], [16,26,22]);
   [-15000,-10000,-5000,0,5000,10000,15000].forEach(delta => {
     const precio = state.vivienda.precioFinal + delta;
     if (precio <= 0) return;
     const sTmp = JSON.parse(JSON.stringify(state));
     sTmp.vivienda.precioFinal = precio;
     const rr = calcularEscenario(sTmp);
-    precioRows.push([precio, Math.round(rr.efectivoTotalNecesario), Math.round(rr.colchonRestante)]);
+    t3.addRow([precio, Math.round(rr.efectivoTotalNecesario), Math.round(rr.colchonRestante)], delta===0);
   });
-  const wsPrecio = XLSX.utils.aoa_to_sheet(precioRows);
-  wsPrecio['!cols'] = [{wch:14},{wch:24},{wch:20}];
-  XLSX.utils.book_append_sheet(wb, wsPrecio, 'Sensibilidad precio');
+  ws3.getColumn(1).numFmt = '#,##0 "€"';
+  ws3.getColumn(2).numFmt = '#,##0 "€"';
+  ws3.getColumn(3).numFmt = '#,##0 "€"';
 
-  // --- Hoja 4: Escenarios comparados (si hay alguno guardado) ---
+  // ===== HOJA 5: ESCENARIOS COMPARADOS (si hay alguno guardado) =====
   if (savedScenarios.length > 0){
-    const compRows = [['Escenario','Precio','Impuesto','Hipoteca','Cuota mensual','TAE','Efectivo total','Colchón']];
+    const ws4 = wb.addWorksheet('Escenarios comparados');
+    const t4 = hojaTabla(ws4, ['Escenario','Precio (€)','Impuesto (€)','Hipoteca (€)','Cuota (€)','TAE','Efectivo total (€)','Colchón (€)'], [20,12,12,12,12,10,16,14]);
     savedScenarios.forEach(sc => {
-      compRows.push([sc.nombre, sc.resumen.precioFinal, sc.resumen.cuotaImpuesto, sc.resumen.hipoteca,
-        sc.resumen.cuotaMensual, sc.resumen.taeEstimada==null?'':sc.resumen.taeEstimada/100, sc.resumen.efectivoTotalNecesario, sc.resumen.colchonRestante]);
+      t4.addRow([sc.nombre, sc.resumen.precioFinal, sc.resumen.cuotaImpuesto, sc.resumen.hipoteca,
+        sc.resumen.cuotaMensual, sc.resumen.taeEstimada==null?'—':sc.resumen.taeEstimada/100, sc.resumen.efectivoTotalNecesario, sc.resumen.colchonRestante]);
     });
-    const wsComp = XLSX.utils.aoa_to_sheet(compRows);
-    wsComp['!cols'] = [{wch:20},{wch:12},{wch:12},{wch:12},{wch:14},{wch:10},{wch:14},{wch:12}];
-    XLSX.utils.book_append_sheet(wb, wsComp, 'Escenarios comparados');
+    ['B','C','D','E','G','H'].forEach(col => { ws4.getColumn(col).numFmt = '#,##0.00 "€"'; });
+    ws4.getColumn('F').numFmt = '0.00%';
   }
 
   return wb;
@@ -2528,11 +2882,11 @@ async function exportarExcel(){
   const textoOriginal = btn.textContent;
   btn.disabled = true; btn.textContent = 'Generando…';
   try {
-    await cargarSheetJS();
-    const wb = construirLibroExcel();
+    await cargarExcelJS();
+    const wb = await construirLibroExcel();
     const region = REGIONES[state.vivienda.comunidad];
     const nombre = `simulacion-hipoteca-${region ? region.nombre.toLowerCase().replace(/\s+/g,'-') : 'espana'}.xlsx`;
-    XLSX.writeFile(wb, nombre);
+    await descargarWorkbook(wb, nombre);
     mostrarToast('Excel descargado ✓');
   } catch (e){
     mostrarToast('No se pudo generar el Excel');
@@ -2566,6 +2920,16 @@ function poblarInformePDF(){
     filaInforme('Ahorros disponibles', fmtEUR(state.comprador.ahorros)),
   ].join('');
 
+  // --- Requisitos del colectivo (si aplica) ---
+  const requisitosWrap = el('informe-requisitos-wrap');
+  const requisitosTexto = el('requisitos-callout-text');
+  if (el('requisitos-callout').style.display !== 'none' && requisitosTexto.textContent.trim()){
+    el('informe-requisitos-texto').innerHTML = requisitosTexto.innerHTML;
+    requisitosWrap.style.display = '';
+  } else {
+    requisitosWrap.style.display = 'none';
+  }
+
   el('informe-tabla-hipoteca').innerHTML = [
     filaInforme('Importe financiado', fmtEUR(r.hipoteca)),
     filaInforme('LTV sobre precio', fmtPct(r.ltvPrecio)),
@@ -2574,6 +2938,31 @@ function poblarInformePDF(){
     filaInforme('Plazo', state.financiacion.plazoAnios + ' años'),
     filaInforme('Cuota mensual', fmtEUR2(r.cuotaMensual), true),
   ].join('');
+
+  // --- Bonificaciones: ¿compensan a largo plazo? (solo si hay alguna vinculación activa) ---
+  const bonifWrap = el('informe-bonif-wrap');
+  const hayBonifActivasPdf = r.desgloseVinculaciones && r.desgloseVinculaciones.length > 0 && (r.costeMensualBonif > 0 || r.descuentoBonif > 0);
+  if (hayBonifActivasPdf){
+    bonifWrap.style.display = '';
+    el('informe-bonif-titulo').textContent = `Bonificaciones: ${r.compensaBonificaciones ? 'compensan' : 'NO compensan'} a largo plazo`;
+    el('informe-tabla-bonif').innerHTML = [
+      `<tr><td></td><td>Sin vinculaciones</td><td>Con vinculaciones</td></tr>`,
+      filaInforme('TIN', `${fmtPct(state.financiacion.tinBase,2)}</td><td>${fmtPct(r.tinFinal,2)}`),
+      filaInforme('Intereses totales', `${fmtEUR(r.interesesSinBonif)}</td><td>${fmtEUR(r.interesesTotales)}`),
+      filaInforme('Coste de las vinculaciones', `${fmtEUR(0)}</td><td>${fmtEUR(r.costeTotalVinculaciones)}`),
+      filaInforme('Coste conjunto total', `${fmtEUR(r.interesesSinBonif)}</td><td>${fmtEUR(r.costeConjuntoConBonif)}`, true),
+    ].join('');
+    const difAbs = fmtEUR(Math.abs(r.diferenciaVsSinBonif));
+    let veredictoTxt = r.compensaBonificaciones
+      ? `Compensan: a lo largo de ${state.financiacion.plazoAnios} años, ahorras ${difAbs} en total, incluso pagando los recibos de las vinculaciones (con el incremento anual asumido).`
+      : `No compensan: a lo largo de ${state.financiacion.plazoAnios} años, pagarías ${difAbs} más en total que rechazando las vinculaciones.`;
+    if (r.costeMensualEquilibrio != null){
+      veredictoTxt += ` Punto de equilibrio: hasta ${fmtEUR2(r.costeMensualEquilibrio)}/mes (ahora pagas ${fmtEUR2(r.costeMensualBonif)}/mes).`;
+    }
+    el('informe-bonif-veredicto').textContent = veredictoTxt;
+  } else {
+    bonifWrap.style.display = 'none';
+  }
 
   const filasEfectivo = [
     filaInforme('Aportación al precio', fmtEUR(r.aportacionAlPrecio)),
@@ -2594,6 +2983,58 @@ function poblarInformePDF(){
   } else {
     alertasWrap.style.display = 'none';
   }
+
+  // --- Tablas de sensibilidad (se clonan tal cual del dossier, ya están calculadas) ---
+  el('informe-tabla-tin-wrap').innerHTML = '';
+  el('informe-tabla-tin-wrap').appendChild(el('tabla-tin').cloneNode(true));
+  el('informe-tabla-precio-wrap').innerHTML = '';
+  el('informe-tabla-precio-wrap').appendChild(el('tabla-precio').cloneNode(true));
+
+  // --- Cronología (clonada de la pestaña Siguientes pasos) ---
+  const stepList = document.querySelector('#panel-pasos .step-list');
+  el('informe-cronologia').innerHTML = '';
+  if (stepList) el('informe-cronologia').appendChild(stepList.cloneNode(true));
+
+  // --- Consejos clave (clonados) ---
+  const tipsList = document.querySelector('#panel-pasos .tips-list');
+  el('informe-consejos').innerHTML = '';
+  if (tipsList) el('informe-consejos').appendChild(tipsList.cloneNode(true));
+
+  // --- Checklist con el progreso real del usuario ---
+  el('informe-checklist-progreso').textContent = 'Progreso actual: ' + el('progreso-label').textContent;
+  const checklistWrap = el('informe-checklist');
+  checklistWrap.innerHTML = '';
+  document.querySelectorAll('#panel-pasos .group-details').forEach(group => {
+    const clone = group.cloneNode(true);
+    // quitar el elemento <summary> nativo y sustituirlo por un titulo de texto plano (mas fiable al imprimir)
+    const summaryTexto = group.querySelector('.group-summary .gs-left').textContent.trim();
+    const conteo = group.querySelector('.group-count').textContent;
+    clone.removeAttribute('open');
+    const nuevoResumen = document.createElement('div');
+    nuevoResumen.className = 'group-summary';
+    nuevoResumen.textContent = `${summaryTexto} (${conteo})`;
+    const viejoSummary = clone.querySelector('summary');
+    viejoSummary.replaceWith(nuevoResumen);
+    // marcar visualmente los items ya completados y sustituir checkboxes por texto
+    clone.querySelectorAll('.check-row').forEach(row => {
+      const cb = row.querySelector('input[type=checkbox]');
+      const label = row.querySelector('label');
+      const marcado = cb && cb.checked;
+      if (marcado) row.classList.add('done');
+      const texto = document.createElement('span');
+      texto.textContent = (marcado ? '☑ ' : '☐ ') + (label ? label.textContent : '');
+      row.innerHTML = '';
+      row.appendChild(texto);
+    });
+    checklistWrap.appendChild(clone);
+  });
+
+  // --- Glosario completo (clonado, sin el buscador) ---
+  const glosarioWrap = el('informe-glosario');
+  glosarioWrap.innerHTML = '';
+  document.querySelectorAll('#panel-glosario .term-group').forEach(group => {
+    glosarioWrap.appendChild(group.cloneNode(true));
+  });
 
   el('informe-footer').textContent = 'Simulación orientativa, no vinculante. Verifica siempre los datos con una gestoría, notaría o asesor antes de decidir. Normativa autonómica sujeta a cambios.';
 }
