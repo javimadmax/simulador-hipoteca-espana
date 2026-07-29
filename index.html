@@ -1359,6 +1359,12 @@
         <div class="table-scroll"><table class="sens" id="tabla-precio"></table></div>
       </div>
 
+      <div class="card" id="card-tasacion">
+        <div class="ledger-title">Si la tasación sale por debajo del precio</div>
+        <p class="comparativa-sub" style="margin-bottom:10px;">El banco financia el % pactado sobre el <b>menor</b> entre precio y tasación, no sobre el precio. Esto es lo que pasaría según cuánto se quede corta.</p>
+        <div class="table-scroll"><table class="sens" id="tabla-tasacion"></table></div>
+      </div>
+
       <div class="card">
         <div class="ledger-title">Precio máximo compatible con tu colchón</div>
         <div id="precio-max-content"></div>
@@ -1822,7 +1828,8 @@ function calcularEscenario(s){
   const regionSinDatos = !!impuestoResult.sinDatos;
 
   const valorFinanciable = s.vivienda.valorTasacion ? Math.min(s.vivienda.precioFinal, s.vivienda.valorTasacion) : s.vivienda.precioFinal;
-  const hipoteca = s.financiacion.modo === 'manual' ? s.financiacion.importeManual : s.vivienda.precioFinal*(s.financiacion.porcentaje/100);
+  // Los bancos financian el % pactado sobre el MENOR entre precio y tasación, no sobre el precio siempre
+  const hipoteca = s.financiacion.modo === 'manual' ? s.financiacion.importeManual : valorFinanciable*(s.financiacion.porcentaje/100);
   const aportacionAlPrecio = s.vivienda.precioFinal - hipoteca;
   const ltvPrecio = s.vivienda.precioFinal>0 ? (hipoteca/s.vivienda.precioFinal)*100 : 0;
   const ltvFinanciable = valorFinanciable>0 ? (hipoteca/valorFinanciable)*100 : 0;
@@ -1987,6 +1994,7 @@ function render(){
     el('badge-compensa').textContent = '';
     el('tabla-tin').innerHTML = '';
     el('tabla-precio').innerHTML = '';
+    el('tabla-tasacion').innerHTML = '';
     el('precio-max-content').innerHTML = `<p style="font-size:12.5px; color:var(--muted);">Introduce tus ahorros, comunidad y un precio de compra para calcular tu precio máximo.</p>`;
     return;
   }
@@ -2010,7 +2018,7 @@ function render(){
     el('comparativa-sub').style.display = '';
     el('comparativa-content').style.display = 'none';
     el('badge-compensa').textContent = '';
-    el('tabla-tin').innerHTML = ''; el('tabla-precio').innerHTML = ''; el('precio-max-content').innerHTML = '';
+    el('tabla-tin').innerHTML = ''; el('tabla-precio').innerHTML = ''; el('tabla-tasacion').innerHTML = ''; el('precio-max-content').innerHTML = '';
     return;
   }
 
@@ -2079,7 +2087,13 @@ function render(){
     alerts.push({t:'warn', m:`El valor de referencia catastral (${fmtEUR(state.vivienda.valorReferencia)}) supera el precio de compra: la base del ITP se calcula sobre ese valor, no sobre el precio.`});
   }
   if (state.vivienda.valorTasacion && state.vivienda.valorTasacion < state.vivienda.precioFinal){
-    alerts.push({t:'warn', m:`La tasación (${fmtEUR(state.vivienda.valorTasacion)}) es inferior al precio: el banco podría financiar menos de lo previsto y necesitarás más efectivo propio.`});
+    if (state.financiacion.modo === 'porcentaje'){
+      const hipotecaSinCap = state.vivienda.precioFinal * (state.financiacion.porcentaje/100);
+      const gapFinanciacion = hipotecaSinCap - r.hipoteca;
+      alerts.push({t:'warn', m:`La tasación (${fmtEUR(state.vivienda.valorTasacion)}) es inferior al precio: el banco financia sobre el menor de los dos, así que en vez de ${fmtEUR(hipotecaSinCap)} te concedería ${fmtEUR(r.hipoteca)} — tendrías que aportar ${fmtEUR(gapFinanciacion)} más de tus ahorros.`});
+    } else {
+      alerts.push({t:'warn', m:`La tasación (${fmtEUR(state.vivienda.valorTasacion)}) es inferior al precio: comprueba que el importe de hipoteca que has puesto en modo manual sigue siendo el que te concedería el banco.`});
+    }
   }
   if (state.operacion.arrasEntregadas > 0 && !state.operacion.condicionSuspensiva && r.hipoteca > 0){
     alerts.push({t:'warn', m:`Has entregado arras sin marcar la condición suspensiva de financiación: si el banco no concede la hipoteca, podrías perderlas.`});
@@ -2234,6 +2248,30 @@ function render(){
     precioHtml += `<tr class="${isCurrent?'current':''}"><td>${fmtEUR(precio)}</td><td>${fmtEUR(rr.efectivoTotalNecesario)}</td><td>${fmtEUR(rr.colchonRestante)}</td></tr>`;
   });
   el('tabla-precio').innerHTML = precioHtml;
+
+  // --- Sensibilidad a la tasación ---
+  const deltasTasacionPct = [0,-3,-5,-8,-10,-15,-20];
+  let filasTasacion = deltasTasacionPct.map(pct => ({
+    pct, tasacion: state.vivienda.precioFinal * (1+pct/100), esActual:false
+  }));
+  if (state.vivienda.valorTasacion){
+    const pctReal = state.vivienda.precioFinal>0 ? ((state.vivienda.valorTasacion/state.vivienda.precioFinal)-1)*100 : 0;
+    filasTasacion.push({ pct: pctReal, tasacion: state.vivienda.valorTasacion, esActual:true });
+  }
+  filasTasacion.sort((a,b) => b.tasacion - a.tasacion);
+
+  let tasacionHtml = '<tr><th>Tasación</th><th>Hipoteca concedida</th><th>Aportación</th><th>Efectivo total</th><th>Colchón</th></tr>';
+  filasTasacion.forEach(f => {
+    const sTmp = JSON.parse(JSON.stringify(state));
+    sTmp.vivienda.valorTasacion = f.tasacion;
+    const rr = calcularEscenario(sTmp);
+    const signo = f.pct > 0 ? '+' : '';
+    const etiqueta = f.esActual
+      ? `${fmtEUR(f.tasacion)} · tu tasación (${signo}${f.pct.toFixed(1)}%)`
+      : `${fmtEUR(f.tasacion)} (${f.pct===0?'precio':signo+f.pct.toFixed(0)+'%'})`;
+    tasacionHtml += `<tr class="${f.esActual?'current':''}"><td>${etiqueta}</td><td>${fmtEUR(rr.hipoteca)}</td><td>${fmtEUR(rr.aportacionAlPrecio)}</td><td>${fmtEUR(rr.efectivoTotalNecesario)}</td><td>${fmtEUR(rr.colchonRestante)}</td></tr>`;
+  });
+  el('tabla-tasacion').innerHTML = tasacionHtml;
 
   // --- Precio máximo compatible ---
   const pMax = precioMaximoCompatible(state, state.operacion.colchonMinimoDeseado);
@@ -2704,12 +2742,16 @@ function hojaTabla(ws, headers, colWidths){
     c.alignment = {horizontal:i===0?'left':'right'};
   });
   headerRow.height = 18;
+  let filaActual = 1;
   return {
     addRow(valores, resaltar){
-      const r = ws.addRow(valores);
-      r.eachCell((c,i) => {
+      filaActual++;
+      const r = ws.getRow(filaActual);
+      valores.forEach((v, i) => {
+        const c = r.getCell(i+1);
+        c.value = v;
         c.font = {size:10, bold:!!resaltar, color:{argb: resaltar?XC.tealDeep:XC.ink}};
-        c.alignment = {horizontal:i===1?'left':'right'};
+        c.alignment = {horizontal:i===0?'left':'right'};
         c.border = {bottom:{style:'hair', color:{argb:XC.border}}};
         if (resaltar) c.fill = {type:'pattern', pattern:'solid', fgColor:{argb:XC.tealWash}};
       });
@@ -2861,6 +2903,28 @@ async function construirLibroExcel(){
   ws3.getColumn(1).numFmt = '#,##0 "€"';
   ws3.getColumn(2).numFmt = '#,##0 "€"';
   ws3.getColumn(3).numFmt = '#,##0 "€"';
+
+  // ===== HOJA: SI LA TASACIÓN SALE POR DEBAJO DEL PRECIO =====
+  const wsT = wb.addWorksheet('Sensibilidad tasación');
+  const tT = hojaTabla(wsT, ['Tasación (€)','% vs precio','Hipoteca concedida (€)','Aportación (€)','Efectivo total (€)','Colchón (€)'], [16,12,20,16,18,16]);
+  let filasTasacionXls = [0,-3,-5,-8,-10,-15,-20].map(pct => ({ pct, tasacion: state.vivienda.precioFinal*(1+pct/100), esActual:false }));
+  if (state.vivienda.valorTasacion){
+    const pctReal = state.vivienda.precioFinal>0 ? ((state.vivienda.valorTasacion/state.vivienda.precioFinal)-1)*100 : 0;
+    filasTasacionXls.push({ pct: pctReal, tasacion: state.vivienda.valorTasacion, esActual:true });
+  }
+  filasTasacionXls.sort((a,b) => b.tasacion - a.tasacion);
+  filasTasacionXls.forEach(f => {
+    const sTmp = JSON.parse(JSON.stringify(state));
+    sTmp.vivienda.valorTasacion = f.tasacion;
+    const rr = calcularEscenario(sTmp);
+    tT.addRow([Math.round(f.tasacion), f.pct/100, Math.round(rr.hipoteca), Math.round(rr.aportacionAlPrecio), Math.round(rr.efectivoTotalNecesario), Math.round(rr.colchonRestante)], f.esActual);
+  });
+  wsT.getColumn(1).numFmt = '#,##0 "€"';
+  wsT.getColumn(2).numFmt = '0.0%';
+  wsT.getColumn(3).numFmt = '#,##0 "€"';
+  wsT.getColumn(4).numFmt = '#,##0 "€"';
+  wsT.getColumn(5).numFmt = '#,##0 "€"';
+  wsT.getColumn(6).numFmt = '#,##0 "€"';
 
   // ===== HOJA 5: ESCENARIOS COMPARADOS (si hay alguno guardado) =====
   if (savedScenarios.length > 0){
