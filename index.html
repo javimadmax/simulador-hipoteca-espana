@@ -348,6 +348,23 @@
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
   @media (max-width:1180px){ .toast{bottom:56px;} }
 
+  .autoguardado-indicador{
+    position:fixed; top:16px; right:16px; z-index:55; background:var(--sage-wash); color:#2F5A40;
+    font-family:var(--font-mono); font-size:11px; font-weight:600; padding:6px 12px; border-radius:20px;
+    opacity:0; transform:translateY(-6px); transition:opacity .25s, transform .25s; pointer-events:none;
+    box-shadow:var(--shadow-card);
+  }
+  .autoguardado-indicador.show{opacity:1; transform:translateY(0);}
+  @media (max-width:1180px){ .autoguardado-indicador{top:auto; bottom:76px; right:14px;} }
+
+  .foot-privacidad{
+    font-size:11px; color:var(--muted); margin-top:10px; line-height:1.6; max-width:80ch;
+  }
+  .link-borrar{
+    all:unset; cursor:pointer; color:var(--brick); text-decoration:underline; font-size:11px; font-family:inherit;
+  }
+  .link-borrar:hover{color:#7A3323;}
+
   /* ---------- Checklist / siguientes pasos ---------- */
   .progress-wrap{display:flex; align-items:center; gap:14px; margin:0 0 24px;}
   .progress-bar{flex:1; height:9px; border-radius:20px; background:var(--paper-2); overflow:hidden; border:1px solid var(--border-soft);}
@@ -1484,10 +1501,14 @@
   <p class="foot-disclaimer">
     Revisado a fecha 22.07.2026. Simulación orientativa basada en la normativa fiscal vigente en cada comunidad autónoma (impuesto cedido: ITP, AJD e IGIC en Canarias), consultada en fuentes especializadas actualizadas a julio de 2026. Los tipos y requisitos cambian con frecuencia por leyes autonómicas y, en algunos casos, forales (País Vasco, Navarra) — verifica siempre el estado vigente en la agencia tributaria de tu comunidad antes de liquidar cualquier impuesto. Para Ceuta y Melilla no se ha encontrado información suficientemente fiable y el simulador no calcula su ITP. Los tipos reducidos por vivienda habitual (jóvenes, familia numerosa, monoparental, discapacidad, víctima de violencia) exigen acreditar requisitos adicionales de renta, empadronamiento y permanencia que debes verificar en la fecha real de la operación; si además compras una VPO, el tipo aplicable puede depender de tu caso concreto. La TAE se estima mediante una TIR mensual sobre el capital neto recibido (descontando la comisión de apertura) y no es la TAE oficial del banco. Este simulador no constituye asesoramiento fiscal, financiero ni legal — contrasta siempre con una gestoría, notaría o asesor antes de decidir.
   </p>
+  <p class="foot-privacidad">
+    💾 Tus datos se guardan automáticamente solo en este navegador (localStorage) — nunca se envían a ningún servidor. Si usas un ordenador compartido o quieres empezar de cero, <button id="btn-borrar-datos" class="link-borrar">borra los datos guardados</button>.
+  </p>
 
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="autoguardado-indicador" id="autoguardado-indicador"></div>
 
 <div id="informe-print" class="print-only">
   <div class="informe-header">
@@ -2401,6 +2422,7 @@ function render(){
   }
 
   if (typeof renderResultadosComparador === 'function') renderResultadosComparador();
+  if (typeof guardarEnLocalStorageDebounced === 'function') guardarEnLocalStorageDebounced();
 }
 
 /* ============================================================
@@ -3339,6 +3361,7 @@ function renderComparador(){
   const wrap = el('comparador-content');
   if (savedScenarios.length === 0){
     wrap.innerHTML = '<p class="compare-empty">Todavía no has guardado ningún escenario. Ajusta los datos y pulsa «Guardar escenario actual» para comparar distintas ofertas o precios.</p>';
+    if (typeof guardarEnLocalStorageDebounced === 'function') guardarEnLocalStorageDebounced();
     return;
   }
   let html = `<table class="compare-table"><tr>
@@ -3372,8 +3395,10 @@ function renderComparador(){
     tr.querySelector('[data-action="rename"]').addEventListener('input', (e) => {
       const sc = savedScenarios.find(s => s.id === scId);
       if (sc) sc.nombre = e.target.value;
+      if (typeof guardarEnLocalStorageDebounced === 'function') guardarEnLocalStorageDebounced();
     });
   });
+  if (typeof guardarEnLocalStorageDebounced === 'function') guardarEnLocalStorageDebounced();
 }
 
 el('btn-guardar-escenario').addEventListener('click', guardarEscenarioActual);
@@ -3660,6 +3685,7 @@ function renderResultadosComparador(){
       </div>`;
   });
   wrap.innerHTML = html;
+  if (typeof guardarEnLocalStorageDebounced === 'function') guardarEnLocalStorageDebounced();
 }
 
 el('btn-add-oferta').addEventListener('click', () => {
@@ -3677,6 +3703,75 @@ el('btn-add-oferta').addEventListener('click', () => {
    INIT
    ============================================================ */
 
+const LS_KEY = 'simulador-hipoteca-espana-v1';
+
+function guardarEnLocalStorage(){
+  try {
+    const checklistState = {};
+    document.querySelectorAll('#panel-pasos .check-row input[type=checkbox]').forEach(cb => {
+      checklistState[cb.id] = cb.checked;
+    });
+    const payload = {
+      version: 1,
+      guardadoEn: new Date().toISOString(),
+      state: state,
+      savedScenarios: savedScenarios,
+      checklistState: checklistState,
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(payload));
+    const indicador = el('autoguardado-indicador');
+    if (indicador){
+      indicador.textContent = 'Guardado ✓ ' + new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
+      indicador.classList.add('show');
+      clearTimeout(guardarEnLocalStorage._t);
+      guardarEnLocalStorage._t = setTimeout(() => indicador.classList.remove('show'), 2000);
+    }
+  } catch (e){ /* localStorage no disponible (modo privado, cuota llena, etc.): fallamos en silencio */ }
+}
+
+let _guardarTimeout = null;
+function guardarEnLocalStorageDebounced(){
+  clearTimeout(_guardarTimeout);
+  _guardarTimeout = setTimeout(guardarEnLocalStorage, 500);
+}
+
+function cargarDeLocalStorage(){
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return false;
+    const payload = JSON.parse(raw);
+    if (!payload || !payload.state) return false;
+
+    ['comprador','fiscalidad','vivienda','financiacion','operacion'].forEach(grupo => {
+      if (payload.state[grupo]) Object.assign(state[grupo], payload.state[grupo]);
+    });
+    if (payload.state.comparadorHipotecas) state.comparadorHipotecas = payload.state.comparadorHipotecas;
+    if (Array.isArray(payload.savedScenarios)) savedScenarios = payload.savedScenarios;
+    if (payload.checklistState){
+      Object.keys(payload.checklistState).forEach(id => {
+        const cb = document.getElementById(id);
+        if (cb) cb.checked = !!payload.checklistState[id];
+      });
+    }
+    return true;
+  } catch (e){ return false; }
+}
+
+function borrarDatosGuardados(){
+  try { localStorage.removeItem(LS_KEY); } catch(e){}
+  location.reload();
+}
+const btnBorrarDatos = el('btn-borrar-datos');
+if (btnBorrarDatos) btnBorrarDatos.addEventListener('click', () => {
+  if (confirm('¿Borrar todos los datos guardados en este navegador? Esto no se puede deshacer.')) borrarDatosGuardados();
+});
+
+document.querySelectorAll('#panel-pasos .check-row input[type=checkbox]').forEach(cb => {
+  cb.addEventListener('change', guardarEnLocalStorageDebounced);
+});
+
+const huboDatosGuardados = cargarDeLocalStorage();
+
 el('wrap-hijosExcedentes').style.display = 'none';
 el('wrap-importeManual').style.display = state.financiacion.modo === 'manual' ? '' : 'none';
 poblarColectivos();
@@ -3684,11 +3779,13 @@ actualizarBloqueCataluna();
 actualizarDetalleVPO();
 actualizarNotaRegion();
 actualizarRequisitosCallout();
+if (huboDatosGuardados) syncUIFromState();
 renderBonificaciones();
 renderOfertas();
 renderComparador();
 actualizarProgresoChecklist();
 render();
+if (huboDatosGuardados) mostrarToast('Se han recuperado tus datos guardados en este navegador');
 
 })();
 </script>
