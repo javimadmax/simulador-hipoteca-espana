@@ -717,7 +717,7 @@
     <div class="hero-meta">
       <span id="hero-normativa">Normativa: <b>elige tu comunidad</b></span>
       <span>Datos fiscales de las 17 CCAA + forales</span>
-      <span>Revisado a fecha <b>22.07.2026</b></span>
+      <span>Revisado a fecha <b>16.09.2026</b></span>
     </div>
   </header>
 
@@ -1499,7 +1499,7 @@
   </div>
 
   <p class="foot-disclaimer">
-    Revisado a fecha 22.07.2026. Simulación orientativa basada en la normativa fiscal vigente en cada comunidad autónoma (impuesto cedido: ITP, AJD e IGIC en Canarias), consultada en fuentes especializadas actualizadas a julio de 2026. Los tipos y requisitos cambian con frecuencia por leyes autonómicas y, en algunos casos, forales (País Vasco, Navarra) — verifica siempre el estado vigente en la agencia tributaria de tu comunidad antes de liquidar cualquier impuesto. Para Ceuta y Melilla no se ha encontrado información suficientemente fiable y el simulador no calcula su ITP. Los tipos reducidos por vivienda habitual (jóvenes, familia numerosa, monoparental, discapacidad, víctima de violencia) exigen acreditar requisitos adicionales de renta, empadronamiento y permanencia que debes verificar en la fecha real de la operación; si además compras una VPO, el tipo aplicable puede depender de tu caso concreto. La TAE se estima mediante una TIR mensual sobre el capital neto recibido (descontando la comisión de apertura) y no es la TAE oficial del banco. Este simulador no constituye asesoramiento fiscal, financiero ni legal — contrasta siempre con una gestoría, notaría o asesor antes de decidir.
+    Revisado a fecha 16.09.2026 (última comprobación normativa: comparado contra fuentes de agosto-septiembre de 2026 en las 17 CCAA, con correcciones en Comunidad Valenciana, Castilla-La Mancha, Andalucía y Canarias respecto a la revisión anterior). Simulación orientativa basada en la normativa fiscal vigente en cada comunidad autónoma (impuesto cedido: ITP, AJD e IGIC en Canarias), consultada en fuentes especializadas. Los tipos y requisitos cambian con frecuencia por leyes autonómicas y, en algunos casos, forales (País Vasco, Navarra) — verifica siempre el estado vigente en la agencia tributaria de tu comunidad antes de liquidar cualquier impuesto. Para Ceuta y Melilla no se ha encontrado información suficientemente fiable y el simulador no calcula su ITP. Los tipos reducidos por vivienda habitual (jóvenes, familia numerosa, monoparental, discapacidad, víctima de violencia) exigen acreditar requisitos adicionales de renta, empadronamiento, permanencia y, en algunas comunidades, un porcentaje mínimo de financiación hipotecaria, que debes verificar en la fecha real de la operación; si además compras una VPO, el tipo aplicable puede depender de tu caso concreto. La TAE se estima mediante una TIR mensual sobre el capital neto recibido (descontando la comisión de apertura) y no es la TAE oficial del banco. Este simulador no constituye asesoramiento fiscal, financiero ni legal — contrasta siempre con una gestoría, notaría o asesor antes de decidir.
   </p>
   <p class="foot-privacidad">
     💾 Tus datos se guardan automáticamente solo en este navegador (localStorage) — nunca se envían a ningún servidor. Si usas un ordenador compartido o quieres empezar de cero, <button id="btn-borrar-datos" class="link-borrar">borra los datos guardados</button>.
@@ -1610,12 +1610,12 @@ const REGIONES = {
     nombre: 'Andalucía', sistema: 'comun',
     itp: { tipo:'flat', general:7, generalHabitual:{ valorMax:150000, tipo:6 } },
     reducidos: {
-      joven: { label:'Joven (< 35 años)', tipo:3.5, edadMax:35, valorMax:150000 },
-      familiaNumerosa: { label:'Familia numerosa', tipo:3.5, valorMax:250000 },
-      discapacidad: { label:'Discapacidad ≥33%', tipo:3.5, valorMax:250000 },
+      joven: { label:'Joven (< 35 años)', tipo:3.5, edadMax:35, valorMax:150000, ajdReducido:0.3 },
+      familiaNumerosa: { label:'Familia numerosa', tipo:3.5, valorMax:250000, ajdReducido:0.1 },
+      discapacidad: { label:'Discapacidad ≥33%', tipo:3.5, valorMax:250000, ajdReducido:0.1 },
     },
     vpo: { tipo:3.5 }, ajd: 1.20,
-    notas: 'Tipo único del 7% desde 2021, con tipo reducido del 6% para vivienda habitual ≤150.000€.'
+    notas: 'Tipo único del 7% desde 2021, con tipo reducido del 6% para vivienda habitual ≤150.000€. En obra nueva, AJD reducido al 0,3% (jóvenes) o 0,1% (familia numerosa/discapacidad) dentro de esos mismos límites de valor.'
   },
   aragon: {
     nombre: 'Aragón', sistema:'comun',
@@ -1655,12 +1655,12 @@ const REGIONES = {
     nombre: 'Canarias', sistema:'comun', ivaEspecial:'igic',
     itp: { tipo:'flat', general:6.5, generalHabitual:{ valorMax:200000, tipo:5 } },
     reducidos: {
-      joven: { label:'Joven (< 40 años)', tipo:4, edadMax:40, valorMax:200000, rentaMaxIndividual:46455 },
-      familiaNumerosa: { label:'Familia numerosa', tipo:1, rentaMaxConjunta:46455, notas:'+18.200€ por hijo adicional.' },
-      discapacidad: { label:'Discapacidad ≥65%', tipo:1, rentaMaxConjunta:46455, notas:'+6.825€ por persona adicional.' },
+      joven: { label:'Joven (< 40 años)', tipo:4, edadMax:40, valorMax:200000, rentaMaxIndividual:46455, ajdReducido:0.4 },
+      familiaNumerosa: { label:'Familia numerosa', tipo:1, rentaMaxConjunta:46455, notas:'+18.200€ por hijo adicional.', ajdReducido:0.4 },
+      discapacidad: { label:'Discapacidad ≥65%', tipo:1, rentaMaxConjunta:46455, notas:'+6.825€ por persona adicional.', ajdReducido:0.4 },
     },
     igicGeneral: 7, igicVPO: 0, ajd: 0.75,
-    notas: 'En obra nueva no se aplica IVA sino IGIC (7% general, 0% en VPO).'
+    notas: 'En obra nueva no se aplica IVA sino IGIC (7% general, 0% en VPO). AJD reducido al 0,4% en obra nueva para los mismos perfiles protegidos.'
   },
   cantabria: {
     nombre: 'Cantabria', sistema:'comun',
@@ -1677,12 +1677,12 @@ const REGIONES = {
     nombre: 'Castilla-La Mancha', sistema:'comun',
     itp: { tipo:'flat', general:9 },
     reducidos: {
-      joven: { label:'Joven (< 36 años)', tipo:3, edadMax:36, valorMax:240000 },
-      familiaNumerosa: { label:'Familia numerosa', tipo:5, valorMax:240000 },
-      discapacidad: { label:'Discapacidad ≥65%', tipo:5, valorMax:240000 },
+      joven: { label:'Joven (< 36 años)', tipo:3, edadMax:36, valorMax:240000, notas:'Requiere financiar más del 50% del precio con hipoteca sobre la propia vivienda.' },
+      familiaNumerosa: { label:'Familia numerosa', tipo:5, valorMax:240000, notas:'Requiere financiar más del 50% del precio con hipoteca sobre la propia vivienda.' },
+      discapacidad: { label:'Discapacidad ≥65%', tipo:5, valorMax:240000, notas:'Requiere financiar más del 50% del precio con hipoteca sobre la propia vivienda.' },
     },
     ajd: 1.50,
-    notas: 'El tramo entre 180.000€ y 240.000€ para jóvenes tiene matices adicionales: verifica con la Junta de Comunidades.'
+    notas: 'Ley 1/2026 (en vigor desde el 31 de marzo de 2026): bajó el tipo joven del 5% al 3% y subió el límite de valor de 180.000€ a 240.000€. Casi todos los tipos reducidos exigen además financiar más del 50% del precio con hipoteca.'
   },
   castillaYLeon: {
     nombre: 'Castilla y León', sistema:'comun',
@@ -1713,12 +1713,13 @@ const REGIONES = {
     nombre: 'Comunitat Valenciana', sistema:'comun',
     itp: { tipo:'tramos', tramos:[[0,1000000,9],[1000000,Infinity,11]] },
     reducidos: {
-      joven: { label:'Joven (< 35 años)', tipo:6, edadMax:35, valorMax:180000, rentaMaxIndividual:30000, rentaMaxConjunta:47000, tipoSobreValorMax:8 },
-      familiaNumerosa: { label:'Familia numerosa', tipo:4 },
-      discapacidad: { label:'Discapacidad (física/sensorial ≥65% o psíquica ≥33%)', tipo:4 },
+      joven: { label:'Joven (< 35 años)', tipo:6, edadMax:35, valorMax:180000, rentaMaxIndividual:30000, rentaMaxConjunta:47000, tipoSobreValorMax:8, ajdReducido:0.1 },
+      familiaNumerosa: { label:'Familia numerosa o monoparental', tipo:3, valorMax:180000, tipoSobreValorMax:4, ajdReducido:0.1 },
+      discapacidad: { label:'Discapacidad (física/sensorial ≥65% o psíquica ≥33%)', tipo:3, valorMax:180000, tipoSobreValorMax:4, ajdReducido:0.1 },
+      victimaViolencia: { label:'Víctima de violencia de género', tipo:3, valorMax:180000, tipoSobreValorMax:4, ajdReducido:0.1 },
     },
     vpo: { tipo:4 }, ajd: 1.40,
-    notas: 'Tipo general bajado del 10% al 9% el 30 de junio de 2026 (11% para inmuebles > 1.000.000€).'
+    notas: 'Tipo general bajado del 10% al 9% el 1 de junio de 2026 (11% para inmuebles > 1.000.000€); AJD general bajado del 1,5% al 1,4% en la misma fecha, con un reducido del 0,1% en obra nueva para los perfiles protegidos.'
   },
   extremadura: {
     nombre: 'Extremadura', sistema:'comun',
@@ -1842,13 +1843,16 @@ function calcularImpuestoRegion(regionKey, s){
     let ivaRate = region.ivaEspecial === 'igic' ? (s.vivienda.esVPO ? region.igicVPO : region.igicGeneral) : (s.vivienda.esVPO ? 4 : 10);
     const cuotaIVA = s.vivienda.precioFinal * (ivaRate/100);
     let ajdRate = region.ajd, bonif = false;
-    if (region.especial === 'cataluna' && region.ajdBonifJovenPct && s.fiscalidad._elegibleReducido){
+    const colectivoItem = (s.fiscalidad.colectivo && s.fiscalidad.colectivo !== 'ninguno' && region.reducidos) ? region.reducidos[s.fiscalidad.colectivo] : null;
+    if (colectivoItem && colectivoItem.ajdReducido != null && s.fiscalidad._elegibleReducido){
+      ajdRate = colectivoItem.ajdReducido; bonif = true;
+    } else if (region.especial === 'cataluna' && region.ajdBonifJovenPct && s.fiscalidad._elegibleReducido){
       ajdRate = ajdRate * (1 - region.ajdBonifJovenPct/100); bonif = true;
     }
     const cuotaAJD = s.vivienda.precioFinal * (ajdRate/100);
     return {
       cuotaImpuesto: cuotaIVA + cuotaAJD,
-      tipoAplicadoLabel: `${region.ivaEspecial==='igic'?'IGIC':'IVA'} ${ivaRate}% + AJD ${ajdRate.toFixed(2)}%${bonif?' (bonificado)':''}`,
+      tipoAplicadoLabel: `${region.ivaEspecial==='igic'?'IGIC':'IVA'} ${ivaRate}% + AJD ${ajdRate.toFixed(2)}%${bonif?' (reducido)':''}`,
       tipoCorto: `${ivaRate}+${ajdRate.toFixed(1)}`,
     };
   }
