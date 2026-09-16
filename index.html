@@ -600,6 +600,89 @@
   .bonif-fields .bf{display:flex; flex-direction:column; gap:3px;}
   .bonif-fields label{font-size:10.5px; color:var(--muted); font-weight:600;}
   .bonif-fields .suffix-wrap input{font-size:12.5px; padding:7px 10px;}
+  .coste-periodo-row{display:flex; gap:5px;}
+  .coste-periodo-row .suffix-wrap{flex:1; min-width:0;}
+  .coste-periodo-row select{
+    font-family:var(--font-mono); font-size:11.5px; padding:7px 4px; border-radius:var(--radius-sm);
+    border:1.5px solid var(--border); background:var(--paper); color:var(--ink); flex-shrink:0; max-width:76px;
+  }
+
+  /* ---------- Comparador de hipotecas ---------- */
+  .oferta-card{
+    border:1.5px solid var(--border); border-radius:var(--radius-md); padding:16px 18px; margin-bottom:14px;
+    background:var(--surface);
+  }
+  .oferta-card-header{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+  .oferta-card-header input.oferta-name{
+    flex:1; border:none; background:transparent; font-size:15px; font-weight:700; color:var(--ink);
+    font-family:var(--font-display); padding:2px 4px; outline:none; border-radius:4px;
+  }
+  .oferta-card-header input.oferta-name:focus{background:var(--paper);}
+  .oferta-card-header button.oferta-remove{
+    all:unset; cursor:pointer; color:var(--muted); font-size:15px; padding:3px 7px; border-radius:5px;
+  }
+  .oferta-card-header button.oferta-remove:hover{background:var(--brick-wash); color:var(--brick);}
+  .oferta-fields{display:grid; grid-template-columns:repeat(4,1fr); gap:12px 14px;}
+  @media (max-width:900px){ .oferta-fields{grid-template-columns:repeat(2,1fr);} }
+  .oferta-fields .of{display:flex; flex-direction:column; gap:4px;}
+  .oferta-fields label{font-size:10.5px; color:var(--muted); font-weight:600;}
+  .oferta-fields .suffix-wrap input, .oferta-fields select{
+    font-family:var(--font-mono); font-size:12.5px; padding:7px 9px; border-radius:var(--radius-sm);
+    border:1.5px solid var(--border); background:var(--paper); color:var(--ink); width:100%;
+  }
+  .oferta-fields .of.span2{grid-column:span 2;}
+
+  .oferta-bonif-section{margin-top:14px; padding-top:14px; border-top:1px dashed var(--border);}
+  .oferta-bonif-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
+  .oferta-bonif-title{font-size:11.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.03em;}
+  .oferta-bonif-empty{font-size:11.5px; color:var(--muted); font-style:italic; margin:0;}
+  .oferta-bonif-item{
+    border:1.5px solid var(--border); border-radius:var(--radius-sm); padding:9px 11px; margin-bottom:8px;
+    background:var(--paper);
+  }
+  .oferta-bonif-item.on{border-color:var(--teal); background:var(--teal-wash);}
+  .obi-top{display:flex; align-items:center; gap:8px;}
+  .obi-top input.obi-name{
+    flex:1; border:none; background:transparent; font-size:12.5px; font-weight:600; color:var(--ink);
+    font-family:var(--font-body); padding:2px 4px; outline:none; border-radius:4px; min-width:0;
+  }
+  .obi-top input.obi-name:focus{background:#fff;}
+  .obi-top button.obi-remove{all:unset; cursor:pointer; color:var(--muted); font-size:12px; padding:2px 6px; border-radius:4px; flex-shrink:0;}
+  .obi-top button.obi-remove:hover{background:var(--brick-wash); color:var(--brick);}
+  .obi-fields{display:grid; grid-template-columns:1fr 1fr 64px 1fr; gap:6px; margin-top:8px;}
+  @media (max-width:640px){ .obi-fields{grid-template-columns:1fr 1fr;} }
+  .obi-fields .suffix-wrap input, .obi-fields select{
+    font-family:var(--font-mono); font-size:11px; padding:6px 7px; border-radius:6px;
+    border:1.5px solid var(--border); background:#fff; color:var(--ink); width:100%;
+  }
+  .switch.switch-sm{width:30px; height:18px; flex-shrink:0;}
+  .switch.switch-sm::after{width:14px; height:14px;}
+  .oferta-bonif-item.on .switch-sm{background:var(--teal);}
+  .oferta-bonif-item.on .switch-sm::after{transform:translateX(12px);}
+
+  .stars{display:inline-flex; gap:1px; font-size:16px; line-height:1; letter-spacing:1px;}
+  .stars .star-on{color:var(--gold);}
+  .stars .star-off{color:var(--border);}
+  .stars.lg{font-size:22px;}
+
+  .resultado-card{
+    border:1.5px solid var(--border); border-radius:var(--radius-md); padding:16px 18px; margin-bottom:12px;
+    background:var(--surface); position:relative;
+  }
+  .resultado-card.winner{border-color:var(--gold); background:var(--gold-wash);}
+  .resultado-top{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+  .resultado-nombre{font-family:var(--font-display); font-size:16px; font-weight:700; color:var(--ink);}
+  .resultado-badge{
+    font-family:var(--font-mono); font-size:10px; font-weight:700; color:#6B4E15; background:var(--gold);
+    padding:3px 10px; border-radius:20px; text-transform:uppercase; letter-spacing:.03em;
+  }
+  .resultado-metrics{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:12px;}
+  @media (max-width:640px){ .resultado-metrics{grid-template-columns:1fr 1fr;} }
+  .resultado-metric{background:var(--paper); border-radius:var(--radius-sm); padding:9px 11px;}
+  .resultado-metric .rm-label{font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase; color:var(--muted);}
+  .resultado-metric .rm-value{font-family:var(--font-mono); font-weight:700; font-size:14px; color:var(--ink); margin-top:2px;}
+  .resultado-veredicto{font-size:12.5px; color:var(--ink-soft); margin-top:12px; line-height:1.5; padding-top:10px; border-top:1px dotted var(--border);}
+  .resultado-veredicto b{color:var(--teal-deep);}
 
   ::-webkit-scrollbar{height:8px; width:8px;}
   ::-webkit-scrollbar-thumb{background:var(--border); border-radius:8px;}
@@ -648,9 +731,10 @@
       <button class="tab-btn" data-tab="fiscalidad"><span class="num">2</span> Fiscalidad</button>
       <button class="tab-btn" data-tab="vivienda"><span class="num">3</span> Vivienda</button>
       <button class="tab-btn" data-tab="financiacion"><span class="num">4</span> Financiación</button>
-      <button class="tab-btn" data-tab="gastos"><span class="num">5</span> Gastos y colchón</button>
-      <button class="tab-btn" data-tab="pasos"><span class="num">6</span> Siguientes pasos</button>
-      <button class="tab-btn" data-tab="glosario"><span class="num">7</span> Glosario</button>
+      <button class="tab-btn" data-tab="comparador-hipotecas"><span class="num">5</span> Comparar hipotecas</button>
+      <button class="tab-btn" data-tab="gastos"><span class="num">6</span> Gastos y colchón</button>
+      <button class="tab-btn" data-tab="pasos"><span class="num">7</span> Siguientes pasos</button>
+      <button class="tab-btn" data-tab="glosario"><span class="num">8</span> Glosario</button>
     </nav>
 
     <!-- ============ FORM PANELS ============ -->
@@ -898,7 +982,22 @@
         <button id="btn-add-bonif" style="all:unset; cursor:pointer; font-size:12.5px; font-weight:600; color:var(--teal); margin-top:6px;">+ Añadir otra vinculación</button>
       </section>
 
-      <!-- 5. GASTOS -->
+      <!-- 5. COMPARADOR DE HIPOTECAS -->
+      <section class="panel" id="panel-comparador-hipotecas">
+        <h2>Compara varias hipotecas</h2>
+        <p class="panel-sub">Añade las ofertas que tengas (bancos, brókers) con sus condiciones reales. Todas se comparan financiando el mismo importe — el de la pestaña Financiación — para que la comparación sea justa. La mejor recibe 5 estrellas, con la justificación de por qué.</p>
+
+        <div class="callout teal" id="ch-hipoteca-base-callout">—</div>
+
+        <div id="ch-ofertas-list"></div>
+        <button id="btn-add-oferta" class="btn-ghost" style="margin-top:4px;">+ Añadir otra oferta</button>
+
+        <div class="divider"></div>
+        <p class="subhead">Resultado</p>
+        <div id="ch-resultados"></div>
+      </section>
+
+      <!-- 6. GASTOS -->
       <section class="panel" id="panel-gastos">
         <h2>Gastos, arras y colchón</h2>
         <p class="panel-sub">Los gastos de la hipoteca (notaría, registro, gestoría, AJD) los asume el banco desde la Ley 5/2019 — aquí solo van los de la compraventa.</p>
@@ -1800,6 +1899,13 @@ function taeEstimadaIRR(principal, cuota, costesMensualesExtra, comisionApertura
   return isFinite(resultado) ? resultado : null;
 }
 
+function costeMensualEquivalente(b){
+  const coste = Number(b.costePeriodo != null ? b.costePeriodo : b.costeMensual) || 0;
+  if (b.periodicidad === 'trimestral') return coste/3;
+  if (b.periodicidad === 'anual') return coste/12;
+  return coste; // 'mensual' o sin especificar
+}
+
 function costeTotalCreciente(costeMensualInicial, incrementoAnualPct, anios){
   const g = (incrementoAnualPct||0)/100;
   if (anios <= 0 || costeMensualInicial <= 0) return 0;
@@ -1836,7 +1942,7 @@ function calcularEscenario(s){
 
   const bonifs = s.financiacion.bonificaciones || [];
   const descuentoBonif = bonifs.filter(b=>b.activo).reduce((a,b)=>a+(Number(b.descuentoPuntos)||0),0);
-  const costeMensualBonif = bonifs.filter(b=>b.activo).reduce((a,b)=>a+(Number(b.costeMensual)||0),0);
+  const costeMensualBonif = bonifs.filter(b=>b.activo).reduce((a,b)=>a+costeMensualEquivalente(b),0);
   const tinFinal = Math.max(0, s.financiacion.tinBase - descuentoBonif);
   const cuotaMensual = cuotaFrancesa(hipoteca, tinFinal, s.financiacion.plazoAnios);
   const nMeses = Math.round(s.financiacion.plazoAnios*12);
@@ -1866,9 +1972,11 @@ function calcularEscenario(s){
 
   const desgloseVinculaciones = bonifsActivas.map(b => ({
     nombre: b.nombre,
-    costeMensualInicial: b.costeMensual,
+    costeMensualInicial: costeMensualEquivalente(b),
+    costePeriodo: b.costePeriodo != null ? b.costePeriodo : b.costeMensual,
+    periodicidad: b.periodicidad || 'mensual',
     incrementoAnualPct: b.incrementoAnualPct || 0,
-    costeTotalPrestamo: costeTotalCreciente(b.costeMensual, b.incrementoAnualPct, s.financiacion.plazoAnios),
+    costeTotalPrestamo: costeTotalCreciente(costeMensualEquivalente(b), b.incrementoAnualPct, s.financiacion.plazoAnios),
   }));
   const costeTotalVinculaciones = desgloseVinculaciones.reduce((a,d) => a + d.costeTotalPrestamo, 0);
   const costeConjuntoConBonif = interesesTotales + costeTotalVinculaciones;
@@ -1910,11 +2018,11 @@ const state = {
   vivienda: { comunidad:'', ciudad:'', tipoVivienda:'segundaMano', esVPO:false, esViviendaHabitual:true, precioAnunciado:0, precioOfertado:0, precioFinal:0, valorReferencia:null, valorTasacion:null, municipioRural:'no', grandTenedor:'no' },
   financiacion: { modo:'porcentaje', porcentaje:80, importeManual:0, plazoAnios:30, tinBase:3.0, comisionAperturaPct:0, taeConocida:null, tipoInteres:'fijo',
     bonificaciones: [
-      { id:1, nombre:'Seguro de hogar', activo:false, descuentoPuntos:0.10, costeMensual:25, incrementoAnualPct:3 },
-      { id:2, nombre:'Seguro de vida', activo:false, descuentoPuntos:0.15, costeMensual:30, incrementoAnualPct:3 },
-      { id:3, nombre:'Domiciliación de nómina', activo:false, descuentoPuntos:0.05, costeMensual:0, incrementoAnualPct:0 },
-      { id:4, nombre:'Plan de pensiones', activo:false, descuentoPuntos:0.10, costeMensual:50, incrementoAnualPct:3 },
-      { id:5, nombre:'Tarjeta de crédito/débito', activo:false, descuentoPuntos:0.05, costeMensual:5, incrementoAnualPct:0 },
+      { id:1, nombre:'Seguro de hogar', activo:false, descuentoPuntos:0.10, costePeriodo:25, periodicidad:'mensual', incrementoAnualPct:3 },
+      { id:2, nombre:'Seguro de vida', activo:false, descuentoPuntos:0.15, costePeriodo:30, periodicidad:'mensual', incrementoAnualPct:3 },
+      { id:3, nombre:'Domiciliación de nómina', activo:false, descuentoPuntos:0.05, costePeriodo:0, periodicidad:'mensual', incrementoAnualPct:0 },
+      { id:4, nombre:'Plan de pensiones', activo:false, descuentoPuntos:0.10, costePeriodo:600, periodicidad:'anual', incrementoAnualPct:3 },
+      { id:5, nombre:'Tarjeta de crédito/débito', activo:false, descuentoPuntos:0.05, costePeriodo:5, periodicidad:'mensual', incrementoAnualPct:0 },
     ]
   },
   operacion: { notaria:800, registro:450, gestoria:350, tasacionCoste:350, otros:0, arrasEntregadas:0, condicionSuspensiva:false, colchonMinimoDeseado:5000, ibiAnual:500, comunidadMensual:80 },
@@ -1996,6 +2104,7 @@ function render(){
     el('tabla-precio').innerHTML = '';
     el('tabla-tasacion').innerHTML = '';
     el('precio-max-content').innerHTML = `<p style="font-size:12.5px; color:var(--muted);">Introduce tus ahorros, comunidad y un precio de compra para calcular tu precio máximo.</p>`;
+    if (typeof renderResultadosComparador === 'function') renderResultadosComparador();
     return;
   }
 
@@ -2019,6 +2128,7 @@ function render(){
     el('comparativa-content').style.display = 'none';
     el('badge-compensa').textContent = '';
     el('tabla-tin').innerHTML = ''; el('tabla-precio').innerHTML = ''; el('tabla-tasacion').innerHTML = ''; el('precio-max-content').innerHTML = '';
+    if (typeof renderResultadosComparador === 'function') renderResultadosComparador();
     return;
   }
 
@@ -2289,6 +2399,8 @@ function render(){
         ${state.financiacion.modo==='manual' ? ` (Ojo: en modo de importe manual, la hipoteca se mantiene fija en ${fmtEUR(state.financiacion.importeManual)} al variar el precio, no escala con él).` : ''}
       </p>`;
   }
+
+  if (typeof renderResultadosComparador === 'function') renderResultadosComparador();
 }
 
 /* ============================================================
@@ -2297,7 +2409,10 @@ function render(){
 
 function renderBonificaciones(){
   const list = el('bonificaciones-list');
-  list.innerHTML = state.financiacion.bonificaciones.map(b => `
+  list.innerHTML = state.financiacion.bonificaciones.map(b => {
+    const costeActual = b.costePeriodo != null ? b.costePeriodo : (b.costeMensual != null ? b.costeMensual : 0);
+    const periodicidadActual = b.periodicidad || 'mensual';
+    return `
     <div class="bonif-item ${b.activo?'on':''}" data-id="${b.id}">
       <div class="bonif-top">
         <div class="switch" data-action="toggle"></div>
@@ -2310,8 +2425,15 @@ function renderBonificaciones(){
           <div class="suffix-wrap"><input type="number" inputmode="decimal" step="0.01" data-action="descuento" value="${b.descuentoPuntos}"><span>pp</span></div>
         </div>
         <div class="bf">
-          <label>Coste mensual hoy</label>
-          <div class="suffix-wrap"><input type="number" inputmode="decimal" step="1" data-action="coste" value="${b.costeMensual}"><span>€</span></div>
+          <label>Coste por periodo</label>
+          <div class="coste-periodo-row">
+            <div class="suffix-wrap"><input type="number" inputmode="decimal" step="1" data-action="coste" value="${costeActual}"><span>€</span></div>
+            <select data-action="periodicidad">
+              <option value="mensual" ${periodicidadActual==='mensual'?'selected':''}>/mes</option>
+              <option value="trimestral" ${periodicidadActual==='trimestral'?'selected':''}>/trimestre</option>
+              <option value="anual" ${periodicidadActual==='anual'?'selected':''}>/año</option>
+            </select>
+          </div>
         </div>
         <div class="bf">
           <label>Incremento anual</label>
@@ -2319,7 +2441,7 @@ function renderBonificaciones(){
         </div>
       </div>
     </div>
-  `).join('');
+  `;}).join('');
 
   list.querySelectorAll('.bonif-item').forEach(item => {
     const id = Number(item.dataset.id);
@@ -2331,7 +2453,12 @@ function renderBonificaciones(){
     });
     item.querySelector('[data-action="nombre"]').addEventListener('input', (e) => { bonif.nombre = e.target.value; });
     item.querySelector('[data-action="descuento"]').addEventListener('input', (e) => { bonif.descuentoPuntos = parseFloat(e.target.value)||0; render(); });
-    item.querySelector('[data-action="coste"]').addEventListener('input', (e) => { bonif.costeMensual = parseFloat(e.target.value)||0; render(); });
+    item.querySelector('[data-action="coste"]').addEventListener('input', (e) => {
+      bonif.costePeriodo = parseFloat(e.target.value)||0;
+      delete bonif.costeMensual; // migrar definitivamente al nuevo esquema
+      render();
+    });
+    item.querySelector('[data-action="periodicidad"]').addEventListener('change', (e) => { bonif.periodicidad = e.target.value; render(); });
     item.querySelector('[data-action="incremento"]').addEventListener('input', (e) => { bonif.incrementoAnualPct = parseFloat(e.target.value)||0; render(); });
     item.querySelector('[data-action="remove"]').addEventListener('click', () => {
       state.financiacion.bonificaciones = state.financiacion.bonificaciones.filter(b => b.id !== id);
@@ -2341,7 +2468,7 @@ function renderBonificaciones(){
 }
 
 el('btn-add-bonif').addEventListener('click', () => {
-  state.financiacion.bonificaciones.push({ id: bonifCounter++, nombre:'Nueva vinculación', activo:true, descuentoPuntos:0.05, costeMensual:0, incrementoAnualPct:3 });
+  state.financiacion.bonificaciones.push({ id: bonifCounter++, nombre:'Nueva vinculación', activo:true, descuentoPuntos:0.05, costePeriodo:0, periodicidad:'mensual', incrementoAnualPct:3 });
   renderBonificaciones(); render();
 });
 
@@ -2858,8 +2985,13 @@ async function construirLibroExcel(){
       c.fill = {type:'pattern', pattern:'solid', fgColor:{argb:XC.teal}};
       c.alignment = {horizontal:i===0?'left':'right'};
     });
-    r.desgloseVinculaciones.forEach(d => {
-      const row = wsB.addRow([d.nombre, d.costeMensualInicial, d.incrementoAnualPct/100, d.costeTotalPrestamo]);
+    r.desgloseVinculaciones.forEach((d, idx) => {
+      const rowNum = filaHeaderDesglose + 1 + idx;
+      const row = wsB.getRow(rowNum);
+      row.getCell(1).value = d.nombre;
+      row.getCell(2).value = d.costeMensualInicial;
+      row.getCell(3).value = d.incrementoAnualPct/100;
+      row.getCell(4).value = d.costeTotalPrestamo;
       row.getCell(2).numFmt = '#,##0.00 "€"'; row.getCell(3).numFmt = '0.0%'; row.getCell(4).numFmt = '#,##0.00 "€"';
       row.eachCell((c,i) => { c.font = {size:10}; c.alignment = {horizontal:i===1?'left':'right'}; });
     });
@@ -3292,6 +3424,256 @@ if (glossarySearch){
 }
 
 /* ============================================================
+   COMPARADOR DE HIPOTECAS (varias ofertas, con puntuación por estrellas)
+   ============================================================ */
+
+let ofertaCounter = 1;
+let ofertaBonifCounter = 1;
+if (!state.comparadorHipotecas) state.comparadorHipotecas = { ofertas: [] };
+
+function calcularOferta(oferta, hipotecaBase){
+  const bonifs = (oferta.bonificaciones || []).filter(b => b.activo);
+  const descuentoBonif = bonifs.reduce((a,b) => a + (Number(b.descuentoPuntos)||0), 0);
+  const tinFinal = Math.max(0, (Number(oferta.tin)||0) - descuentoBonif);
+  const plazoAnios = Number(oferta.plazoAnios) || 1;
+  const cuotaMensual = cuotaFrancesa(hipotecaBase, tinFinal, plazoAnios);
+  const nMeses = Math.round(plazoAnios*12);
+  const interesesTotales = cuotaMensual*nMeses - hipotecaBase;
+  const costeBonifMensual = bonifs.reduce((a,b) => a + costeMensualEquivalente(b), 0);
+  const costeTotalVinculaciones = bonifs.reduce((a,b) => a + costeTotalCreciente(costeMensualEquivalente(b), b.incrementoAnualPct, plazoAnios), 0);
+  const comisionAperturaImporte = hipotecaBase * ((Number(oferta.comisionAperturaPct)||0)/100);
+  const comisionCancelacionImporte = hipotecaBase * ((Number(oferta.comisionCancelacionPct)||0)/100);
+  const taeEstimada = taeEstimadaIRR(hipotecaBase, cuotaMensual, costeBonifMensual, comisionAperturaImporte, nMeses);
+  const costeConstitucion = comisionAperturaImporte + (Number(oferta.tasacionCoste)||0) + (Number(oferta.otrosGastos)||0);
+  const costeTotalGlobal = interesesTotales + costeTotalVinculaciones + costeConstitucion;
+  return { tinFinal, cuotaMensual, interesesTotales, costeBonifMensual, costeTotalVinculaciones, descuentoBonif,
+    comisionAperturaImporte, comisionCancelacionImporte, taeEstimada, costeConstitucion, costeTotalGlobal, plazoAnios };
+}
+
+function renderEstrellas(valor, big){
+  let html = `<span class="stars${big?' lg':''}">`;
+  for (let i=1;i<=5;i++){
+    if (valor >= i) html += '<span class="star-on">★</span>';
+    else if (valor >= i-0.5) html += '<span class="star-on">⯪</span>';
+    else html += '<span class="star-off">★</span>';
+  }
+  html += '</span>';
+  return html;
+}
+
+function renderOfertas(){
+  const list = el('ch-ofertas-list');
+  const ofertas = state.comparadorHipotecas.ofertas;
+  list.innerHTML = ofertas.map(o => `
+    <div class="oferta-card" data-id="${o.id}">
+      <div class="oferta-card-header">
+        <input class="oferta-name" data-action="nombre" value="${o.nombre}">
+        <button class="oferta-remove" data-action="remove">✕</button>
+      </div>
+      <div class="oferta-fields">
+        <div class="of"><label>TIN</label><div class="suffix-wrap"><input type="number" inputmode="decimal" step="0.05" data-action="tin" value="${o.tin}"><span>%</span></div></div>
+        <div class="of"><label>Tipo</label>
+          <select data-action="tipoInteres">
+            <option value="fijo" ${o.tipoInteres==='fijo'?'selected':''}>Fijo</option>
+            <option value="variable" ${o.tipoInteres==='variable'?'selected':''}>Variable</option>
+            <option value="mixto" ${o.tipoInteres==='mixto'?'selected':''}>Mixto</option>
+          </select>
+        </div>
+        <div class="of"><label>Plazo</label><div class="suffix-wrap"><input type="number" inputmode="decimal" step="1" data-action="plazoAnios" value="${o.plazoAnios}"><span>años</span></div></div>
+        <div class="of"><label>Comisión apertura</label><div class="suffix-wrap"><input type="number" inputmode="decimal" step="0.1" data-action="comisionAperturaPct" value="${o.comisionAperturaPct}"><span>%</span></div></div>
+        <div class="of"><label>Comisión cancelación</label><div class="suffix-wrap"><input type="number" inputmode="decimal" step="0.1" data-action="comisionCancelacionPct" value="${o.comisionCancelacionPct}"><span>%</span></div></div>
+        <div class="of"><label>Tasación (coste)</label><div class="suffix-wrap"><input type="number" inputmode="decimal" step="10" data-action="tasacionCoste" value="${o.tasacionCoste}"><span>€</span></div></div>
+        <div class="of"><label>Otros gastos</label><div class="suffix-wrap"><input type="number" inputmode="decimal" step="10" data-action="otrosGastos" value="${o.otrosGastos}"><span>€</span></div></div>
+      </div>
+
+      <div class="oferta-bonif-section">
+        <div class="oferta-bonif-header">
+          <span class="oferta-bonif-title">Vinculaciones de esta oferta</span>
+          <button class="btn-ghost small" data-action="add-bonif">+ Añadir</button>
+        </div>
+        <div class="oferta-bonif-list" data-oferta-bonif-list="${o.id}"></div>
+      </div>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.oferta-card').forEach(card => {
+    const id = Number(card.dataset.id);
+    const oferta = ofertas.find(o => o.id === id);
+    card.querySelector('[data-action="nombre"]').addEventListener('input', (e) => { oferta.nombre = e.target.value; renderResultadosComparador(); });
+    card.querySelector('[data-action="remove"]').addEventListener('click', () => {
+      state.comparadorHipotecas.ofertas = state.comparadorHipotecas.ofertas.filter(o => o.id !== id);
+      renderOfertas(); renderResultadosComparador();
+    });
+    ['tin','tipoInteres','plazoAnios','comisionAperturaPct','comisionCancelacionPct','tasacionCoste','otrosGastos'].forEach(campo => {
+      const node = card.querySelector(`[data-action="${campo}"]`);
+      if (!node) return;
+      const evento = node.tagName === 'SELECT' ? 'change' : 'input';
+      node.addEventListener(evento, (e) => {
+        oferta[campo] = node.tagName === 'SELECT' ? e.target.value : (parseFloat(e.target.value)||0);
+        renderResultadosComparador();
+      });
+    });
+    card.querySelector('[data-action="add-bonif"]').addEventListener('click', () => {
+      if (!oferta.bonificaciones) oferta.bonificaciones = [];
+      oferta.bonificaciones.push({ id: ofertaBonifCounter++, nombre:'Vinculación', activo:true, descuentoPuntos:0.05, costePeriodo:0, periodicidad:'mensual', incrementoAnualPct:3 });
+      renderOfertaBonificaciones(oferta);
+      renderResultadosComparador();
+    });
+    renderOfertaBonificaciones(oferta);
+  });
+}
+
+function renderOfertaBonificaciones(oferta){
+  const cont = document.querySelector(`[data-oferta-bonif-list="${oferta.id}"]`);
+  if (!cont) return;
+  const bonifs = oferta.bonificaciones || [];
+  if (bonifs.length === 0){
+    cont.innerHTML = '<p class="oferta-bonif-empty">Sin vinculaciones — esta oferta se compara a su TIN puro.</p>';
+    return;
+  }
+  cont.innerHTML = bonifs.map(b => {
+    const costeActual = b.costePeriodo != null ? b.costePeriodo : (b.costeMensual != null ? b.costeMensual : 0);
+    const periodicidadActual = b.periodicidad || 'mensual';
+    return `
+    <div class="oferta-bonif-item ${b.activo?'on':''}" data-bonif-id="${b.id}">
+      <div class="obi-top">
+        <div class="switch switch-sm" data-action="obi-toggle"></div>
+        <input class="obi-name" data-action="obi-nombre" value="${b.nombre}">
+        <button class="obi-remove" data-action="obi-remove">✕</button>
+      </div>
+      <div class="obi-fields">
+        <div class="suffix-wrap"><input type="number" inputmode="decimal" step="0.01" data-action="obi-descuento" value="${b.descuentoPuntos}"><span>pp</span></div>
+        <div class="suffix-wrap"><input type="number" inputmode="decimal" step="1" data-action="obi-coste" value="${costeActual}"><span>€</span></div>
+        <select data-action="obi-periodicidad">
+          <option value="mensual" ${periodicidadActual==='mensual'?'selected':''}>/mes</option>
+          <option value="trimestral" ${periodicidadActual==='trimestral'?'selected':''}>/trim.</option>
+          <option value="anual" ${periodicidadActual==='anual'?'selected':''}>/año</option>
+        </select>
+        <div class="suffix-wrap"><input type="number" inputmode="decimal" step="0.5" data-action="obi-incremento" value="${b.incrementoAnualPct != null ? b.incrementoAnualPct : 3}"><span>%</span></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  cont.querySelectorAll('.oferta-bonif-item').forEach(item => {
+    const bid = Number(item.dataset.bonifId);
+    const bonif = oferta.bonificaciones.find(b => b.id === bid);
+    item.querySelector('[data-action="obi-toggle"]').addEventListener('click', () => {
+      bonif.activo = !bonif.activo;
+      item.classList.toggle('on', bonif.activo);
+      renderResultadosComparador();
+    });
+    item.querySelector('[data-action="obi-nombre"]').addEventListener('input', (e) => { bonif.nombre = e.target.value; });
+    item.querySelector('[data-action="obi-descuento"]').addEventListener('input', (e) => { bonif.descuentoPuntos = parseFloat(e.target.value)||0; renderResultadosComparador(); });
+    item.querySelector('[data-action="obi-coste"]').addEventListener('input', (e) => {
+      bonif.costePeriodo = parseFloat(e.target.value)||0;
+      delete bonif.costeMensual;
+      renderResultadosComparador();
+    });
+    item.querySelector('[data-action="obi-periodicidad"]').addEventListener('change', (e) => { bonif.periodicidad = e.target.value; renderResultadosComparador(); });
+    item.querySelector('[data-action="obi-incremento"]').addEventListener('input', (e) => { bonif.incrementoAnualPct = parseFloat(e.target.value)||0; renderResultadosComparador(); });
+    item.querySelector('[data-action="obi-remove"]').addEventListener('click', () => {
+      oferta.bonificaciones = oferta.bonificaciones.filter(b => b.id !== bid);
+      renderOfertaBonificaciones(oferta);
+      renderResultadosComparador();
+    });
+  });
+}
+
+function renderResultadosComparador(){
+  const wrap = el('ch-resultados');
+  const callout = el('ch-hipoteca-base-callout');
+  const r = calcularEscenario(state);
+
+  if (!state.vivienda.comunidad || state.vivienda.precioFinal <= 0){
+    callout.innerHTML = 'Completa primero comunidad autónoma y precio de la vivienda (pestañas Vivienda) para fijar el importe a financiar.';
+    wrap.innerHTML = '';
+    return;
+  }
+  callout.innerHTML = `Comparando todas las ofertas financiando <b>${fmtEUR(r.hipoteca)}</b> (el importe resultante de tu pestaña Financiación). Si cambias el precio, la tasación o el % financiado, se actualiza aquí también.`;
+
+  const ofertas = state.comparadorHipotecas.ofertas;
+  if (ofertas.length === 0){
+    wrap.innerHTML = '<p class="comparativa-sub">Añade al menos dos ofertas para compararlas.</p>';
+    return;
+  }
+
+  const calculadas = ofertas.map(o => ({ oferta:o, calc: calcularOferta(o, r.hipoteca) }));
+  const costes = calculadas.map(c => c.calc.costeTotalGlobal);
+  const min = Math.min(...costes), max = Math.max(...costes);
+
+  calculadas.forEach(c => {
+    const pctExtra = min>0 ? ((c.calc.costeTotalGlobal - min)/min)*100 : 0;
+    c.estrellas = Math.round(Math.max(1, Math.min(5, 5 - pctExtra/10))*2)/2;
+  });
+  calculadas.sort((a,b) => a.calc.costeTotalGlobal - b.calc.costeTotalGlobal);
+
+  const ganador = calculadas[0];
+
+  let html = '';
+  if (ofertas.length === 1){
+    html += `<p class="comparativa-sub">Añade al menos una oferta más para poder comparar y justificar cuál es mejor.</p>`;
+  }
+  calculadas.forEach((c, idx) => {
+    const esGanador = idx === 0 && ofertas.length > 1;
+    let veredicto = '';
+    if (esGanador && ofertas.length > 1){
+      const segunda = calculadas[1];
+      const diff = segunda.calc.costeTotalGlobal - c.calc.costeTotalGlobal;
+      const componentes = [
+        { nombre:'los intereses', valor: segunda.calc.interesesTotales - c.calc.interesesTotales },
+        { nombre:'las vinculaciones', valor: segunda.calc.costeTotalVinculaciones - c.calc.costeTotalVinculaciones },
+        { nombre:'los gastos de constitución (comisión de apertura, tasación, otros)', valor: segunda.calc.costeConstitucion - c.calc.costeConstitucion },
+      ];
+      componentes.sort((a,b) => Math.abs(b.valor) - Math.abs(a.valor));
+      const principal = componentes[0];
+      veredicto = `<b>🏆 Mejor opción.</b> Sale ${fmtEUR(diff)} más barata en total que "${segunda.oferta.nombre}", la siguiente mejor — sobre todo por ${principal.nombre} (${principal.valor>=0?'ahorra':'pierde'} ${fmtEUR(Math.abs(principal.valor))} ahí).`;
+    } else if (ofertas.length > 1){
+      const diff = c.calc.costeTotalGlobal - ganador.calc.costeTotalGlobal;
+      const componentes = [
+        { nombre:'el TIN/intereses', valor: c.calc.interesesTotales - ganador.calc.interesesTotales },
+        { nombre:'las vinculaciones', valor: c.calc.costeTotalVinculaciones - ganador.calc.costeTotalVinculaciones },
+        { nombre:'los gastos de constitución', valor: c.calc.costeConstitucion - ganador.calc.costeConstitucion },
+      ];
+      componentes.sort((a,b) => Math.abs(b.valor) - Math.abs(a.valor));
+      const principal = componentes[0];
+      veredicto = `${fmtEUR(diff)} más cara en total que "${ganador.oferta.nombre}" a lo largo de toda la vida del préstamo, principalmente por ${principal.nombre} (${fmtEUR(Math.abs(principal.valor))} de diferencia ahí). ${c.calc.comisionCancelacionImporte>0 ? `Ojo: si cancelas anticipadamente, esta oferta tiene una comisión de cancelación de hasta ${fmtEUR(c.calc.comisionCancelacionImporte)}.` : ''}`;
+    } else {
+      veredicto = c.calc.comisionCancelacionImporte>0 ? `Comisión de cancelación de hasta ${fmtEUR(c.calc.comisionCancelacionImporte)} si amortizas anticipadamente.` : '';
+    }
+
+    html += `
+      <div class="resultado-card ${esGanador?'winner':''}">
+        <div class="resultado-top">
+          <div>
+            <span class="resultado-nombre">${c.oferta.nombre}</span>
+            ${esGanador && ofertas.length>1 ? '<span class="resultado-badge">Mejor opción</span>' : ''}
+          </div>
+          ${renderEstrellas(c.estrellas, true)}
+        </div>
+        <div class="resultado-metrics">
+          <div class="resultado-metric"><div class="rm-label">TIN final</div><div class="rm-value">${fmtPct(c.calc.tinFinal,2)}</div></div>
+          <div class="resultado-metric"><div class="rm-label">TAE estimada</div><div class="rm-value">${c.calc.taeEstimada==null?'—':fmtPct(c.calc.taeEstimada,2)}</div></div>
+          <div class="resultado-metric"><div class="rm-label">Cuota mensual</div><div class="rm-value">${fmtEUR2(c.calc.cuotaMensual)}</div></div>
+          <div class="resultado-metric"><div class="rm-label">Coste total (${c.calc.plazoAnios} años)</div><div class="rm-value">${fmtEUR(c.calc.costeTotalGlobal)}</div></div>
+        </div>
+        ${veredicto ? `<div class="resultado-veredicto">${veredicto}</div>` : ''}
+      </div>`;
+  });
+  wrap.innerHTML = html;
+}
+
+el('btn-add-oferta').addEventListener('click', () => {
+  state.comparadorHipotecas.ofertas.push({
+    id: ofertaCounter++, nombre: `Oferta ${state.comparadorHipotecas.ofertas.length+1}`,
+    tin: 3.0, tipoInteres:'fijo', plazoAnios: state.financiacion.plazoAnios || 30,
+    comisionAperturaPct: 0, comisionCancelacionPct: 0,
+    tasacionCoste: state.operacion.tasacionCoste || 350, otrosGastos: 0,
+    bonificaciones: [],
+  });
+  renderOfertas(); renderResultadosComparador();
+});
+
+/* ============================================================
    INIT
    ============================================================ */
 
@@ -3303,6 +3685,7 @@ actualizarDetalleVPO();
 actualizarNotaRegion();
 actualizarRequisitosCallout();
 renderBonificaciones();
+renderOfertas();
 renderComparador();
 actualizarProgresoChecklist();
 render();
