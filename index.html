@@ -2192,8 +2192,18 @@ function render(){
   el('kpi-colchon-sub').textContent = `deseado: ${fmtEUR(state.operacion.colchonMinimoDeseado)}`;
   el('kpi-cuota').textContent = fmtEUR2(r.cuotaMensual);
   el('kpi-cuota-sub').textContent = r.ratioCuota==null ? 'informa tus ingresos para ver el ratio' : `${fmtPct(r.ratioCuota)} de tus ingresos`;
-  el('kpi-tae').textContent = r.taeEstimada==null ? '—' : fmtPct(r.taeEstimada, 2);
-  el('kpi-tae-sub').textContent = state.taeConocidaDiff || 'TIN + comisión + vinculaciones';
+
+  if (state.financiacion.taeConocida != null){
+    // El usuario tiene la TAE real del banco: esa es la cifra fiable, se muestra como principal.
+    const diff = state.financiacion.taeConocida - r.taeEstimada;
+    el('kpi-tae').textContent = fmtPct(state.financiacion.taeConocida, 2);
+    el('kpi-tae-sub').textContent = r.taeEstimada==null
+      ? 'TAE del banco'
+      : `Estimada aquí: ${fmtPct(r.taeEstimada,2)} (${diff>=0?'+':''}${fmtPct(diff,2)})`;
+  } else {
+    el('kpi-tae').textContent = r.taeEstimada==null ? '—' : fmtPct(r.taeEstimada, 2);
+    el('kpi-tae-sub').textContent = 'estimada: TIN + comisión + vinculaciones';
+  }
 
   // sticky bar
   el('sticky-efectivo').textContent = fmtEUR(r.efectivoTotalNecesario);
@@ -2249,9 +2259,6 @@ function render(){
   }
   if (!state.financiacion.taeConocida){
     alerts.push({t:'info', m:`La TAE no puede deducirse solo del TIN: añade seguros, comisiones y vinculaciones para comparar ofertas de forma justa. Aquí se estima con una TIR sobre el capital neto recibido.`});
-  } else {
-    const diff = state.financiacion.taeConocida - r.taeEstimada;
-    state.taeConocidaDiff = `Banco: ${fmtPct(state.financiacion.taeConocida,2)} (diferencia: ${diff>=0?'+':''}${fmtPct(diff,2)})`;
   }
   if (state.vivienda.tipoVivienda === 'nueva' && region.especial === 'cataluna' && region.ajdBonifJovenPct && r.elegibleReducido){
     alerts.push({t:'good', m:`Al ser vivienda nueva y cumplir los requisitos, el AJD queda bonificado: ahorras ${fmtEUR(state.vivienda.precioFinal*(region.ajd/100)*(region.ajdBonifJovenPct/100))} respecto al tipo general.`});
